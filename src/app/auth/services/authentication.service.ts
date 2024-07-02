@@ -1,4 +1,3 @@
-// authentication.service.ts
 import { Injectable } from '@angular/core';
 import { CognitoUser, AuthenticationDetails, CognitoUserSession, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { environment } from "../../../environment/environment";
@@ -7,6 +6,7 @@ import { Router } from "@angular/router";
 import { MessageService } from "primeng/api";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { apiEndpoint } from "../../app-settings/config";
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -39,10 +39,16 @@ export class AuthenticationService {
   }
 
   signIn(username: string, password: string): Observable<any> {
-    const authenticationDetails = new AuthenticationDetails({ Username: username, Password: password });
-    const cognitoUser = new CognitoUser({ Username: username, Pool: this.userPool });
+  const getIp$ = this.http.get('https://ipinfo.io/ip?token=f3de785982d012', { responseType: 'text' });
+    console.log('getIp$', getIp$);
+    const authenticateUser$ = (ip: any) => new Observable(observer => {
+      const authenticationDetails = new AuthenticationDetails({
+        Username: username,
+        Password: password,
+        ClientMetadata: { ip }
+      });
+      const cognitoUser = new CognitoUser({ Username: username, Pool: this.userPool });
 
-    return new Observable(observer => {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: (session: any) => {
           this.loadPermissions();
@@ -62,24 +68,21 @@ export class AuthenticationService {
         }
       });
     });
+
+    return getIp$.pipe(
+      switchMap(data => authenticateUser$(data))
+    );
   }
 
   loadPermissions() {
-    this.getIdToken().subscribe(
-      token => {
-        this.getUserPermissions(token).subscribe(
-          permissions => {
-            this.permissionsSubject.next(permissions);
-            this.setPermissions(permissions);
-          },
-          error => {
-            console.error('Error fetching permissions', error);
-          }
-        );
+    this.getIdToken().pipe(
+      switchMap(token => this.getUserPermissions(token))
+    ).subscribe(
+      permissions => {
+        this.permissionsSubject.next(permissions);
+        this.setPermissions(permissions);
       },
-      error => {
-        console.error('Error fetching ID token', error);
-      }
+      error => console.error('Error fetching permissions', error)
     );
   }
 
@@ -134,15 +137,10 @@ export class AuthenticationService {
       this.currentUserSubject.next(null);
     }
   }
+
   setPermissions(data: any) {
     let user = this.getLastAuthUser();
     //save permissions to local storage with related to user
     localStorage.setItem(user?.getUsername() + '-permissions', JSON.stringify(data));
   }
 }
-
-
-
-
-
-
