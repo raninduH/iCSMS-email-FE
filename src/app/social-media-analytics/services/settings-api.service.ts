@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Campaign } from '../models/campaign-analysis';
+import { socialMediaBackendAPI } from '../../app-settings/config';
 
 const headers = new HttpHeaders()
 .set('Content-Type', 'application/json')
@@ -13,12 +14,12 @@ const headers = new HttpHeaders()
   providedIn: 'root'
 })
 export class SettingsApiService {
-  private apiUrl = 'http://127.0.0.1:8000/social-media/settings';
+  private apiUrl = `${socialMediaBackendAPI}/social-media/settings`;
 
   constructor(private http: HttpClient) {}
 
   getTopicAlerts(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/topic_alerts`);
+    return this.http.get<any>(`${this.apiUrl}/product_alerts`);
   }
 
   getCampaigns(): Observable<any> {
