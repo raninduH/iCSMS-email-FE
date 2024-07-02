@@ -36,22 +36,7 @@ export class WordcloudComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['wordList'] ) {
-      $("#wordCloud").jQWCloud({
-        words: this.wordList,
-        maxFont: 50,
-        minFont:10,
-        verticalEnabled: true,
-        padding_left: null,
-        word_click :function(event: any){
-          console.log(event.target.textContent);
-        },
-        word_mouseOver :function(){},
-        word_mouseEnter :function(){},
-        word_mouseOut :function(){},
-        beforeCloudRender:function(){},
-        afterCloudRender:function(){}
-  
-      });
+      this.refreshChart(this.wordList);
     }
   }
 }
