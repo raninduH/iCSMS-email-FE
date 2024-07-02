@@ -1,0 +1,17 @@
+:host ::ng-deep .p-card .p-card-content {
+    padding: 0 1.25rem;
+  }
+
+:host ::ng-deep .p-component, .p-component * {
+    box-sizing: border-box;
+    height: auto;
+  }
+
+//:host ::ng-deep .p-message.p-message-success {
+//  background: #f9f9f9;
+//  /* border: solid #1ea97c; */
+//  border-width: 0 0 0 6px;
+//  /* color: #1ea97c; */
+//}
+
+
