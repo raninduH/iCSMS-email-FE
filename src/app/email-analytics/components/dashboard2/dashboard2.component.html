@@ -74,7 +74,7 @@
     <!-- <span class="text-5xl">5</span>
       <span class="text-3xl">sentiment score</span> -->
     <div class="w-full h-full flex justify-center items-center border border-solid border-slate-300 rounded-lg bg-white hover:bg-gray-50 hover:border-sky-400 hover:cursor-pointer transition hover:duration-150">
-      <app-dashboard-sentiment-card></app-dashboard-sentiment-card>
+      <app-dashboard-sentiment-card [fromDate]="rangeDates[0]" [toDate]="rangeDates[1]"/>
     </div>
   </div>
   <div
