@@ -299,6 +299,7 @@ export class UsersComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.logs = [];
     this.selectedUsers = {} as User;
     this.isLoading = true;
     this.userRefreshService.userAdded.subscribe(() => {

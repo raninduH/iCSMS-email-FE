@@ -51,7 +51,7 @@ import {PanelMenuModule} from "primeng/panelmenu";
 import {MenubarModule} from "primeng/menubar";
 import {SkeletonModule} from "primeng/skeleton";
 import {RippleModule} from "primeng/ripple";
-import zoomPlugin from 'chartjs-plugin-zoom';
+// import zoomPlugin from 'chartjs-plugin-zoom';
 
 @NgModule({
   declarations: [
@@ -111,7 +111,7 @@ import zoomPlugin from 'chartjs-plugin-zoom';
     MenubarModule,
     SkeletonModule,
     RippleModule,
-    
+
 
   ],
   exports: [
