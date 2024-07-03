@@ -1,7 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MenuItem } from "primeng/api";
 import { CallAnalyticsService } from "../../services/call-analytics.service";
-import { CallStatistics, OverallCallStatusPercentages } from "../../types";
+import {
+  BestOperatorItem,
+  CallStatistics,
+  OperatorAnalyticsOverTimeRecord,
+  SentimentOverTimeDataSet,
+  SentimentPercentages
+} from "../../types";
+import { WordCloudItem } from "../../../shared/types";
+import { DoughnutChartComponent } from "../doughnut-chart/doughnut-chart.component";
+import { LineAreaChartComponent } from "../line-area-chart/line-area-chart.component";
+import { BarChartComponent } from "../horizontal-bar-chart/bar-chart.component";
+import { StackedBarChartComponent } from "../stacked-bar-chart/stacked-bar-chart.component";
+import { WordcloudComponent } from "../../../shared/shared-components/wordcloud/wordcloud.component";
 
 
 @Component({
@@ -9,56 +21,99 @@ import { CallStatistics, OverallCallStatusPercentages } from "../../types";
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit{
-
-  constructor(private callAnalyticsService: CallAnalyticsService) {
-  }
+export class DashboardComponent implements OnInit {
+  @ViewChild('dChartComp') dChart!: DoughnutChartComponent;
+  @ViewChild('lChartComp') lChart!: LineAreaChartComponent;
+  @ViewChild('bChartComp') bChart!: BarChartComponent;
+  @ViewChild('sChartComp') sChart!: StackedBarChartComponent;
+  @ViewChild('keywordCloud') keywordCloud!: WordcloudComponent;
 
   breadcrumbItems: MenuItem[] = [
     {label: "Call Analytics"},
     {label: "Dashboard"}
   ];
 
+  start = "2024-06-29-16-29-00"
+  end = "2024-06-30-18-36-30"
+  isLoadingStatistics = true;
   callStatistics!: CallStatistics;
+  callSentiments!: SentimentPercentages;
+  sentimentOverTime!: SentimentOverTimeDataSet[];
+  operatorCallsOverTime!: OperatorAnalyticsOverTimeRecord[];
+  operatorRankings!: BestOperatorItem[];
+  topicDistribution!: { [KeyFilter: string]: number }
+  keywords: WordCloudItem[] = []
+  protected readonly Math = Math;
 
-  myData = [
-    {word: 'Prashant', weight: 40, color: 'green'},
-    {word: 'Sandeep', weight: 39, color: 'green'},
-    {word: 'Ajinkya', weight: 11, color: 'green'},
-    {word: 'Kuldeep', weight: 36, color: 'green'},
-    {word: 'Vivek', weight: 39},
-    {word: 'Saheer', weight: 12, color: 'green'},
-    {word: 'Lohit', weight: 27},
-    {word: 'Anirudh', weight: 36},
-    {word: 'Raj', weight: 22},
-    {word: 'Mohan', weight: 40},
-    {word: 'Yadav', weight: 39},
-    {word: 'India', weight: 11, color: 'green'},
-    {word: 'USA', weight: 27},
-    {word: 'Sreekar', weight: 36},
-    {word: 'Ram', weight: 39},
-    {word: 'Deepali', weight: 12, color: 'green'},
-    {word: 'Kunal', weight: 27},
-    {word: 'Rishi', weight: 80},
-    {word: 'Chintan', weight: 22}
-  ]
+  constructor(private callAnalyticsService: CallAnalyticsService, private cdr: ChangeDetectorRef) {
+    this.callAnalyticsService.getAllKeywords(this.start, this.end).then(response => {
+      this.keywords = Object.entries(response.data).map(([word, weight]) => (
+        {word: word, weight: Number(weight)}));
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+  }
 
   ngOnInit() {
-    this.callStatistics = this.callAnalyticsService.getCallStatistics();
-
+    this.reloadData(this.start, this.end);
   }
 
-  calculateCallStatusPercentage(positive: number, negative: number, neutral: number): OverallCallStatusPercentages {
-    let total = positive + negative + neutral;
-    let negativePercentage = negative * 100 / total;
-    let positivePercentage = positive * 100 / total;
-    let neutralPercentage = neutral * 100 / total;
+  reloadData(start: string, end: string) {
+    this.callAnalyticsService.getCallStatistics(start, end).then(response => {
+      this.callStatistics = response.data;
+      this.isLoadingStatistics = false;
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
 
-    return {
-      positive: positivePercentage,
-      negative: negativePercentage,
-      neutral: neutralPercentage
-    }
+    this.callAnalyticsService.getSentimentPercentages(start, end).then(response => {
+      this.callSentiments = response.data
+      console.log(this.callSentiments)
+      if (this.dChart) this.dChart.refreshChart(response.data);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+
+    this.callAnalyticsService.getSentimentOverTime(start, end).then(response => {
+      this.sentimentOverTime = response.data;
+      if (this.lChart) this.lChart.refreshChart(response.data);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+
+    this.callAnalyticsService.getTopicsDistribution(start, end).then(response => {
+      this.topicDistribution = response.data;
+      if (this.bChart) this.bChart.refreshChart(response.data);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+
+    this.callAnalyticsService.getOperatorCallsOverTime(start, end).then(response => {
+      this.operatorCallsOverTime = response.data;
+      if (this.sChart) this.sChart.refreshChart(response.data);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+
+    this.callAnalyticsService.getOperatorRatings(start, end).then(response => {
+      this.operatorRankings = response.data;
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
+
+    this.callAnalyticsService.getAllKeywords(start, end).then(response => {
+      this.keywords = Object.entries(response.data).map(([word, weight]) => ({word: word, weight: Number(weight)}));
+      if (this.keywordCloud) this.keywordCloud.refreshChart(this.keywords);
+    }).catch(err => {
+      console.log(err);
+    }).finally(() => {
+    });
   }
-
 }

@@ -13,35 +13,36 @@ export class CallAnalyticsService {
   constructor(private http: HttpClient) {
   }
 
-  public getCallStatistics(): CallStatistics {
-    return {
-      negativeCalls: 50,
-      neutralCalls: 100,
-      positiveCalls: 75,
-      totalCalls: 225,
-      averageCallTime: 10,
-      totalMinutes: 1523
-    };
+  public getCallStatistics(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/call-statistics?start=${start}&end=${end}`));
   }
 
-  public getOverallCallStatus() {
-
+  public getSentimentPercentages(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/sentiment-percentages?start=${start}&end=${end}`));
   }
 
-  public getRecentCalls() {
-
-
+  public getOperatorCallsOverTime(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/operator-calls-over-time?start=${start}&end=${end}`));
   }
 
-  public getOverallCallSentimentScore() {
-
+  public getTopicsDistribution(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/topics-distribution?start=${start}&end=${end}`));
   }
 
-  public getSentimentTimeDetails() {
 
+  public getOperatorRatings(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/operator-ratings?start=${start}&end=${end}`))
+  }
+
+  public getSentimentOverTime(start: string,  end: string): Promise<ApiResponse> {
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/sentiment-over-time?start=${start}&end=${end}`));
   }
 
   public getCallSummary(call_id: string): Promise<ApiResponse> {
-    return firstValueFrom<ApiResponse>(this.http.get<ApiResponse>(`${this.API_ROOT}/get-call-summary/${call_id}`));
+    return firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/call-summary/${call_id}`));
+  }
+
+  public getAllKeywords(start: string,  end: string): Promise<ApiResponse> {
+    return  firstValueFrom(this.http.get<ApiResponse>(`${this.API_ROOT}/all-keywords?start=${start}&end=${end}`));
   }
 }

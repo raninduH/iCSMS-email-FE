@@ -14,16 +14,19 @@ import { CalendarModule } from 'primeng/calendar';
 import { DividerModule } from 'primeng/divider';
 import { SharedModule } from './shared/shared.module';
 import { MultiSelectModule } from 'primeng/multiselect';
-
 import { MessageService } from "primeng/api";
 import { HttpClientModule } from '@angular/common/http';
 import { MessagesModule } from 'primeng/messages';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { AvatarModule } from 'primeng/avatar';
 import { AvatarGroupModule } from 'primeng/avatargroup';
+import { FormsModule } from '@angular/forms';
+import { MainDashboardModule } from './main-dashboard/main-dashboard.module';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+
+
 
 
 
@@ -49,8 +52,12 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
     ToastModule,
     DialogModule,
     AvatarModule,
-    AvatarGroupModule
+    AvatarGroupModule,
+    FormsModule,
+    MainDashboardModule,
+    OverlayPanelModule
   ],
+
   providers: [MessageService],
   bootstrap: [AppComponent],
 })

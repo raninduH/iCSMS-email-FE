@@ -42,6 +42,8 @@ import { CaCardsComponent } from './components/ca-cards/ca-cards.component';
 import { LineChartInstagramComponent } from './components/charts/line-chart-instagram/line-chart-instagram.component';
 import { GaugeChartInstagramComponent } from './components/charts/gauge-chart-instagram/gauge-chart-instagram.component';
 import { GaugeChartFacebookComponent } from './components/charts/gauge-chart-facebook/gauge-chart-facebook.component';
+import { ModalExportPIComponent } from './components/Modals/modal-export-pi/modal-export-pi.component';
+import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
 
 
 @NgModule({
@@ -68,6 +70,7 @@ import { GaugeChartFacebookComponent } from './components/charts/gauge-chart-fac
     LineChartInstagramComponent,
     GaugeChartInstagramComponent,
     GaugeChartFacebookComponent
+    
   ],
   imports: [
     PanelModule,
@@ -96,6 +99,8 @@ import { GaugeChartFacebookComponent } from './components/charts/gauge-chart-fac
     TabViewModule,
     ChartModule,
     ButtonModule,
+    ModalExportPIComponent,
+    ModalAddNewCampaignComponent,
     NgxEchartsModule.forRoot({echarts: () => import('echarts')}),
   ]
 })
