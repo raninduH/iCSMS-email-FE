@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { UtilityService } from '../../services/utility.service';
 import { CommonColors } from '../../interfaces/utility';
@@ -9,11 +9,16 @@ import { CommonColors } from '../../interfaces/utility';
   styleUrl: './dashboard-sentiment-card.component.scss'
 })
 export class DashboardSentimentCardComponent implements OnInit {
+
+  @Input() intervalInDaysStart!: number;
+  @Input() intervalInDaysEnd!: number;
+  @Input() value!: number;
+  
   loading = false;
   dialogVisible = false;
   option!: EChartsOption;
 
-  value: number = -0.1;
+
 
   colors: CommonColors = {};
 
@@ -22,6 +27,17 @@ export class DashboardSentimentCardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.updateData() 
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['value'] ) {
+      this.updateData()
+    }
+
+  }
+
+  updateData(){
     this.colors = this.utility.getColors();
     this.option = {
       series: [

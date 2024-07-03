@@ -15,3 +15,7 @@ export const ERRORS = {
     timeoutError: 'Request timed out. Please try again later.',
     unknownFetchError: 'Unknown error has occured while fetching data. Please try again later.',
 }
+
+export const INTERVALS = {
+    pollingInterval: 240000 // 120,000 milliseconds
+}

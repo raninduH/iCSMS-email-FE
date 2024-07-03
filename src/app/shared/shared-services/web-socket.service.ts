@@ -8,13 +8,14 @@ export class WebSocketService {
 
   constructor() { }
 
-  public connect(): void {
-    this.socket = new WebSocket("ws://localhost:8000/ws/notify");
+  public connect(webSocketUrl: string): void {
+    this.socket = new WebSocket(webSocketUrl);
 
     this.socket.onopen = () => {
       console.log("Connected to the server");
     };
 
+    // You can override this
     this.socket.onmessage = (event) => {
       console.log(event.data);
     };
@@ -28,8 +29,8 @@ export class WebSocketService {
     };
   }
 
-  public disconnect(): void {
-    this.socket.close();
+  public disconnect(socket: WebSocket): void {
+    socket.close();
   }
 
   public sendMessage(message: string): void {

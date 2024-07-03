@@ -1,13 +1,12 @@
-import { EventEmitter, Output } from '@angular/core';
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router'; // Import Router
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from "primeng/api";
 import { DateRangeService } from '../../../main-dashboard/services/shared-date-range/date-range.service';
 
 @Component({
   selector: 'app-page-header',
   templateUrl: './page-header.component.html',
-  styleUrls: ['./page-header.component.scss'] // Correct the property name
+  styleUrls: ['./page-header.component.scss']
 })
 export class PageHeaderComponent implements OnInit {
 
@@ -19,41 +18,87 @@ export class PageHeaderComponent implements OnInit {
   @Input() showAddMemberButton: boolean = false;
   @Input() showAddWidgetButton: boolean = false;
   @Input() showAddRoleButton: boolean = false;
+  @Input() showRightSideBarButtons: boolean = false;
+  @Input() mainDashboardDate: boolean = false;
+  @Input() callDashboardDate: boolean = false;
 
-  @Input() mainDashboardDate:boolean=false;
-  
+  @Input() mainDashboardNotification:boolean=false;
+
+  @Input() emailDashboardDate:boolean=false;
+  @Input() intervalInDaysStart:number=29;
+  @Input() intervalInDaysEnd:number=0;
+
   @Input() minDate: Date = new Date();
   @Input() maxDate: Date = new Date();
 
   @Output() buttonAction: EventEmitter<any> = new EventEmitter();
-
-
   @Output() rangeDatesChanged: EventEmitter<Date[]> = new EventEmitter<Date[]>();
+  @Output() callDateRangeChanged: EventEmitter<string[]> = new EventEmitter<string[]>();
 
   sidebarVisible: boolean = false;
 
   rangeDates: Date[] | undefined;
+  callDateRange: Date[] | undefined;
+  emailDates: Date[] | undefined;
   home: MenuItem | undefined;
 
-  constructor(private router: Router,  private dateRangeService: DateRangeService) {} // Inject Router in the constructor
-
-
-
-  onRangeDateChange(rangeDates: Date[]) {
-    this.rangeDatesChanged.emit(rangeDates);
+  constructor(private router: Router, private dateRangeService: DateRangeService) {
   }
 
   ngOnInit() {
     this.rangeDates = this.getCurrentDateRange();
+    this.emailDates = this.getEmailCurrentDateRange();
     this.dateRangeService.changeDateRange(this.rangeDates);
-    this.home = { icon: 'pi pi-home', routerLink: '/' };
+    this.home = {icon: 'pi pi-home', routerLink: '/'};
     this.showOldDate();
+  }
+
+  onRangeDateChange(rangeDates: Date[]) {
+    this.rangeDatesChanged.emit(rangeDates);
+    console.log('rangeDates', rangeDates);
+  }
+
+  onRangeSelect(dateRange: Date[]) {
+    if (dateRange[1] !== null) {
+      this.callDateRangeChanged.emit([this.formatDate(dateRange[0], "start"), this.formatDate(dateRange[1], "end")]);
+      console.log(this.formatDate(dateRange[0]), this.formatDate(dateRange[1]))
+    }
+  }
+
+  formatDate(date: Date, type: "start" | "end" = "start"): string {
+    const pad = (num:any) => num.toString().padStart(2, '0');
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1); // getMonth() is zero-indexed
+    const day = pad(date.getDate());
+    if (type === "start") {
+      return `${year}-${month}-${day}-00-00-00`;
+    } else {
+      return `${year}-${month}-${day}-23-59-59`;
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
+      this.emailDates = this.getEmailCurrentDateRange();
+    }
   }
 
   getCurrentDateRange = (): Date[] => {
     const today = new Date();
     const pastDate = new Date(today);
     pastDate.setDate(today.getDate() - 7);
+  
+    return [pastDate, today];
+  };
+
+
+
+  getEmailCurrentDateRange = (): Date[] => {
+    const today = new Date();
+    const pastDate = new Date(today);
+    pastDate.setDate(today.getDate() - this.intervalInDaysStart);
+    today.setDate(today.getDate() - this.intervalInDaysEnd)
   
     return [pastDate, today];
   };
@@ -77,11 +122,18 @@ export class PageHeaderComponent implements OnInit {
     }
   }
 
+  onDateRangeChangeNotifications(): void {
+    if (this.rangeDates) {
+      this.dateRangeService.changeDateRange(this.rangeDates);
+      // this.oldDateSave(this.rangeDates);
+    }
+  }
+
   oldDateSave(dateRange: Date[]): void {
     caches.open('all-data').then(cache => {
       const dateStrings = dateRange.map(date => date.toISOString());
       const dataResponse = new Response(JSON.stringify(dateStrings), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: {'Content-Type': 'application/json'}
       });
       cache.put('old-date', dataResponse);
     });

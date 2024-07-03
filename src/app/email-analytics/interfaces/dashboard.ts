@@ -54,6 +54,7 @@ export interface stat_card_single_response{
     sub_title: string;
     header: string;
     sentiment: string;
+    sentiment_score: number;
     imgPath: string;
 }
 
@@ -139,7 +140,14 @@ export interface OngoingAndClosedStatsResponse{
     closed_percentage_inquiry: number; 
 
 }
-    
+
+export interface StatCard {
+    title: number;
+    sub_title: string;
+    header: string;
+    subheader: string;
+    fontColor: string;
+  }
     
 export interface BestPerformingEmailAccResponse{  
     best_performing_email_acc: string;
