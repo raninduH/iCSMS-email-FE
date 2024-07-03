@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from "@angular/router";
 import { WebSocketService } from "./shared/shared-services/web-socket.service";
+import { catchError, map, tap } from "rxjs/operators";
+import { webSocket } from "rxjs/webSocket";
 
 @Component({
   selector: 'app-root',
@@ -9,7 +11,7 @@ import { WebSocketService } from "./shared/shared-services/web-socket.service";
 })
 export class AppComponent implements OnInit{
   title = 'iCMS-Frontend';
-  currentUrl = ""
+  currentUrl = "";
   isAuthLayout = false;
 
   constructor(private router: Router, private webSocketService: WebSocketService) {
@@ -19,18 +21,32 @@ export class AppComponent implements OnInit{
           this.currentUrl = event.url
           this.isAuthLayout = this.currentUrl.includes("auth");
         }
-      })
+      });
+    // this.webSocketService.connect("ws://localhost:8000/ws/notify");
   }
 
   ngOnInit() {
-    const callWebSocket = this.webSocketService.connect("ws://localhost:8000/ws/notify");
-    callWebSocket.onmessage = (event) => {
-      console.log("[Call Analytics] ", event.data);
-    }
+    // this.webSocketService.sendMessage("Hello from the client!");
+    // const liveData$ = this.webSocketService.messages$.pipe(
+    //   map((rows:any) => rows.data),
+    //   catchError(error => { throw error }),
+    //   tap({
+    //       error: error => console.log('[Live component] Error:', error),
+    //       complete: () => console.log('[Live component] Connection Closed')
+    //     }
+    //   )
+    // );
+    // liveData$.subscribe((data) => {
+    //   console.log(data);
+    // });
 
-    callWebSocket.onopen = () => {
-      console.log("[Call Analytics] Connected to the server");
-    }
+    const subject = webSocket("ws://localhost:8000/ws/notify");
+
+    subject.subscribe({
+      next: msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
+      error: err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
+      complete: () => console.log('complete') // Called when connection is closed (for whatever reason).
+    });
   }
 
 }
