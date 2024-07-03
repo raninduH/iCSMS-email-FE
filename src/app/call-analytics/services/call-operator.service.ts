@@ -23,13 +23,7 @@ export class CallOperatorService {
   }
 
   public addOperator(operator: OperatorListItem): Promise<ApiResponse> {
-    const token = this.getIdToken();
-    console.log(token);
-    const requestHeaders = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    return firstValueFrom(this.http.post<ApiResponse>(this.API_ROOT + "/operators", operator, { headers: requestHeaders }));
+    return firstValueFrom(this.http.post<ApiResponse>(this.API_ROOT + "/operators", operator));
   }
 
   public deleteOperator(operatorId: string): Promise<ApiResponse> {
@@ -46,22 +40,6 @@ export class CallOperatorService {
 
   public getAllCallOperatorSentiments(): Promise<ApiResponse> {
     return firstValueFrom(this.http.get<ApiResponse>(this.API_ROOT + "/average-operator-sentiment"));
-  }
-
-  private getIdToken() {
-    // Get all keys from localStorage
-    const keys = Object.keys(localStorage);
-
-    // Find the key that ends with 'idToken'
-    const idTokenKey = keys.find(key => key.endsWith('idToken'));
-
-    if (idTokenKey) {
-      // Return the value associated with the idToken key
-      return localStorage.getItem(idTokenKey);
-    } else {
-      console.log('idToken not found in localStorage');
-      return null;
-    }
   }
 
 }
