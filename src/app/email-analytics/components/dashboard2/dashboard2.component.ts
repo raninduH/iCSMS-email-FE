@@ -268,7 +268,7 @@ getDataForEmailAccCards(){
   
   this.isLoadingEmailCards = true
   this.DataForStatCardsSubscription = this.dataService.getDataForEmailCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
-  console.log(data)
+  console.log("DATA FOR EMAIL ACC CARDS",data)
   this.EmailAccData = data
 
   this.isLoadingEmailCards = false
@@ -280,7 +280,7 @@ getDataForEmailAccCards(){
 getDataForStatCards(){
   
   this.statCardsSubscription =  this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
-  console.log(data)
+  console.log("ISSUE AND INQUIRY COUNT DATA", data)
 
   this.openedIssuesCount = data.count_total_ongoing_issues
   this.closedIssuesCount = data.count_total_closed_issues
