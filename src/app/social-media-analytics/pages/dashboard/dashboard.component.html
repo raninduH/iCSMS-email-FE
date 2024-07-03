@@ -4,12 +4,12 @@
   <div class="flex gap-4 flex-wrap">
 
     <doughnut-chart title="Overall Sentiment" [percentages]="data_doughnut" />
-    <gauge-chart />
+    <app-gauge-chart-facebook />
 
     <word-cloud-topics [words]="myData1" title="Product Trends"/>
-  
+
     <word-cloud-keywords [words]="myData2" title="Keyword Trends" />
-     
+
   </div>
 
    <div class="flex gap-3 flex-wrap ">

@@ -13,15 +13,19 @@ export class DoughnutChartComponent implements OnInit {
   data: any;
 
   options: any;
+  
 
   constructor(private DashboardAPiService:DashboardApiService){}
 
   ngOnInit() {
-    this.fetchSentimentPercentages();
+    const startDate = '2024-05-01';
+    const endDate = '2024-07-30';
+
+    this.fetchSentimentPercentages(startDate,endDate);
   }
 
-  fetchSentimentPercentages() {
-    this.DashboardAPiService.getSentimentPercentage()
+  fetchSentimentPercentages(startDate:string,endDate:string) {
+    this.DashboardAPiService.getSentimentPercentage(startDate,endDate)
       .subscribe(
         (data: any) => {
           this.percentages = data.percentage; // Update percentages with data from backend
@@ -33,9 +37,9 @@ export class DoughnutChartComponent implements OnInit {
               {
                 data: this.percentages,
                 backgroundColor: [
-                  'rgba(255, 99, 132, 0.8)',
-                  'rgba(255, 206, 86, 0.8)',
-                  'rgba(75, 192, 192, 0.8)'
+                  '#FF6E76',
+                  '#e7cb59',
+                  '#5dd28d'
                 ],
                 hoverBackgroundColor: [
                   'rgba(255, 99, 132, 1)',
