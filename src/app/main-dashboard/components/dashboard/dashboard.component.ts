@@ -95,7 +95,6 @@ export class DashboardComponent implements OnInit,OnDestroy{
     this.socketSubscription = this.chartService.messages$.subscribe(
       message => {
         if (message.response === 'widget') {
-          console.log('ins');
           this.widgetsUserData();
           
           // Keep skeleton active for 2 seconds after receiving the message
@@ -179,70 +178,6 @@ export class DashboardComponent implements OnInit,OnDestroy{
     this.authService.getIdToken().subscribe((token) =>{
       this.chartService.widgetsUser(token).subscribe(
         async (response) => {
-            if(response==false){
-              response = [
-                {
-                  id: "667ea1c335ef8cc81cdcb672",
-                  title: "line-all",
-                  chartType: "Line Chart",
-                  grid: { cols: 4, rows: 3, x: 0 ,y:0},
-                  keywords: [],
-                  sources: ["email", "social", "call"],
-                  status: "show",
-                  topics: [],
-                  xAxis: "date",
-                  yAxis: "sentiment-count"
-                },
-                {
-                  id: "6682ca1df50d1ed076dbaea5",
-                  title: "bar-email",
-                  chartType: "Bar Chart",
-                  grid: { cols: 3, rows: 3, x: 4 ,y:3},
-                  keywords: [],
-                  sources: ["email"],
-                  status: "show",
-                  topics: [],
-                  xAxis: "topics",
-                  yAxis: "sentiment-count"
-                },
-                {
-                  id: "6682d023f50d1ed076dbaea6",
-                  title: "line-email",
-                  chartType: "Line Chart",
-                  grid: { cols: 4, rows: 3, x: 0,y:4 },
-                  keywords: [],
-                  sources: ["email"],
-                  status: "show",
-                  topics: [],
-                  xAxis: "date",
-                  yAxis: "sentiment-count"
-                },
-                {
-                  id: "6682d076f50d1ed076dbaea7",
-                  title: "email-line",
-                  chartType: "Line Chart",
-                  grid: { cols: 3, rows: 2, x: 3 ,y:0},
-                  keywords: [],
-                  sources: ["email"],
-                  status: "hide",
-                  topics: [],
-                  xAxis: "topics",
-                  yAxis: "sources"
-                },
-                {
-                  id: "6682e4cdf50d1ed076dbaeab",
-                  title: "bar-sources",
-                  chartType: "Bar Chart",
-                  grid: { cols: 3, rows: 2, x: 3 },
-                  keywords: [],
-                  sources: ["email", "social", "call"],
-                  status: "show",
-                  topics: [],
-                  xAxis: "topics",
-                  yAxis: "sentiment-count"
-                },
-              ];   
-            }
             try {
               const cache = await caches.open('widgets');
               const cachedResponse = await cache.match('widgets-data');
@@ -256,6 +191,8 @@ export class DashboardComponent implements OnInit,OnDestroy{
                   await cache.put('widgets-data', dataResponse);
                   this.widgetCacheChange = true;
                   this.gridComponent.changes = true;
+                  // this.skeletonActivation=true;
+                  return;
                 }
               } else {
                 const dataResponse = new Response(JSON.stringify(response), {

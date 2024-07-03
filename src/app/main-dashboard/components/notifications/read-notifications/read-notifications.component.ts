@@ -6,6 +6,7 @@ import { DateRangeService } from '../../../services/shared-date-range/date-range
 
 interface CustomMessage extends Message {
   read: boolean;
+  sources:string;
 }
 
 @Component({
@@ -24,7 +25,7 @@ export class ReadNotificationsComponent implements OnInit {
 
   filteredNotifications: CustomMessage[] = [];
 
-  readnotifications: CustomMessage[] = [{severity: "info", summary: "No Notifications", detail: "Empty",read:false }];
+  readnotifications: CustomMessage[] = [{severity: "info", summary: "No Notifications", detail: "Empty",read:false,sources:'' }];
   unreadnotifications: CustomMessage[] = [];
   emptyRead:boolean=true;
   refreshTime:number = 1000;
@@ -76,7 +77,7 @@ export class ReadNotificationsComponent implements OnInit {
         this.notificationService.updateUnreadNotifications(notification.id).subscribe(
           (response) => {
             
-          },
+                    },
         );
         
       }
@@ -193,10 +194,11 @@ export class ReadNotificationsComponent implements OnInit {
           const newMessage: CustomMessage = {
             severity: "success",
             summary: notification.datetime,
-            detail: `${notification.sources} : ${notification.title}`,
+            detail: notification.title,
             id: notification.id,
             data: notification.description,
-            read: false  // Mark as read
+            read: false,  // Mark as read
+            sources:notification.sources
           };
           allNotifications.push(newMessage);
         }
@@ -210,10 +212,11 @@ export class ReadNotificationsComponent implements OnInit {
           const newMessage: CustomMessage = {
             severity: "info",
             summary: notification.datetime,
-            detail: `${notification.sources} : ${notification.title}`,
+            detail: notification.title,
             id: notification.id,
             data: notification.description,
-            read: true  // Mark as read
+            read: true,  // Mark as read,
+            sources:notification.sources
           };
           allNotifications.push(newMessage);
         }
@@ -228,7 +231,7 @@ export class ReadNotificationsComponent implements OnInit {
   
       // Handle empty notifications for both read and unread
       if (emptyRead && emptyUnread) {
-        this.filteredNotifications = [{ severity: "info", summary: "No Notifications", detail: "Empty",read:false }];
+        this.filteredNotifications = [{ severity: "info", summary: "No Notifications", detail: "Empty",read:false,sources:'' }];
       } else {
         this.filteredNotifications = allNotifications;
       }
