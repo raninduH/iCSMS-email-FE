@@ -53,4 +53,18 @@ export class SettingsApiService {
     return this.http.put<any>(`http://127.0.0.1:8000/social-media/settings/sentiment_shift_threshold/${id}`, data, { headers: headers });
   }
 
+  deleteThreshold(id: string): Observable<any> {
+    return this.http.delete<any>(`http://127.0.0.1:8000/social-media/settings/sentiment_shift_threshold/${id}`);
+  }
+
+  deleteCampaign(id: string | undefined): Observable<any> {
+    return this.http.delete<any>(`http://127.0.0.1:8000/social-media/settings/campaign/${id}`);
+  }
+
+  deleteAlertItem(id: string | undefined): Observable<any> {
+    return this.http.delete<any>(`http://127.0.0.1:8000/social-media/settings/product_alert/${id}`);
+  }
+
+
+
 }

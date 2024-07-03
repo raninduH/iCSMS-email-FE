@@ -20,6 +20,7 @@ export class SettingsCampaignComponent implements OnInit {
   contentInstagram: CampaignData = { subtitle: 'Instagram', data: [] };
 
   @ViewChild(ModalCampaignComponent) modalCampaignComponent!: ModalCampaignComponent;
+  campaigns: any;
 
   constructor(private settingsApiService: SettingsApiService) { }
 
@@ -59,7 +60,9 @@ export class SettingsCampaignComponent implements OnInit {
   }
 
   onRowDelete(item: Campaign): void {
-    // Implement delete functionality
+    this.settingsApiService.deleteCampaign(item.id).subscribe(() => {
+      this.campaigns = this.campaigns.filter((val: Campaign) => val.id !== item.id);
+     });
   }
 
   topBarCaption = 'Add New';

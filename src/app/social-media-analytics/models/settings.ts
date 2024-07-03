@@ -8,6 +8,7 @@ export interface SettingAlertsData {
 }
 
 export interface AlertItem {
+  id?: string | undefined;
   product?: string;
   alerttype?: string;
   min_val?: number;
