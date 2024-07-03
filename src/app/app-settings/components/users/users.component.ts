@@ -285,6 +285,9 @@ export class UsersComponent implements OnInit {
   actions!: MenuItem[];
   viewUserPopUpVisible: boolean = false;
   permissions: string[] = [];
+  logsVisible: boolean = false;
+
+  logs: { action: string, is_success: boolean, time:string }[] = [];
 
   constructor(
     private customerService: UserDataService,
@@ -498,8 +501,35 @@ export class UsersComponent implements OnInit {
           }
         },
         disabled: !this.hasPermission('Enable User') || !this.selectedUsers || this.selectedUsers.status
+      },
+      //logs
+      {
+        label: 'Logs',
+        icon: 'pi pi-clock',
+        command: () => {
+          this.showLogs()
+          console.log('Viewing logs');
+        },
+        disabled: !this.hasPermission('View User') || !userSelected
       }
     ];
+  }
+
+  showLogs() {
+    this.authService.getIdToken().subscribe((token: any) => {
+      this.customerService.getUserLogs(token, this.selectedUsers.username, '2024-07-01', '2024-07-31').subscribe(
+        (data: any) => {
+          console.log(data);
+          this.logs = data;
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Logs fetched successfully' });
+        },
+        (error: any) => {
+          console.log(error);
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch logs' });
+        }
+      );
+    });
+    this.logsVisible = true;
   }
 
   private hasPermission(permission: string): boolean {

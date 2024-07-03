@@ -115,6 +115,29 @@
     height: 100%;
   }
 
+  .logs-table {
+    min-width: 100%;
+  }
+
+  .logs-table .p-datatable-thead > tr > th,
+  .logs-table .p-datatable-tbody > tr > td {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .logs-table .p-datatable-thead > tr > th {
+    background-color: #f4f4f4;
+  }
+
+  .p-badge-success {
+    background-color: #28a745 !important;
+  }
+
+  .p-badge-danger {
+    background-color: #dc3545 !important;
+  }
+
+
 }
 
 @media screen and (max-width: 960px) {
