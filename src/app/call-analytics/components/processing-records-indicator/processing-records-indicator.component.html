@@ -1,10 +1,6 @@
 <p-toast></p-toast>
-<p-panel class="flex flex-col text-center justify-center mb-4">
-
-  <div [style.display]="pendingCallData && pendingCallData.length > 0 ? 'block' : 'none'">
-
+<p-panel class="flex flex-col text-center justify-center mb-4" [style.display]="pendingCallData && pendingCallData.length > 0 ? 'block' : 'none'">
   <h3 class="mb-0 mt-0 text-start">Processing Records</h3><hr><br>
-
   <div class="flex justify-between items-center px-3 mb-5" *ngFor="let call of pendingCallData">
     <div class="flex justify-between" style="width:60%;">
       <div class="flex items-center gap-8">
@@ -14,6 +10,5 @@
         </div>
       </div>
     </div>
-  </div>
   </div>
 </p-panel>

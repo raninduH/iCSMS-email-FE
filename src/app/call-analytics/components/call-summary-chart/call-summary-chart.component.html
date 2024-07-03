@@ -63,6 +63,7 @@
                 [outlined]="true"></p-button>
     </div>
   </div>
+</p-panel>
 
   <p-dialog [draggable]="false" [resizable]="false" *ngIf="visibleSummary" header="Call Summary" [modal]="true"
             [(visible)]="visibleSummary" [style]="{width: '30vw', height: 'auto'}">
@@ -131,4 +132,3 @@
       <p-button label="Yes" (click)="onConfirmDelete(selectedCall.id)" styleClass="p-button-danger"></p-button>
     </div>
   </p-dialog>
-</p-panel>
