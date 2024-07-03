@@ -1,11 +1,11 @@
-<p-panel class="flex flex-col text-center justify-center mb-4">
+<p-panel class="flex flex-col text-center justify-center">
 
 
 <div class="chart-header-container">
 
     <p class="chart-title">{{ title }}</p>
-      <p *ngIf="selectedDateRange && selectedDateRange.length === 2 && selectedDateRange[0] && selectedDateRange[1]">{{ selectedDateRange[0]}} - {{ selectedDateRange[1]}}</p>
-      <p *ngIf="Date">{{ Date}}</p>
+<!--      <p *ngIf="selectedDateRange && selectedDateRange.length === 2 && selectedDateRange[0] && selectedDateRange[1]">{{ selectedDateRange[0]}} - {{ selectedDateRange[1]}}</p>-->
+<!--      <p *ngIf="Date">{{ Date}}</p>-->
       <div class="card">
         <p-menubar [model]="items" />
       </div>
