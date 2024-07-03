@@ -1,6 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
+  const URLS_TO_EXCLUDE = [
+    "api.ipify.org"
+  ]
+
+  for (const url of URLS_TO_EXCLUDE) {
+    if (req.url.includes(url)) {
+      return next(req);
+    }
+  }
+
   const idToken = getIdToken();
   console.log('idToken:', idToken)
   const  cloned = req.clone({
