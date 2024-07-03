@@ -133,7 +133,7 @@
 
       <ng-container *ngIf="item['chartType'] === 'Bar Chart'">
 
-        <app-bar-chart *ngIf="item['yAxis'] === 'counts' || item['yAxis'] === 'sources'" 
+        <app-bar-chart *ngIf="item['yAxis'] === 'counts'" 
         [title]="item['title']"
           [source]="item['sources']"
           [changes]="item['changes']"
@@ -145,7 +145,7 @@
           (deletedConfirmed)="gridDeleteConfirmed(item['id'],item['title'])">
         </app-bar-chart>
 
-        <app-vertical-ber-chart *ngIf="item['yAxis'] === 'sentiment-count' "
+        <app-vertical-ber-chart *ngIf="item['yAxis'] != 'counts'"
           [title]="item['title']"
           [source]="item['sources']"
           [changes]="item['changes']"

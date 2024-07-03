@@ -153,16 +153,16 @@ export class BarChartComponent  implements OnInit,OnChanges{
 
 
   onDelete(){
-    console.log('delete');
+
     this.deletedConfirmed.emit();
   }
 
   onEdit(){
-    console.log('Edit');
+
   }
 
  confirmDeleted() {
-        console.log('confirm button');
+
         this.hideConfirmed.emit();
   }
 
@@ -280,7 +280,7 @@ chartDataGet(): void {
 
               if (source === 'email') {
                 emailTopics = this.extractTopics(data, 'email');
-                console.log(emailTopics);
+                
                 allTopics.push(...emailTopics);
               }
 
@@ -294,13 +294,13 @@ chartDataGet(): void {
 
               if (source === 'call') {
                 this.callCount = this.extractCounts(data, 'call');
-                console.log(this.callCount);
+                
                 sourceData = this.aggregateWordCloudData(this.callCount, this.topics,'call');
               }
 
               if (source === 'email') {
                 this.emailCount = this.extractCounts(data, 'email');
-                console.log(this.emailCount);
+                
                 sourceData = this.aggregateWordCloudData(this.emailCount, this.topics,'email');
               }
 
@@ -364,7 +364,7 @@ getMaxValues(response: any) {
 
 
 transformData(data: any[]): { [key: string]: { count: number, percentage: number } } {
-  console.log(data);
+  
   const transformedData: { [key: string]: { count: number, percentage: number } } = {};
   data.forEach(item => {
     transformedData[item.category] = {
@@ -459,12 +459,7 @@ extractTopics(data: any, sourceType: string): any[] {
       .filter((sourceItem: any) => this.isDateInRange(sourceItem.Date))
       .flatMap((sourceItem: any) => {
         if (this.xAxis === 'topics') {
-          console.log(sourceType);
-          const topics = sourceItem.data
-          .filter((dataItem: any) => dataItem.topic && dataItem.topic.length > 0) // Ensure topic exists
-          .flatMap((dataItem: any) => dataItem.topic);
-        console.log(topics);
-        return topics;
+          return sourceItem.data.flatMap((dataItem: any) => dataItem.topic);
         } else if (this.xAxis === 'keywords') {
           return sourceItem.data.flatMap((dataItem: any) => dataItem.keywords);
         } else if (this.xAxis === 'issues') {
@@ -488,7 +483,7 @@ extractCounts(data: any, sourceType: string): any[] {
 }
 
 aggregateWordCloudData(allCount: any, topics: string[],source:string): any[] {
-console.log(allCount);
+
   this.total = 0;
 
   const categoryMapEmail: { [topic: string]: number } = {};
