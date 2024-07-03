@@ -152,13 +152,20 @@ export class BarChartComponent  implements OnInit,OnChanges{
   }
 
 
+
   onDelete(){
 
     this.deletedConfirmed.emit();
   }
 
+edit:boolean=false;
   onEdit(){
+      this.edit=true;
+    
+  }
 
+  editOff(){
+    this.edit=false;
   }
 
  confirmDeleted() {
