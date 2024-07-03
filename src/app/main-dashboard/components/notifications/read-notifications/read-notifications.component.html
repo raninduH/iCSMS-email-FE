@@ -44,7 +44,11 @@
 
 
       <div class="notifications-container">
-        <div *ngFor="let notification of filteredNotifications" class="notification-card">
+        <div *ngFor="let notification of filteredNotifications">
+
+        <div *ngIf="notification.read==true" >
+          <!-- Unread messages -->
+           new
           <p-card (click)="viewNotification(notification)" styleClass="full-width-card">
             <ng-template pTemplate="header">
               {{ notification.summary }}
@@ -52,6 +56,21 @@
             <p>{{ notification.detail }}</p>
             <p>{{ notification.data }}</p>
           </p-card>
+        </div>
+
+        <!-- Readed Messages -->
+        old
+        <div *ngIf="notification.read==false">
+          <p-card (click)="viewNotification(notification)" styleClass="full-width-card" >
+            <ng-template pTemplate="header">
+              {{ notification.summary }}
+            </ng-template>
+            <p>{{ notification.detail }}</p>
+            <p>{{ notification.data }}</p>
+          </p-card>
+        </div>
+
+
         </div>
       </div>
 

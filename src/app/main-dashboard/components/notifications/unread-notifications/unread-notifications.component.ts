@@ -127,8 +127,8 @@ export class UnreadNotificationsComponent implements OnInit {
               // If the notification doesn't exist, add it to the list
               const newMessage: Message = {
                 severity: "info",
-                summary: newNotification.title,
-            detail: newNotification.datetime,
+                summary: newNotification.datetime,
+            detail: `${newNotification.sources} : ${newNotification.title}`,
             id: newNotification.id,
             data: newNotification.description
               };

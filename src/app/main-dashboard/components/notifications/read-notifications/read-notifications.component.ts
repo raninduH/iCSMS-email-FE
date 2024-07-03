@@ -1,15 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Message } from 'primeng/api';
 import { NotificationService } from '../../../services/notification.service';
-import { OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { DateRangeService } from '../../../services/shared-date-range/date-range.service';
-import { forkJoin } from 'rxjs';
+
+interface CustomMessage extends Message {
+  read: boolean;
+}
 
 @Component({
   selector: 'app-read-notifications',
   templateUrl: './read-notifications.component.html',
-  styleUrl: './read-notifications.component.scss'
+  styleUrls: ['./read-notifications.component.scss']
 })
 export class ReadNotificationsComponent implements OnInit {
 
@@ -20,10 +22,10 @@ export class ReadNotificationsComponent implements OnInit {
   visible:boolean =false;
   showData:any[]=[];
 
-  filteredNotifications: Message[] = [];
+  filteredNotifications: CustomMessage[] = [];
 
-  readnotifications: Message[] = [{severity: "info", summary: "No Notifications", detail: "Empty" }];
-  unreadnotifications: Message[] = [];
+  readnotifications: CustomMessage[] = [{severity: "info", summary: "No Notifications", detail: "Empty",read:false }];
+  unreadnotifications: CustomMessage[] = [];
   emptyRead:boolean=true;
   refreshTime:number = 1000;
 
@@ -67,10 +69,17 @@ export class ReadNotificationsComponent implements OnInit {
   }
 
   viewNotification(notification:any){
-    console.log(notification);
     this.visible=true;
     this.showData=[notification['summary'],notification['data'],notification['detail']];
-
+    if(notification.read==true)
+      {
+        this.notificationService.updateUnreadNotifications(notification.id).subscribe(
+          (response) => {
+            
+          },
+        );
+        
+      }
   }
 
   addMessages(){
@@ -166,6 +175,7 @@ export class ReadNotificationsComponent implements OnInit {
   //   );
   // }
 
+
   readNotification(): void {
     forkJoin([
       this.notificationService.getReadNotifications(),
@@ -173,21 +183,20 @@ export class ReadNotificationsComponent implements OnInit {
     ]).subscribe(([readNotifications, unreadNotifications]) => {
       console.log(readNotifications, unreadNotifications);
   
-      const allNotifications: Message[] = [];
+      const allNotifications: CustomMessage[] = [];
       let emptyRead = false;
       let emptyUnread = false;
   
       // Process read notifications
       if (readNotifications.length !== 0) {
-        const readIds = readNotifications.map((notification: { id: any }) => notification.id);
-  
         for (const notification of readNotifications) {
-          const newMessage: Message = {
+          const newMessage: CustomMessage = {
             severity: "success",
-            summary: notification.title,
-            detail: notification.datetime,
+            summary: notification.datetime,
+            detail: `${notification.sources} : ${notification.title}`,
             id: notification.id,
-            data: notification.description
+            data: notification.description,
+            read: false  // Mark as read
           };
           allNotifications.push(newMessage);
         }
@@ -197,15 +206,14 @@ export class ReadNotificationsComponent implements OnInit {
   
       // Process unread notifications
       if (unreadNotifications.length !== 0) {
-        const unreadIds = unreadNotifications.map((notification: { id: any }) => notification.id);
-  
         for (const notification of unreadNotifications) {
-          const newMessage: Message = {
+          const newMessage: CustomMessage = {
             severity: "info",
-            summary: notification.title,
-            detail: notification.datetime,
+            summary: notification.datetime,
+            detail: `${notification.sources} : ${notification.title}`,
             id: notification.id,
-            data: notification.description
+            data: notification.description,
+            read: true  // Mark as read
           };
           allNotifications.push(newMessage);
         }
@@ -213,9 +221,14 @@ export class ReadNotificationsComponent implements OnInit {
         emptyUnread = true;
       }
   
+      // Sort all notifications by datetime from most recent to least recent
+      allNotifications.sort((a, b) => 
+        new Date(b.summary || "").getTime() - new Date(a.summary || "").getTime()
+      );
+  
       // Handle empty notifications for both read and unread
       if (emptyRead && emptyUnread) {
-        this.filteredNotifications = [{severity: "info", summary: "No Notifications", detail: "Empty" }];
+        this.filteredNotifications = [{ severity: "info", summary: "No Notifications", detail: "Empty",read:false }];
       } else {
         this.filteredNotifications = allNotifications;
       }
@@ -224,4 +237,4 @@ export class ReadNotificationsComponent implements OnInit {
     });
   }
 
-}
+  }
