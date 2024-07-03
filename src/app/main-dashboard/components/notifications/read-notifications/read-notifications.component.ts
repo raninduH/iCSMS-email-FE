@@ -184,10 +184,10 @@ export class ReadNotificationsComponent implements OnInit {
         for (const notification of readNotifications) {
           const newMessage: Message = {
             severity: "success",
-            summary: notification.created_at,
-            detail: notification.alert,
+            summary: notification.title,
+            detail: notification.datetime,
             id: notification.id,
-            data: notification.email
+            data: notification.description
           };
           allNotifications.push(newMessage);
         }
@@ -202,10 +202,10 @@ export class ReadNotificationsComponent implements OnInit {
         for (const notification of unreadNotifications) {
           const newMessage: Message = {
             severity: "info",
-            summary: notification.created_at,
-            detail: notification.alert,
+            summary: notification.title,
+            detail: notification.datetime,
             id: notification.id,
-            data: notification.email
+            data: notification.description
           };
           allNotifications.push(newMessage);
         }
