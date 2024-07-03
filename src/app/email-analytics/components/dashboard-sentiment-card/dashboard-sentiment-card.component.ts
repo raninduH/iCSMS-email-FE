@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit, Input, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { UtilityService } from '../../services/utility.service';
 import { CommonColors } from '../../interfaces/utility';
@@ -8,7 +8,7 @@ import { CommonColors } from '../../interfaces/utility';
   templateUrl: './dashboard-sentiment-card.component.html',
   styleUrl: './dashboard-sentiment-card.component.scss'
 })
-export class DashboardSentimentCardComponent implements OnInit {
+export class DashboardSentimentCardComponent implements OnInit, OnChanges {
 
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
@@ -16,16 +16,19 @@ export class DashboardSentimentCardComponent implements OnInit {
   
   loading = false;
   dialogVisible = false;
-  option!: EChartsOption;
+  options!: EChartsOption;
 
 
 
   colors: CommonColors = {};
+  @Input() fromDate!: Date;
+  @Input() toDate!: Date;
 
   constructor(
     private utility: UtilityService,
   ) { }
 
+  
   ngOnInit() {
     this.updateData() 
   }
@@ -39,7 +42,29 @@ export class DashboardSentimentCardComponent implements OnInit {
 
   updateData(){
     this.colors = this.utility.getColors();
-    this.option = {
+    this.setOptions();
+  }
+  
+
+  getColor(value: number) {
+    if (value < -0.3) {
+      return '#FF4500';
+      // return this.colors.negative || '#FF4500';
+    } else if (value < 0.3) {
+      return '#FFA500';
+      // return this.colors.neutral || '#FF4500'; // Yellow-Orange '#FFA500'
+    } else {
+      return '#32CD32';
+      // return this.colors.positive || '#32CD32'; // Green
+    }
+  }
+
+  popup() {
+    this.dialogVisible = true;
+  }
+
+  setOptions() {
+    this.options = {
       series: [
         {
           type: 'gauge',
@@ -140,25 +165,5 @@ export class DashboardSentimentCardComponent implements OnInit {
         }
       ]
     };
-  
   }
-
-  getColor(value: number) {
-    if (value < -0.3) {
-      return '#FF4500';
-      // return this.colors.negative || '#FF4500';
-    } else if (value < 0.3) {
-      return '#FFA500';
-      // return this.colors.neutral || '#FF4500'; // Yellow-Orange '#FFA500'
-    } else {
-      return '#32CD32';
-      // return this.colors.positive || '#32CD32'; // Green
-    }
-  }
-
-
-  popup() {
-    this.dialogVisible = true;
-  }
-  
 }  

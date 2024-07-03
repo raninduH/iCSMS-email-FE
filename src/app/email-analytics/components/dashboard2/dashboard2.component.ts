@@ -32,7 +32,8 @@ export class Dashboard2Component implements OnInit{
 
   // calenders
 
-  rangeDates: Date[] | undefined;
+  // rangeDates: Date[] | undefined;
+  rangeDates: Date[] = [new Date(), new Date()];
   
   fromDate: Date | undefined;
   toDate: Date | undefined;
