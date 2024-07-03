@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MenuItem } from "primeng/api";
 import { PiPageItem } from '../../models/platform-insights';
 import { PlatformInsightsApiService } from '../../services/platform-insights-api.service';
-import { ModalAddNewCampaignComponent } from '../../components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
-import { ModalSetAlertComponent } from '../../components/Modals/modal-set-alert/modal-set-alert.component';
+import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
+import { ModalAlertComponent } from '../../components/Modals/modal-alert/modal-alert.component';
 import { TabStateService } from '../../services/tab-state.service';
 import { Subscription } from 'rxjs';
 

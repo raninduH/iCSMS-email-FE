@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SettingAlertsData, AlertItem } from '../../models/settings';
 import { SettingsApiService } from '../../services/settings-api.service';
+import { ModalAlertComponent } from '../../components/Modals/modal-alert/modal-alert.component';
 
 @Component({
   selector: 'settings-alerts',
@@ -10,6 +11,8 @@ import { SettingsApiService } from '../../services/settings-api.service';
 
 export class SettingsAlerts implements OnInit {
   list_alerts: AlertItem[] = [];
+
+  @ViewChild(ModalAlertComponent) modalAlertComponent!: ModalAlertComponent;
 
   constructor(private settingsApiService: SettingsApiService) { }
 
@@ -24,12 +27,18 @@ export class SettingsAlerts implements OnInit {
     );
   }
 
-  onRowEdit(item: AlertItem) {
-    // Implement edit functionality
+  openAddNew(){
+    this.modalAlertComponent.showDialog();
   }
 
-  onRowDelete(item: AlertItem) {
-    // Implement delete functionality
+  onRowEdit(item: AlertItem): void {
+    this.modalAlertComponent.showDialog(item);
+  }
+
+  onRowDelete(item: AlertItem): void {
+    // this.settingsApiService.deleteThreshold(item.id).subscribe(() => {
+    //   this.thresholds = this.thresholds.filter((val: Thresholds) => val.id !== item.id);
+    // });
   }
 
   topBarCaption = "Add New";

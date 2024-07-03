@@ -1,0 +1,61 @@
+<form [formGroup]="modalSetAlertForm" (ngSubmit)="onSubmitModalSetAlertForm()">
+  <p-dialog [header]="topBarCaption" [modal]="true" [(visible)]="visible" [style]="{ width: '45rem' }">
+    <div class="flex align-items-center mb-3">
+      <label for="product" class="font-semibold" style="width: 6rem; flex-shrink: 0">Product</label>
+      <div style="flex-grow: 1">
+        <input pInputText id="product" style="width: 100%" autocomplete="off" placeholder="Enter Product"
+          formControlName="product" />
+      </div>
+    </div>
+
+    <div class="flex align-items-center mb-3">
+      <label for="alertType" class="font-semibold" style="width: 6rem; flex-shrink: 0">Alert Type</label>
+      <div style="flex-grow: 1">
+        <p-dropdown [options]="notificationTypes" optionLabel="name" [showClear]="true"
+          placeholder="Select an Alert Type" id="alertType" [style]="{ width: '100%' }" formControlName="alert_type">
+          <ng-template let-notificationType pTemplate="item">
+            <div class="flex align-items-center gap-2">
+              <img [src]="notificationType.icon" style="width: 20px" />
+              <div>{{ notificationType.name }}</div>
+            </div>
+          </ng-template>
+          <ng-template let-notificationTypes pTemplate="item">
+            <div class="flex align-items-center gap-2">
+              <img [src]="notificationTypes.icon" style="width: 20px" />
+              <div>{{ notificationTypes.name }}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="flex align-items-center mb-3">
+      <label for="threshold" class="font-semibold" style="width: 6rem; flex-shrink: 0">Threshold</label>
+    </div>
+    <div class="flex align-items-center mb-3" style="align-items: center; justify-content: space-evenly">
+      <div style="display: flex; flex-direction: row; align-items: center">
+        <label for="min" class="font-semibold" style="width: 6rem; flex-shrink: 0">Min :
+        </label>
+        <p-inputNumber class="short-input" mode="decimal" [showButtons]="true" inputId="min" [min]="-10" [max]="10"
+          formControlName="min_val" [style]="{ width: '100px' }"
+          [inputStyle]="{ width: '100%', 'font-size': '14px' }"></p-inputNumber>
+      </div>
+      <div style="
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: row;
+            align-items: center;
+          ">
+        <label for="max" class="font-semibold" style="width: 6rem; flex-shrink: 0">Max :
+        </label>
+        <p-inputNumber class="short-input" mode="decimal" [showButtons]="true" inputId="max" formControlName="max_val"
+          [min]="-10" [max]="10" [style]="{ width: '100px' }"
+          [inputStyle]="{ width: '100%', 'font-size': '14px' }"></p-inputNumber>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center">
+      <button pButton type="submit" [label]="isEditMode ? 'Update Alert' : 'Save'" style="margin: 0 auto"></button>
+    </div>
+  </p-dialog>
+</form>

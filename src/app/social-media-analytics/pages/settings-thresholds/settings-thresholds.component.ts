@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Thresholds } from '../../models/settings';
 import { SettingsApiService } from '../../services/settings-api.service';
+import { ModalThresholdComponent } from '../../components/Modals/modal-threshold/modal-threshold.component';
+
 
 @Component({
   selector: 'settings-thresholds',
@@ -13,6 +15,8 @@ export class SettingsThresholdsComponent implements OnInit {
   list_thresholds: Thresholds[] = [];
   thresholds!: Thresholds[];
   loading: boolean = true;
+
+  @ViewChild(ModalThresholdComponent) modalThresholdComponent!: ModalThresholdComponent;
 
   constructor(private settingsApiService: SettingsApiService) { }
 
@@ -30,4 +34,19 @@ export class SettingsThresholdsComponent implements OnInit {
       this.loading = false;
     });
   }
+
+  openAddNew(){
+    this.modalThresholdComponent.showDialog();
+  }
+
+  onRowEdit(item: Thresholds): void {
+    this.modalThresholdComponent.showDialog(item);
+  }
+
+  onRowDelete(item: Thresholds): void {
+    // this.settingsApiService.deleteThreshold(item.id).subscribe(() => {
+    //   this.thresholds = this.thresholds.filter((val: Thresholds) => val.id !== item.id);
+    // });
+  }
+
 }

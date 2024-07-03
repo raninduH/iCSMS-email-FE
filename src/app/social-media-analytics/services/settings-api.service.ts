@@ -30,9 +30,6 @@ export class SettingsApiService {
     return this.http.get<any>(`${this.apiUrl}/sentiment_shifts`);
   }
 
-  setSentimentShift(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/sentiment_shifts`, data);
-  }
   setKeywordAlerts(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/keyword_alerts`, data);
   }
@@ -43,8 +40,17 @@ export class SettingsApiService {
   setTopicAlerts(data: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8000/social-media/settings/add_topic_alert`, data, { headers: headers });
   }
-  setThresold(data: any): Observable<any> {
+  
+  setSentimentShift(data: any): Observable<any> {
     return this.http.post<any>(`http://127.0.0.1:8000/social-media/settings/add_sentiment_shift_threshold`, data, { headers: headers });
+  }
+
+  updateTopicAlerts(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`http://127.0.0.1:8000/social-media/settings/product_alert/${id}`, data, { headers: headers });
+  }
+
+  updateSentimentShift(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`http://127.0.0.1:8000/social-media/settings/sentiment_shift_threshold/${id}`, data, { headers: headers });
   }
 
 }
