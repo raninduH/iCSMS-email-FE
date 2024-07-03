@@ -48,24 +48,33 @@
 
         <div *ngIf="notification.read==true" >
           <!-- Unread messages -->
-          <p-card (click)="viewNotification(notification)" styleClass="full-width-card">
+
+          <div class="unread">
+          <p-card (click)="viewNotification(notification)"  styleClass="full-width-card">
+
             <ng-template pTemplate="header">
-              {{ notification.detail }}
+              <span class="new-label1">New</span>
+              {{ notification.summary }}
             </ng-template>
-            <p>{{ notification.data }}</p>
-            <h6>{{ notification.summary }}</h6>
+            <p class="card-content1">{{ notification.detail }}</p>
+            <p class="card-content2">{{ notification.data }}</p>
           </p-card>
+          </div>
         </div>
 
         <!-- Readed Messages -->
+
+          <div class="read">
         <div *ngIf="notification.read==false">
           <p-card (click)="viewNotification(notification)" styleClass="full-width-card" >
             <ng-template pTemplate="header">
-              {{ notification.detail }}
+              <span class="new-label2">Old</span>
+              {{ notification.summary }}
             </ng-template>
-            <p>{{ notification.data }}</p>
-            <h6>{{ notification.summary }}</h6>
+            <p class="card-content3">{{ notification.detail }}</p>
+            <p class="card-content4">{{ notification.data }}</p>
           </p-card>
+        </div>
         </div>
 
 
