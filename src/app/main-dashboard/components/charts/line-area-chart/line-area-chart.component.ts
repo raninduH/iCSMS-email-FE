@@ -581,13 +581,22 @@ export class LineAreaChartComponent implements OnInit,OnChanges {
     });
 
 
+    // return Object.keys(sentimentMap).map(date => {
+    //   const avgSentiments = sentimentMap[date];
+    //   return {
+    //     Date: date,
+    //     positive: avgSentiments.positiveCount !== 0 ? Math.round((avgSentiments.positive / avgSentiments.positiveCount) * 100) / 100 : 0,
+    //     negative: avgSentiments.negativeCount !== 0 ? Math.round((avgSentiments.negative / avgSentiments.negativeCount) * 100) / 100 : 0,
+    //     neutral: avgSentiments.neutralCount !== 0 ? Math.round((avgSentiments.neutral / avgSentiments.neutralCount) * 100) / 100 : 0,
+    //   };
+    // });
     return Object.keys(sentimentMap).map(date => {
       const avgSentiments = sentimentMap[date];
       return {
         Date: date,
-        positive: avgSentiments.positiveCount !== 0 ? Math.round((avgSentiments.positive / avgSentiments.positiveCount) * 100) / 100 : 0,
-        negative: avgSentiments.negativeCount !== 0 ? Math.round((avgSentiments.negative / avgSentiments.negativeCount) * 100) / 100 : 0,
-        neutral: avgSentiments.neutralCount !== 0 ? Math.round((avgSentiments.neutral / avgSentiments.neutralCount) * 100) / 100 : 0,
+        positive: avgSentiments.positiveCount,
+        negative: avgSentiments.negativeCount ,
+        neutral: avgSentiments.neutralCount ,
       };
     });
   }
@@ -667,9 +676,9 @@ export class LineAreaChartComponent implements OnInit,OnChanges {
     
       // Calculate average sentiment scores
       sortedCombinedData.forEach((entry: any) => {
-        entry.avgPositive = entry.positive / entry.positiveCount;
-        entry.avgNegative = entry.negative / entry.negativeCount;
-        entry.avgNeutral = entry.neutral / entry.neutralCount;
+        entry.avgPositive = entry.positive ;
+        entry.avgNegative = entry.negative ;
+        entry.avgNeutral = entry.neutral ;
       });
     
       this.positive = sortedCombinedData.map((entry: any) => entry.avgPositive);

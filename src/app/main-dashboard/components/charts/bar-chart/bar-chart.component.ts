@@ -280,6 +280,7 @@ chartDataGet(): void {
 
               if (source === 'email') {
                 emailTopics = this.extractTopics(data, 'email');
+                console.log(emailTopics);
                 allTopics.push(...emailTopics);
               }
 
@@ -458,7 +459,12 @@ extractTopics(data: any, sourceType: string): any[] {
       .filter((sourceItem: any) => this.isDateInRange(sourceItem.Date))
       .flatMap((sourceItem: any) => {
         if (this.xAxis === 'topics') {
-          return sourceItem.data.flatMap((dataItem: any) => dataItem.topic);
+          console.log(sourceType);
+          const topics = sourceItem.data
+          .filter((dataItem: any) => dataItem.topic && dataItem.topic.length > 0) // Ensure topic exists
+          .flatMap((dataItem: any) => dataItem.topic);
+        console.log(topics);
+        return topics;
         } else if (this.xAxis === 'keywords') {
           return sourceItem.data.flatMap((dataItem: any) => dataItem.keywords);
         } else if (this.xAxis === 'issues') {

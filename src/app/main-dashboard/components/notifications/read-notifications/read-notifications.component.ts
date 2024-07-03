@@ -76,7 +76,7 @@ export class ReadNotificationsComponent implements OnInit {
         this.notificationService.updateUnreadNotifications(notification.id).subscribe(
           (response) => {
             
-          },
+                    },
         );
         
       }

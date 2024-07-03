@@ -48,25 +48,23 @@
 
         <div *ngIf="notification.read==true" >
           <!-- Unread messages -->
-           new
           <p-card (click)="viewNotification(notification)" styleClass="full-width-card">
             <ng-template pTemplate="header">
-              {{ notification.summary }}
+              {{ notification.detail }}
             </ng-template>
-            <p>{{ notification.detail }}</p>
             <p>{{ notification.data }}</p>
+            <h6>{{ notification.summary }}</h6>
           </p-card>
         </div>
 
         <!-- Readed Messages -->
-        old
         <div *ngIf="notification.read==false">
           <p-card (click)="viewNotification(notification)" styleClass="full-width-card" >
             <ng-template pTemplate="header">
-              {{ notification.summary }}
+              {{ notification.detail }}
             </ng-template>
-            <p>{{ notification.detail }}</p>
             <p>{{ notification.data }}</p>
+            <h6>{{ notification.summary }}</h6>
           </p-card>
         </div>
 
@@ -75,15 +73,15 @@
       </div>
 
        <p-dialog
-          header="{{showData[0]}}"
+          header="{{showData[2]}}"
           [(visible)]="visible"
           [modal]="true"
           [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
           [style]="{ width: '50vw' }"
           [draggable]="true"
           [resizable]="true">
-                  <p>{{showData[2]}}</p>
-                  <h6>{{showData[1]}}</h6>
+                  <p>{{showData[1]}}</p>
+                  <h6>{{showData[0]}}</h6>
 
             <!-- <p-button (click)="showDialog()" label="Show" /> -->
       </p-dialog>
