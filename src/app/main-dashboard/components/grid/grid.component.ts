@@ -266,7 +266,7 @@ chartDataGet(): void {
         cache.match('data').then((cachedResponse) => {
           if (cachedResponse) {
             cachedResponse.json().then((cachedData: any) => {
-  
+
               if (!this.isEqual(response, cachedData)) {
 
                 const dataResponse = new Response(JSON.stringify(response), {
@@ -331,7 +331,7 @@ grid(){
     maxItemCols: 6,
     maxItemRows: 6,
 
-    minItemCols: 2,
+    minItemCols: 3,
     minItemRows: 2,
 
     defaultItemCols: 1,
@@ -503,7 +503,7 @@ processGridData(titles: string[], chartTypes: string[], sources: any[], grids: a
     }
   }
 
-  
+
 resize(event: Event, item: GridsterItem): void {
   // Calculate the new ratio in real-time
   const newRatio = item.cols / item.rows;
@@ -580,7 +580,7 @@ itemChange(item: GridsterItem, itemComponent: GridsterItemComponentInterface): v
       this.updateCache(this.changesQueue);
     }, 1000);
 
-    
+
   }
 }
 
