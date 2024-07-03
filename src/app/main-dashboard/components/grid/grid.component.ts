@@ -332,7 +332,7 @@ grid(){
     maxItemRows: 6,
 
     minItemCols: 3,
-    minItemRows: 2,
+    minItemRows: 3,
 
     defaultItemCols: 1,
     defaultItemRows: 1,
