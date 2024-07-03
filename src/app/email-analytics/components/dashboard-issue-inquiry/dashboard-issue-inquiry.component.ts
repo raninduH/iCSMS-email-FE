@@ -11,6 +11,10 @@ export class DashboardIssueInquiryComponent {
   
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() openedIssuesCount!: number;
+  @Input() closedIssuesCount!: number;
+  @Input() openedInquiriesCount!: number;
+  @Input() closedInquiriesCount!: number;
 
   popup() {
     this.dialogVisible = true;

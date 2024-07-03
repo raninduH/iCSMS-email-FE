@@ -21,6 +21,8 @@ export class PerformanceInsightsDashboardComponent {
 
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() isOpened!:boolean;
+ 
 
   rangeDates: Date[] | undefined;
   
@@ -74,7 +76,7 @@ export class PerformanceInsightsDashboardComponent {
   overdueIssByEmailsData: number[]=[]
   isLoadingOverdueIssByEmailAcc: boolean = true
 
- 
+
 
   documentStyle = getComputedStyle(document.documentElement);
 
@@ -104,16 +106,25 @@ export class PerformanceInsightsDashboardComponent {
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
       
-      this.subscribeALL();
+      //this.subscribeALL();
 
 
       
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
-      this.unsubscribeAll()
+    if ((changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) && this.isOpened) {
+      this.unsubscribeAll();
       this.subscribeALL();
+    }
+
+    if(changes['isOpened']){
+
+      if(this.isOpened){
+        this.subscribeALL();
+      }else{
+        this.unsubscribeAll();
+      }
     }
   }
 
@@ -156,7 +167,7 @@ onRangeDatesChanged(rangeDates: Date[]) {
 
 subscribeALL(){
   this.getDataForStatCards()
-  this.getDataForOverallEfficiencyandEffectivenessDntChart()
+  //this.getDataForOverallEfficiencyandEffectivenessDntChart()
   this.getDataForEfficiencyDstriandEffectivenessDistri()
   this.getDataForEfficiencyByEmaiAcss()
   this.getOverdueIssuesdata()
@@ -166,7 +177,7 @@ unsubscribeAll(){
   this.DataForStatCardsSubscription?.unsubscribe();
   this.DataForEffiandEffecIssuesSubscription?.unsubscribe();
   this.DataForEffiandEffecInquiriesSubscription?.unsubscribe();
-  this.CurrentOverallEfficiencyandEffectivenessSubscription?.unsubscribe();
+ // this.CurrentOverallEfficiencyandEffectivenessSubscription?.unsubscribe();
   this.DataForEfficiencyByEmailAccSubscription?.unsubscribe();
   this.OverdueIssuesdataSubscription?.unsubscribe();
 }

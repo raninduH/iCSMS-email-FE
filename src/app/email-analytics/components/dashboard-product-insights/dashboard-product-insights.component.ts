@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-product-insights',
@@ -9,6 +9,8 @@ export class DashboardProductInsightsComponent {
   dialogVisible = false;
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() product_labels!:string[];
+  @Input() product_performance_scores!: number[];
 
   popup() {
     this.dialogVisible = true;
@@ -19,70 +21,82 @@ export class DashboardProductInsightsComponent {
   options: any;
 
   ngOnInit() {
-      const documentStyle = getComputedStyle(document.documentElement);
-      const textColor = documentStyle.getPropertyValue('--text-color');
-      const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-      const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    this.updateData();
+     
+  }
 
-      this.data = {
-          labels: ['API Dev', 'API Mon', 'Mercury', 'Cloud', 'IAM'],
-          datasets: [
-              {
-                  label: 'My First dataset',
-                  backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-                  borderColor: documentStyle.getPropertyValue('--blue-500'),
-                  data: [65, 59, 80, 81, 56, 55, 40],
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['product_performance_scores'] ) {
+      this.updateData()
+    }
 
-                  barPercentage: 0.3,
-                  categoryPercentage: 1,
-              },
-          ]
-      };
+  }
 
-      this.options = {
-          indexAxis: 'y',
-          maintainAspectRatio: false,
-          aspectRatio: 0.8,
-          plugins: {
-              legend: {
-                  display: false,
-                  labels: {
-                      color: textColor,
-                  }
-              },
-              title: {
-                display: true,
-                color: textColor,
-                text: 'Product Insights',
-                font: {
-                    size: 14,
+  updateData(){
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    this.data = {
+        labels: this.product_labels,
+        datasets: [
+            {
+                label: 'My First dataset',
+                backgroundColor: documentStyle.getPropertyValue('--blue-500'),
+                borderColor: documentStyle.getPropertyValue('--blue-500'),
+                data: this.product_performance_scores,
+
+                barPercentage: 0.3,
+                categoryPercentage: 1,
+            },
+        ]
+    };
+
+    this.options = {
+        indexAxis: 'y',
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+            legend: {
+                display: false,
+                labels: {
+                    color: textColor,
                 }
+            },
+            title: {
+              display: true,
+              color: textColor,
+              text: 'Product Insights',
+              font: {
+                  size: 14,
               }
-          },
-          scales: {
-              x: {
-                  ticks: {
-                      color: textColorSecondary,
-                      font: {
-                          weight: 500
-                      }
-                  },
-                  grid: {
-                      color: surfaceBorder,
-                      drawBorder: false
-                  }
-              },
-              y: {
-                  ticks: {
-                      color: textColorSecondary
-                  },
-                  grid: {
-                      color: surfaceBorder,
-                      drawBorder: false,
-                      offset: false,
-                  },
-              }
-          }
-      };
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    }
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false,
+                    offset: false,
+                },
+            }
+        }
+    };
   }
 }

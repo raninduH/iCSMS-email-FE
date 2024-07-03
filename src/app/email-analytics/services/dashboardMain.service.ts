@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, interval } from 'rxjs';
-import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse } from '../interfaces/dashboard';
+import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse, stat_card_single_response } from '../interfaces/dashboard';
 import { INTERVALS, URLS } from './app.constants';
 import { startWith, switchMap } from 'rxjs/operators';
 
@@ -96,6 +96,24 @@ getOverdueIssuesdata(intervalIndays: number, intervalInDaysEnd: number): Observa
     switchMap(() => this.http.get<OverdueIssuesResponse>(url))
   );
 }
+
+getDataForEmailCards(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<stat_card_single_response[]> {
+  const url = `${this.baseUrl}/get_data_for_stat_cards?intervalInDaysStart=${intervalInDaysStart}&intervalInDaysEnd=${intervalInDaysEnd}`;
+
+  return interval(this.pollingInterval).pipe(
+    startWith(0),
+    switchMap(() => this.http.get<stat_card_single_response[]>(url))
+  );
+}
+
+getDataForGaugeChart(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<GaugeChartResponse> {
+  const url = `${this.baseUrl}/get_data_value_for_gauge_chart?intervalInDaysStart=${intervalInDaysStart}&intervalInDaysEnd=${intervalInDaysEnd}`;
+
+  return interval(this.pollingInterval).pipe(
+    startWith(0),
+    switchMap(() => this.http.get<GaugeChartResponse>(url))
+  );
+  }
 
 
 }

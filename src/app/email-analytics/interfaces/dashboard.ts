@@ -54,6 +54,7 @@ export interface stat_card_single_response{
     sub_title: string;
     header: string;
     sentiment: string;
+    sentiment_score: number;
     imgPath: string;
 }
 

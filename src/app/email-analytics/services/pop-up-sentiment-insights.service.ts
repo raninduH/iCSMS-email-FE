@@ -64,7 +64,7 @@ export class DataService {
   getDataForSentimentsByTime(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<SentimentsByTimeResponse> {
     const url = `${this.baseUrl}/get_data_for_sentiments_by_time?intervalInDaysStart=${intervalInDaysStart}&intervalInDaysEnd=${intervalInDaysEnd}`;
 
-    return interval(60000).pipe(
+    return interval(this.pollingInterval).pipe(
       startWith(0),
       switchMap(() => this.http.get<SentimentsByTimeResponse>(url))
     );

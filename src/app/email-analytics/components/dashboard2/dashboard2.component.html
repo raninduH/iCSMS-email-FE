@@ -29,7 +29,10 @@
     <div class="h-fit">
       <app-dashboard-overall-progress
       [intervalInDaysStart]="intervalInDaysStart"
-      [intervalInDaysEnd]="intervalInDaysEnd"></app-dashboard-overall-progress>
+      [intervalInDaysEnd]="intervalInDaysEnd"
+      [efficiencyData]="dntChartDataOverallEfficiency"
+      [effectivenessData]="dntChartDataOverallEffeftiveness"
+      [progressData]="dntChartDataProgress"></app-dashboard-overall-progress>
     </div>
   </div>
   <div
@@ -40,7 +43,8 @@
     <div class="w-full h-full flex justify-center items-center border border-solid border-slate-300 rounded-lg bg-white hover:bg-gray-50 hover:border-sky-400 hover:cursor-pointer transition hover:duration-150">
       <app-dashboard-sentiment-card
       [intervalInDaysStart]="intervalInDaysStart"
-      [intervalInDaysEnd]="intervalInDaysEnd"></app-dashboard-sentiment-card>
+      [intervalInDaysEnd]="intervalInDaysEnd"
+      [value]="dataValue_forGaugeStart"></app-dashboard-sentiment-card>
     </div>
   </div>
   <div
@@ -51,7 +55,11 @@
     <div class="w-full h-full border border-solid border-slate-300 rounded-lg bg-white hover:bg-gray-50 hover:border-sky-400 hover:cursor-pointer transition hover:duration-150">
       <app-dashboard-issue-inquiry
       [intervalInDaysStart]="intervalInDaysStart"
-      [intervalInDaysEnd]="intervalInDaysEnd"></app-dashboard-issue-inquiry>
+      [intervalInDaysEnd]="intervalInDaysEnd"
+      [openedIssuesCount]="openedIssuesCount"
+      [closedIssuesCount]="closedIssuesCount"
+      [openedInquiriesCount]="openedInquiriesCount"
+      [closedInquiriesCount]="closedInquiriesCount"></app-dashboard-issue-inquiry>
     </div>
   </div>
   <div
@@ -71,7 +79,9 @@
     <div class="h-full w-full p-4">
       <app-dashboard-product-insights
       [intervalInDaysStart]="intervalInDaysStart"
-      [intervalInDaysEnd]="intervalInDaysEnd"></app-dashboard-product-insights>
+      [intervalInDaysEnd]="intervalInDaysEnd"
+      [product_performance_scores]="products_performance_scores"
+      [product_labels]="products_labels"></app-dashboard-product-insights>
     </div>
   </div>
 
@@ -83,7 +93,8 @@
     <div class="h-full w-full p-4">
       <app-dashboard-account-insights
       [intervalInDaysStart]="intervalInDaysStart"
-      [intervalInDaysEnd]="intervalInDaysEnd"></app-dashboard-account-insights>
+      [intervalInDaysEnd]="intervalInDaysEnd"
+      [accountCardsArr]="EmailAccData"></app-dashboard-account-insights>
     </div>
   </div>
 </div>

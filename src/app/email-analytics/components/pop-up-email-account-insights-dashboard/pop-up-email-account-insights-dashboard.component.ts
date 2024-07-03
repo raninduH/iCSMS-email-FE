@@ -20,6 +20,7 @@ export class PopUpEmailAccountInsightsDashboardComponent {
 
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() isOpened!:boolean;
 
   rangeDates: Date[] | undefined;
   
@@ -47,8 +48,8 @@ export class PopUpEmailAccountInsightsDashboardComponent {
   
   // stat cards inputs
   statsData: stat_card_single_response[] = [
-    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png' },
-    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png' }
+    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png', sentiment_score: 0 },
+    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png', sentiment_score: 0 }
     // Add more objects as needed
   ];
   
@@ -81,20 +82,29 @@ export class PopUpEmailAccountInsightsDashboardComponent {
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
       
-      this.subscribeAll();
+      //this.subscribeAll();
 
       
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
-      this.unsubsribeAll();
+    if ((changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) && this.isOpened) {
+      this.unsubscribeAll();
       this.subscribeAll();
+    }
+
+    if(changes['isOpened']){
+
+      if(this.isOpened){
+        this.subscribeAll();
+      }else{
+        this.unsubscribeAll();
+      }
     }
   }
 
   ngOnDestroy(): void {
-    this.unsubsribeAll();
+    this.unsubscribeAll();
   
   }
 
@@ -122,7 +132,7 @@ onRangeDatesChanged(rangeDates: Date[]) {
 
   console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
   
-  this.unsubsribeAll();
+  this.unsubscribeAll();
   this.subscribeAll();
 }
 
@@ -133,7 +143,7 @@ subscribeAll(){
   this.getOverdueIssuesdata();
 }
 
-unsubsribeAll(){
+unsubscribeAll(){
   this.DataForStatCardsSubscription?.unsubscribe();
   this.DataForEfficiencyByEmaiAcssSubscription?.unsubscribe();
   this.BestPerformingEmailSubscription?.unsubscribe();
@@ -145,7 +155,7 @@ getDataForStatCards(){
   this.isLoadingStatCards = true
 
   this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
-  console.log(data)
+  console.log("EMAIl ACCOUNTS STAT DATA",data)
   this.statsData = data
 
   this.isLoadingStatCards = false

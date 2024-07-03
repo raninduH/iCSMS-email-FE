@@ -28,6 +28,7 @@ export class PopUpProductInsightsDashboardComponent {
 
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() isOpened!:boolean;
 
 
   rangeDates: Date[] | undefined;
@@ -103,15 +104,24 @@ export class PopUpProductInsightsDashboardComponent {
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
 
-      this.subscribeALL();
+      //this.subscribeALL();
 
       
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
-      this.unsubscribeAll()
+    if ((changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) && this.isOpened) {
+      this.unsubscribeAll();
       this.subscribeALL();
+    }
+
+    if(changes['isOpened']){
+
+      if(this.isOpened){
+        this.subscribeALL();
+      }else{
+        this.unsubscribeAll();
+      }
     }
   }
   

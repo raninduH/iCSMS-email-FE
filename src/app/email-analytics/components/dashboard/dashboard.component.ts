@@ -32,6 +32,7 @@ export class DashboardComponent  implements OnInit{
   
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
+  @Input() isOpened!:boolean;
 
   // calenders
 
@@ -54,8 +55,8 @@ export class DashboardComponent  implements OnInit{
 
   // stat cards inputs
   statsData: stat_card_single_response[] = [
-    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png' },
-    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png' }
+    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png', sentiment_score: 0 },
+    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png', sentiment_score: 0 }
     // Add more objects as needed
   ];
 
@@ -132,13 +133,22 @@ export class DashboardComponent  implements OnInit{
 
     console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
 
-    this.subscribeALL();
+    //this.subscribeALL();
   }
   
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
+    if ((changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) && this.isOpened) {
       this.unsubscribeAll();
       this.subscribeALL();
+    }
+
+    if(changes['isOpened']){
+
+      if(this.isOpened){
+        this.subscribeALL();
+      }else{
+        this.unsubscribeAll();
+      }
     }
   }
   ngOnDestroy(): void {
