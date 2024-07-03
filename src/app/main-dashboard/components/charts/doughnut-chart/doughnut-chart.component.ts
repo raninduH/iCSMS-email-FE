@@ -1,11 +1,11 @@
 import { Component, Input, OnInit,Injector,EventEmitter, OnChanges, SimpleChanges,Output } from '@angular/core';
-declare var $: any;
+// declare var $: any;
 import { HttpClient } from '@angular/common/http';
 import { timer } from 'rxjs';
 import { DateRangeService } from '../../../services/shared-date-range/date-range.service';
 import { ChartsService } from '../../../services/charts.service';
 import { Subscription } from 'rxjs';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import {ConfirmationService, MenuItem, MessageService} from 'primeng/api';
 import { AuthenticationService } from '../../../../auth/services/authentication.service';
 
 interface MeterItem {
@@ -23,8 +23,10 @@ interface MeterItem {
   providers:[MessageService]
 })
 export class DoughnutChartComponent implements OnInit,OnChanges{
-  @Output() deleteConfirmed: EventEmitter<void> = new EventEmitter<void>();
-  
+
+  @Output() deletedConfirmed: EventEmitter<void> = new EventEmitter<void>();
+  @Output() hideConfirmed: EventEmitter<void> = new EventEmitter<void>();
+
   @Input() closable:boolean = true;
   @Input() title!: string;
   @Input() data!: any;
@@ -44,7 +46,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
     { label: 'Neutral', value: 70, color1: '#FF9800', color2: '#FFC107', icon: 'pi pi-desktop' }
   ];
 
-  @Input() id!: string; 
+  @Input() id!: string;
 
   totalSums = { positive: 0, negative: 0, neutral: 0 };
 
@@ -63,6 +65,8 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
 
   changeSource:any;
 
+  item:MenuItem[] = [];
+
   private socketSubscription: Subscription | undefined;
 
   constructor(private http: HttpClient,
@@ -73,11 +77,50 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
   private authService:AuthenticationService) {}
 
   ngOnInit() {
+
+    this.item= [
+      {
+        icon: 'pi pi-ellipsis-v',
+        items: [
+          {
+            label: 'Delete',
+            icon: 'pi pi-times',
+            command: () => {
+              this['onDelete']();
+            }
+          },
+          {
+            label: 'Edit',
+            icon: 'pi pi-pencil',
+            command: () => {
+              this['onEdit']();
+            }
+          },
+          {
+            label: 'Hide',
+            icon: 'pi pi-eye-slash',
+            command: () => {
+              this['confirmDeleted']();
+            }
+          }
+
+          
+        ]
+      }
+
+  ];
+
+    // this.itemActions = [
+    //   {label: 'Delete', icon: 'pi pi-trash', command: (event) => console.log('Delete', event)},
+    //   {label: 'Edit', icon: 'pi pi-pencil', command: (event) => console.log('Edit', event)}
+    // ]
+
+
     this.categories=this.source;
     this.selectedCategories=this.source;
-    if(this.selectedCategories){
-      this.doughnutExtract(this.selectedCategories);
-    }
+    // if(this.selectedCategories){
+    //   this.doughnutExtract(this.selectedCategories);
+    // }
 
     timer(0,1000).subscribe(() => {
       if(this.changes){
@@ -112,7 +155,11 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
         if(this.selectedCategories){
           this.doughnutExtract(this.selectedCategories);
         }
-
+      }
+      else{
+        if(this.selectedCategories){
+          this.doughnutExtract(this.selectedCategories);
+        }
       }
     });
   }
@@ -132,12 +179,21 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
       }
     });
   }
-  
-  confirmDeleted() {
-    console.log('confirm button');
-    this.deleteConfirmed.emit();
-}
+ 
 
+  onDelete(){
+    console.log('delete');
+    this.deletedConfirmed.emit();
+  }
+
+  onEdit(){
+    console.log('Edit');
+  }
+
+ confirmDeleted() {
+        console.log('confirm button');
+        this.hideConfirmed.emit();
+  }
   onDateRangeChange() {
     if (this.rangeDates && this.rangeDates.length === 2 && this.rangeDates[0] && this.rangeDates[1]) {
       this.selectedDateRange = this.rangeDates.map(date => this.formatDate(date));
@@ -187,7 +243,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
   chartDataGet(): void {
     this.authService.getIdToken().subscribe((token) =>{
     this.chartService.chartData(token).subscribe(
-      (response) => {      
+      (response) => {
         caches.open('all-data').then(cache => {
           cache.match('data').then((cachedResponse) => {
             if (cachedResponse) {
@@ -216,17 +272,17 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
       },
       // (error) => {
       //   console.error('Error fetching doughnut chart data:', error);
-      // } 
+      // }
     );
   });
   }
-  
+
   isEqual(obj1: any, obj2: any): boolean {
     const keys1 = Object.keys(obj1);
     const keys2 = Object.keys(obj2);
-  
+
     if (keys1.length !== keys2.length) return false;
-  
+
     for (let key of keys1) {
       if (!keys2.includes(key)) return false;
       if (JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])) {
@@ -235,7 +291,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
     }
     return true;
   }
-  
+
 
   formatDate(date: Date): string {
     const options: Intl.DateTimeFormatOptions = {
@@ -275,7 +331,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
                 );
               }
             });
-  
+
             this.sumDoughnutData(this.callDoughnut, this.emailDoughnut, this.socialDoughnut, sources);
           });
         }
@@ -291,7 +347,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
       {
         if (!this.rangeDates || this.rangeDates.length !== 2) {
           return false;
-        }    
+        }
         const date = new Date(dateStr);
         const startDate = new Date(this.rangeDates[0]);
         const endDate = new Date(this.rangeDates[1]);
@@ -307,12 +363,12 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
         return true;
       }
     return false;
-    
+
   }
 
   sumDoughnutData(callData: any[], emailData: any[], socialData: any[], sources: string[]) {
     this.totalSums = { positive: 0, negative: 0, neutral: 0 };
-    
+
     const sumData = (dataArray: any[]) => {
       dataArray.forEach((item: any) => {
         item.forEach((data: any) => {
@@ -331,7 +387,7 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
         });
       });
     };
-  
+
     sources.forEach(source => {
       if (source === 'call') {
         sumData(callData);
@@ -343,13 +399,13 @@ export class DoughnutChartComponent implements OnInit,OnChanges{
         sumData(socialData);
       }
     });
-  
+
     this.percentages = [
       this.totalSums.negative,
       this.totalSums.positive,
       this.totalSums.neutral
     ];
-  
+
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     this.data = {

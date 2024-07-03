@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-issue-inquiry',
@@ -7,6 +7,14 @@ import { Component } from '@angular/core';
 })
 export class DashboardIssueInquiryComponent {
   dialogVisible = false;
+
+  
+  @Input() intervalInDaysStart!: number;
+  @Input() intervalInDaysEnd!: number;
+  @Input() openedIssuesCount!: number;
+  @Input() closedIssuesCount!: number;
+  @Input() openedInquiriesCount!: number;
+  @Input() closedInquiriesCount!: number;
 
   popup() {
     this.dialogVisible = true;

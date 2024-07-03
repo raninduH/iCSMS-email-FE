@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MenuItem } from "primeng/api";
-import { DataService } from './dashboard.component.data.service';
+
 import { GaugeChartResponse, SentimentsByTimeResponse, SentimentsByTopicResponse, SentimentsDistributionByTimeResponse, get_current_overall_sentiments_response, stat_card_single_response, word_cloud_single_response } from '../../interfaces/dashboard';
+import { DataService } from '../../services/pop-up-sentiment-insights.service';
+import { Subscription } from 'rxjs';
 
 interface TrendingTopic {
   text: string;
@@ -28,8 +30,9 @@ export class DashboardComponent  implements OnInit{
     {label: "Dashboard1"}
   ];
   
- intervalInDaysStart: number = 29;
- intervalInDaysEnd: number = 0;
+  @Input() intervalInDaysStart!: number;
+  @Input() intervalInDaysEnd!: number;
+  @Input() isOpened!:boolean;
 
   // calenders
 
@@ -52,8 +55,8 @@ export class DashboardComponent  implements OnInit{
 
   // stat cards inputs
   statsData: stat_card_single_response[] = [
-    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png' },
-    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png' }
+    { title: 540, sub_title: 'Total Emails', header: 'Customer Care', sentiment: 'Positive', imgPath: './email/mail_blue.png', sentiment_score: 0 },
+    { title: 340, sub_title: 'Total Emails', header: 'Marketing', sentiment: 'Negative', imgPath: './email/mail_red.png', sentiment_score: 0 }
     // Add more objects as needed
   ];
 
@@ -78,6 +81,7 @@ export class DashboardComponent  implements OnInit{
   // wordcloud
   wordCloudData: TrendingWord[] = []
   isLoadingWCC: boolean = true
+  
 
   // sentiment distribution in topics ( stacked bar chart)
   labels_forStackedBarChart!: string[];
@@ -100,6 +104,13 @@ export class DashboardComponent  implements OnInit{
 
   isLoadingGC:boolean = true;
   
+  private CurrentOverallSentimentsSubscription: Subscription | undefined;
+  private DataForStatCardsSubscription: Subscription | undefined;
+  private DataForSentimentsByTopicSubscription: Subscription | undefined;
+  private DataForSentimentsByTimeSubscription: Subscription | undefined;
+  private DataForWordCloudSubscription: Subscription | undefined;
+  private DataForSentimentsDistribtuionOfTopicsSubscription: Subscription | undefined;
+  private DataForGaugeChartSubscription: Subscription | undefined;
 
   constructor(private fb: FormBuilder, private http: HttpClient, private dataService: DataService) {}
 
@@ -119,19 +130,30 @@ export class DashboardComponent  implements OnInit{
     this.minDate.setMonth(prevMonth);
     this.minDate.setFullYear(prevYear);
     this.maxDate = today;
- 
-  
 
-  this.getCurrentOverallSentiments()
-  // this.getDataForTopicsCloud()
-  this.getDataForStatCards()
-  this.getDataForSentimentsByTopic()
-  this.getDataForSentimentsByTime()
-  this.getDataForWordCloud()
-  this.getDataForSentimentsDistribtuionOfTopics()
-  this.getDataForGaugeChart()
+    console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
 
+    //this.subscribeALL();
   }
+  
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) && this.isOpened) {
+      this.unsubscribeAll();
+      this.subscribeALL();
+    }
+
+    if(changes['isOpened']){
+
+      if(this.isOpened){
+        this.subscribeALL();
+      }else{
+        this.unsubscribeAll();
+      }
+    }
+  }
+  ngOnDestroy(): void {
+    this.unsubscribeAll();
+}
 
 
 
@@ -157,9 +179,16 @@ onRangeDatesChanged(rangeDates: Date[]) {
   this.intervalInDaysEnd = Math.floor(differenceEndMs / (1000 * 60 * 60 * 24))
 
   console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
+  
+  this.unsubscribeAll();
+  this.subscribeALL();
 
+
+}
+
+subscribeALL(){
+  
   this.getCurrentOverallSentiments()
-  // this.getDataForTopicsCloud()
   this.getDataForStatCards()
   this.getDataForSentimentsByTopic()
   this.getDataForSentimentsByTime()
@@ -168,13 +197,21 @@ onRangeDatesChanged(rangeDates: Date[]) {
   this.getDataForGaugeChart()
 }
 
-
+unsubscribeAll(){
+  this.CurrentOverallSentimentsSubscription?.unsubscribe();
+  this.DataForStatCardsSubscription?.unsubscribe();
+  this.DataForSentimentsByTopicSubscription?.unsubscribe();
+  this.DataForSentimentsByTimeSubscription?.unsubscribe();
+  this.DataForWordCloudSubscription?.unsubscribe();
+  this.DataForSentimentsDistribtuionOfTopicsSubscription?.unsubscribe();
+  this.DataForGaugeChartSubscription?.unsubscribe();
+}
 
 getCurrentOverallSentiments(){
     
    this.isLoadingDC = true;
     // get data for the current overall sentiments
-    this.dataService.getCurrentOverallSentiments(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:get_current_overall_sentiments_response) => {
+   this.CurrentOverallSentimentsSubscription =  this.dataService.getCurrentOverallSentiments(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:get_current_overall_sentiments_response) => {
     console.log(Object.keys(data).length)
     if (Object.keys(data).length !== 0){
       // const dictData = data as unknown as { positive_percentage: number, neutral_percentage: number, negative_percentage: number };
@@ -193,32 +230,13 @@ getCurrentOverallSentiments(){
   });
 }
 
-// getDataForTopicsCloud(){
 
-//   this.isLoadingTC = true;
-//   this.dataService.getDataForTopicsCloud(this.intervalInDaysStart).subscribe(data => {
-//   const newkeywords:TrendingTopic[] = []
-//   for (const item of data) {
-//     // Access the "product" and "frequency" properties of each item
-//     const product = item.product;
-//     const frequency = item.frequency;
-    
-//     // Do something with topic and frequency, such as logging them to the console
-//     console.log(`Topic: ${product}, Frequency: ${frequency}`);
-
-//     newkeywords.push({"text":product, "frequency": frequency})
-//   }
-
-//     this.keywords = newkeywords 
-//     this.isLoadingTC = false;
-//   });
-
-// }
 
 
 getDataForStatCards(){
-
-  this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
+  
+  this.isLoadingStatCards = true
+  this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
   console.log(data)
   this.statsData = data
 
@@ -231,7 +249,7 @@ getDataForStatCards(){
 getDataForSentimentsByTopic(){
   this.isLoadingSBT = true;
 
-  this.dataService.getDataForSentimentsByTopic(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: SentimentsByTopicResponse) => {
+  this.DataForSentimentsByTopicSubscription = this.dataService.getDataForSentimentsByTopic(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: SentimentsByTopicResponse) => {
   
 
   if (data.sbtChartLabels.length !== 0){
@@ -250,7 +268,7 @@ getDataForSentimentsByTime(){
 
   this.isLoadingSBTime = true;
 
-  this.dataService.getDataForSentimentsByTime(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:SentimentsByTimeResponse) => {
+  this.DataForSentimentsByTimeSubscription = this.dataService.getDataForSentimentsByTime(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:SentimentsByTimeResponse) => {
   
 
 
@@ -260,6 +278,8 @@ getDataForSentimentsByTime(){
   this.positive_values_forSentimentsByTime = data.positive_values
   this.neutral_values_forSentimentsByTime = data.neutral_values
   this.negative_values_forSentimentsbyTime = data.negative_values
+
+  console.log("sentiment by TIME LABELS", this.labelsForSentimentsByTime)
   
   this.isLoadingSBTime = false;
 
@@ -268,12 +288,13 @@ getDataForSentimentsByTime(){
 
 getDataForWordCloud(){
 
-     this.isLoadingWCC = true
-
+  this.wordCloudData = [] 
+  this.isLoadingWCC = true
      // Get data for word cloud
-     this.dataService.getDataForWordCloud(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:word_cloud_single_response[]) => {
-      console.log("WORD CLOUD DATA", data)
-      const newkeywords: TrendingWord[] = []
+     this.DataForWordCloudSubscription = this.dataService.getDataForWordCloud(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:word_cloud_single_response[]) => {
+      console.log("WORD CLOUD DATA", data, "intervalindaysStart", this.intervalInDaysStart, "intervalInDaysEnd", this.intervalInDaysEnd)
+      // const newkeywords: TrendingWord[] = []
+      //this.wordCloudData = [{"word":"topic", "weight": 50, "color": 'rgba(212, 13, 214, 0.9)'}]
       for (const item of data) {
         // Access the "topic" and "frequency" properties of each item
         const topic = item.topic;
@@ -283,10 +304,11 @@ getDataForWordCloud(){
         // Do something with topic and frequency, such as logging them to the console
         console.log(`word: ${topic}, weight: ${frequency}`);
   
-        newkeywords.push({"word":topic, "weight": frequency, "color": color})
+        this.wordCloudData.push({"word":topic, "weight": frequency, "color": color})
       }
   
-       this.wordCloudData = newkeywords
+       //this.wordCloudData = newkeywords
+       console.log("WORD CLOUD DATA JUST BEOFRE DISPLAYING",  this.wordCloudData)
        this.isLoadingWCC = false
   
       
@@ -297,7 +319,7 @@ getDataForSentimentsDistribtuionOfTopics(){
 
   this.isLoadingSDT = true
 
-  this.dataService.getDataForSentimentsDistribtuionOfTopics(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: SentimentsDistributionByTimeResponse) => {
+  this.DataForSentimentsDistribtuionOfTopicsSubscription = this.dataService.getDataForSentimentsDistribtuionOfTopics(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: SentimentsDistributionByTimeResponse) => {
     console.log("sentiments distribtion by topic", data)
     
     this.labels_forStackedBarChart = data.labels_freq
@@ -320,7 +342,7 @@ getDataForSentimentsDistribtuionOfTopics(){
 getDataForGaugeChart() {
   this.isLoadingGC = true; // Set loading indicator to true before making the request
 
-  this.dataService.getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
+  this.DataForGaugeChartSubscription = this.dataService.getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
     .subscribe((data: GaugeChartResponse) => {
       console.log("gauge chart data", data.value)
       this.dataValue_forGaugeStart = data.value

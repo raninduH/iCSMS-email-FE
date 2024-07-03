@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-overall-progress',
@@ -9,6 +9,13 @@ export class DashboardOverallProgressComponent {
   dataEfficiency: any;
   dataEffectivity: any;
   dataProgress: any;
+
+  
+  @Input() intervalInDaysStart!: number;
+  @Input() intervalInDaysEnd!: number;
+  @Input() efficiencyData!: number[];
+  @Input() effectivenessData!: number[];
+  @Input() progressData!: number[];
 
   optionsDefault: any;
   optionsProgress: any;
@@ -22,6 +29,19 @@ export class DashboardOverallProgressComponent {
   }
 
   ngOnInit() {
+    this.updateData()
+    
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['efficiencyData'] || changes['effectivenessData'] || changes['progressData']) {
+      this.updateData()
+    }
+  }
+
+
+
+  updateData(){
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
 
@@ -29,7 +49,7 @@ export class DashboardOverallProgressComponent {
         labels: ['High', 'Moderate', 'Low', 'Poor'],
         datasets: [
             {
-                data: [540, 325, 702, 100],
+                data: this.efficiencyData || [540, 325, 702, 100],
                 backgroundColor: [
                   documentStyle.getPropertyValue('--green-500'),
                   documentStyle.getPropertyValue('--blue-500'), 
@@ -50,7 +70,7 @@ export class DashboardOverallProgressComponent {
         labels: ['High', 'Moderate', 'Low', 'Poor'],
         datasets: [
             {
-                data: [540, 325, 702, 100],
+                data: this.effectivenessData || [540, 325, 702, 100],
                 backgroundColor: [
                   documentStyle.getPropertyValue('--green-500'),
                   documentStyle.getPropertyValue('--blue-500'), 
@@ -71,7 +91,7 @@ export class DashboardOverallProgressComponent {
       labels: ['Closed', 'Ongoing'],
         datasets: [
             {
-                data: [140, 325],
+                data: this.progressData || [140, 325],
                 backgroundColor: [
                   documentStyle.getPropertyValue('--green-500'),
                   documentStyle.getPropertyValue('--blue-500'), 

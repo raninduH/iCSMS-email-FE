@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, SimpleChanges, Input } from '@angular/core';
+import { Component, OnChanges, OnInit, Input, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { UtilityService } from '../../services/utility.service';
 import { CommonColors } from '../../interfaces/utility';
@@ -9,10 +9,17 @@ import { CommonColors } from '../../interfaces/utility';
   styleUrl: './dashboard-sentiment-card.component.scss'
 })
 export class DashboardSentimentCardComponent implements OnInit, OnChanges {
+
+  @Input() intervalInDaysStart!: number;
+  @Input() intervalInDaysEnd!: number;
+  @Input() value!: number;
+  
   loading = false;
   dialogVisible = false;
   options!: EChartsOption;
-  value: number = -0.1;
+
+
+
   colors: CommonColors = {};
   @Input() fromDate!: Date;
   @Input() toDate!: Date;
@@ -23,17 +30,21 @@ export class DashboardSentimentCardComponent implements OnInit, OnChanges {
 
   
   ngOnInit() {
+    this.updateData() 
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['value'] ) {
+      this.updateData()
+    }
+
+  }
+
+  updateData(){
     this.colors = this.utility.getColors();
     this.setOptions();
   }
   
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fromDate'] || changes['toDate']) {
-      // this.fetchData();
-      console.log('fromDate:', this.fromDate);
-      console.log('toDate:', this.toDate);
-    }
-  }
 
   getColor(value: number) {
     if (value < -0.3) {

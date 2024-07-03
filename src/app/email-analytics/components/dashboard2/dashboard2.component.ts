@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { MenuItem } from "primeng/api";
-import { DataService } from './dashboard2.component.data.service';
-import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse } from '../../interfaces/dashboard';
+import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse, stat_card_single_response } from '../../interfaces/dashboard';
+import { DataService } from '../../services/dashboardMain.service';
+import { Subscription } from 'rxjs';
 
 interface TrendingTopic {
   text: string;
@@ -124,13 +125,53 @@ export class Dashboard2Component implements OnInit{
   
    // stat cards inputs
    statsData = [
-    { title: 10, sub_title: 'total', header: 'Ongoing', subheader: 'issues', fontColor:this.documentStyle.getPropertyValue('--negative-color')},
-    { title: 5, sub_title: 'total', header: 'Closed', subheader: 'issues', fontColor:this.documentStyle.getPropertyValue('--positive-color')},
-    { title: 10, sub_title: 'total', header: 'Ongoing', subheader: 'inquiries', fontColor:this.documentStyle.getPropertyValue('--negative-color')},
-    { title: 5, sub_title: 'total', header: 'Closed', subheader: 'inquiries', fontColor:this.documentStyle.getPropertyValue('--positive-color')}
+    { title: 0, sub_title: 'total', header: 'Ongoing', subheader: 'issues', fontColor:this.documentStyle.getPropertyValue('--negative-color')},
+    { title: 0, sub_title: 'total', header: 'Closed', subheader: 'issues', fontColor:this.documentStyle.getPropertyValue('--positive-color')},
+    { title: 0, sub_title: 'total', header: 'Ongoing', subheader: 'inquiries', fontColor:this.documentStyle.getPropertyValue('--negative-color')},
+    { title: 0, sub_title: 'total', header: 'Closed', subheader: 'inquiries', fontColor:this.documentStyle.getPropertyValue('--positive-color')}
     // Add more objects as needed
   ];
-  isLoadingStatcards: boolean = false;
+  isLoadingStatcards: boolean = true;
+  isLoadingEmailCards: boolean = true;
+  isLoadingGC: boolean = true
+  EmailAccData: stat_card_single_response[] = []
+
+  openedIssuesCount!:number 
+  closedIssuesCount!:number 
+  openedInquiriesCount!:number 
+  closedInquiriesCount!:number 
+  
+  dataValue_forGaugeStart:number = 0
+
+  products_labels!: string[]
+  products_performance_scores!: number[]
+
+  isProductPerformanceChart: boolean = true;
+
+  
+  private statCardsSubscription: Subscription | undefined;
+  private DataForStatCardsSubscription: Subscription | undefined;
+  private CurrentOverallEfficiencyandEffectivenessSubscription: Subscription | undefined;
+  private DataForGaugeChartSubscription: Subscription | undefined;
+  private DataForProductsByIssueandInquirySubscription: Subscription | undefined;
+
+  private DataForEffiandEffecInquiriesSubscription: Subscription | undefined;
+  private DataForIssueandInquiryTypesSubscription: Subscription | undefined;
+  private DataForEfficiencyByEmailAccSubscription: Subscription | undefined;
+  private BestPerformingEmailSubscription: Subscription | undefined;
+  private OverdueIssuesdataSubscription: Subscription | undefined;
+
+
+  _isPerfInsightsOpened: boolean = false;
+  set isPerfInsightsOpened(value: boolean) {
+    this._isPerfInsightsOpened = value;
+    if (value) {
+      this.unsubscribeAll();
+    }
+  }
+  get isPerfInsightsOpened(): boolean {
+    return this._isPerfInsightsOpened;
+  }
  
   constructor(private fb: FormBuilder, private http: HttpClient, private dataService: DataService) {}
 
@@ -151,126 +192,26 @@ export class Dashboard2Component implements OnInit{
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
 
-    //   this.wordCloudData = [{"word":"problemtype1", "weight": 10, "color": "rgba(102, 153, 255, 0.8)"},{"word":"problemtype2", "weight": 5, "color": "rgba(102, 153, 255, 0.8)"}]
-    //   this.chartData = [30, 40, 30];
-      
-    //   this.dntChartDataOverallEfficiency = [40,20,20,20]
-    //   this.dntChartOverallEfficiencyLabels =  ['Inefficient', 'Less Efficient', 'Moderately Efficient', 'Highly Efficient']
-      
-    //   this.dntChartDataOverallEffeftiveness = [40,20,20,20]
-    //   this.dntChartOverallEffectivenessLabels = ['Ineffective', 'Minimally Effective', 'Moderately Effective', 'Highly Effective' ]
-      
-    //   this.dntChartDataProgress= [30,70]
-    //   this.dntChartProgressLabels = ["ongoing percentage", "closed percentage"]
+ 
 
-    //   this.effi_dstri_vert_bar_labels = ['Highly Efficient', 'Moderately Efficient', 'Less Efficient', 'Inefficient']
-    //   this.effi_distri_vert_var_issues_data = [5,7,8,4]
-    //   this.effi_distri_vert_var_inquiries_data = [7,7,6,2]
-
-    //   this.effect_dstri_vert_bar_labels = ['Highly Effective', 'Moderately Effective', 'Minimally Effective', 'Ineffective']
-    //   this.effect_distri_vert_var_issues_data = [6,7,8,0]
-    //   this.effect_distri_vert_var_inquiries_data = [7,7,7,5]
-      
-    //   this.issue_types_distri_labels = [
-    //     'Order Issues', 'Billing and Payment Problems', 'Account Issues', 
-    //     'Product or Service Complaints', 'Technical Issues', 
-    //     'Warranty and Repair Issues', 'Subscription Problems', 
-    //     'Return and Exchange Problems'
-    //     ]
-    //   this.issue_types_distri_labels.forEach((label, index) => {
-    //     this.issue_types_distri_colors.push("rgba(18, 86, 222, 0.9)");
-    //   });
-    //   this.issue_types_distri_data = [5,6,7,8,9,5,4,3]
-
-    //   this.inquiry_types_distri_labels = [
-    //     'Order Issues', 'Billing and Payment Problems', 'Account Issues', 
-    //     'Product or Service Complaints', 'Technical Issues', 
-    //     'Warranty and Repair Issues', 'Subscription Problems', 
-    //     'Return and Exchange Problems'
-    //     ]
-    //   this.inquiry_types_distri_labels.forEach((label, index) => {
-    //     this.inquiry_types_distri_colors.push("rgba(222, 18, 195, 0.9)");
-    //   });
-    //   this.inquiry_types_distri_data = [5,6,7,8,9,5,4,3]
-
-
-      
-      //this.prodcuts_distri_of_issues_and_inquiries_labels = ['vega', 'aston martin', 'dbx', 'porsche']
-      // this.prodcuts_distri_of_issues_and_inquiries_datasets = [
-      //   {
-      //     type: 'bar',
-      //     label: 'No of Issues',
-      //     backgroundColor: this.documentStyle.getPropertyValue('--issue-color'),
-      //     data: [21, 84, 24, 75]
-      // },
-      // {
-      //     type: 'bar',
-      //     label: 'No of Inquiries',
-      //     backgroundColor: this.documentStyle.getPropertyValue('--inquiry-color'),
-      //     data: [41, 52, 24, 74]
-      // }
-
-      // ]
-
-    //   this.bestProduct = "VEGA EV"
-    //   this.worstProduct = "Uber"
-    
-
-    //   this.bestEmail = "email account 1"
-
-    //   this.email_acc_effi_labels = ['emailAcc1', "emailAcc2", "emailAcc3"]
-    //   this.email_acc_effi_dataset = [
-    //     {
-    //       type: 'bar',
-    //       label: 'Inefficient',
-    //       backgroundColor:   this.documentStyle.getPropertyValue('--inefficient-color'),
-    //       data: [21, 84, 24]
-    //   },
-    //   {
-    //       type: 'bar',
-    //       label: 'Less Efficient',
-    //       backgroundColor: this.documentStyle.getPropertyValue('--less-efficient-color'),
-    //       data: [41, 52, 24]
-    //   },
-    //   {
-    //     type: 'bar',
-    //     label: 'Moderately Efficient',
-    //     backgroundColor:  this.documentStyle.getPropertyValue('--moderately-efficient-color'),
-    //     data: [21, 84, 24]
-    // },
-    // {
-    //     type: 'bar',
-    //     label: 'High Efficient',
-    //     backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
-    //     // backgroundColor: "rgba(17, 193, 14, 0.9)",
-    //     data: [41, 52, 24]
-    // }
-
-    //   ]
-
-
-    //   this.overallOverdueIssuesHeader = `8 OVERDUE ISSUES recorded`
-    //   this.overallOverdueIssuesContent = `out of 15 ongoing issues `
-
-
-    //   this.overdueIssByEmailsLabels = ['emailAcc1', "emailAcc2", "emailAcc3"]
-    //   for (let i of this.overdueIssByEmailsLabels){
-    //     this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
-    //   }
-
-    //   this.overdueIssByEmailsData = [3,4,5]
-
-
-      this.getDataForStatCards()
-      this.getDataForOverallEfficiencyandEffectivenessDntChart()
-      this.getDataForEfficiencyDstriandEffectivenessDistri()
-      this.getDataForIssueandInquiryTypes()
-      this.getDataForIssuenadInquiryByProducts()
-      this.getDataForEfficiencyByEmaiAcss()
-      this.getOverdueIssuesdata()
+    this.subscribeALL()
 
       
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['intervalInDaysStart'] || changes['intervalInDaysEnd']) {
+      this.unsubscribeAll();
+      this.subscribeALL();
+    }
+  }
+
+   ngOnDestroy(): void {
+    this.unsubscribeAll()
+    
+  }
+
+
 
   
 onRangeDatesChanged(rangeDates: Date[]) {
@@ -296,31 +237,56 @@ onRangeDatesChanged(rangeDates: Date[]) {
 
   console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
   
+  this.unsubscribeAll()
+  this.subscribeALL()
+
+
+
+}
+
+subscribeALL(){
   this.getDataForStatCards()
+  this.getDataForEmailAccCards()
   this.getDataForOverallEfficiencyandEffectivenessDntChart()
-  this.getDataForEfficiencyDstriandEffectivenessDistri()
-  this.getDataForIssueandInquiryTypes()
+  this.getDataForGaugeChart()
   this.getDataForIssuenadInquiryByProducts()
-  this.getDataForEfficiencyByEmaiAcss()
-  this.getOverdueIssuesdata()
-  // this.getCurrentOverallSentiments()
-  // this.getDataForTopicsCloud()
-  // this.getDataForStatCards()
-  // this.getDataForSentimentsByTopic()
-  // this.getDataForSentimentsByTime()
-  // this.getDataForWordCloud()
-  // this.getDataForSentimentsDistribtuionOfTopics()
-  // this.getDataForGaugeChart()
+}
+
+unsubscribeAll(){
+  this.statCardsSubscription?.unsubscribe();
+  this.CurrentOverallEfficiencyandEffectivenessSubscription?.unsubscribe();
+  this.DataForStatCardsSubscription?.unsubscribe();
+  this.DataForGaugeChartSubscription?.unsubscribe();
+  this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
+
+  // this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
+  // this.DataForEfficiencyByEmailAccSubscription?.unsubscribe();
+  // this.BestPerformingEmailSubscription?.unsubscribe();
+  // this.OverdueIssuesdataSubscription?.unsubscribe();
+}
+
+getDataForEmailAccCards(){
+  
+  this.isLoadingEmailCards = true
+  this.DataForStatCardsSubscription = this.dataService.getDataForEmailCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
+  console.log("DATA FOR EMAIL ACC CARDS",data)
+  this.EmailAccData = data
+
+  this.isLoadingEmailCards = false
+     
+ });
+
 }
 
 getDataForStatCards(){
   
-  this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
-  console.log(data)
-  this.statsData[0].title = data.count_total_ongoing_issues
-  this.statsData[1].title = data.count_total_closed_issues
-  this.statsData[2].title = data.count_total_ongoing_inquiries
-  this.statsData[3].title = data.count_total_closed_inquiries
+  this.statCardsSubscription =  this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
+  console.log("ISSUE AND INQUIRY COUNT DATA", data)
+
+  this.openedIssuesCount = data.count_total_ongoing_issues
+  this.closedIssuesCount = data.count_total_closed_issues
+  this.openedInquiriesCount = data.count_total_ongoing_inquiries
+  this.closedInquiriesCount = data.count_total_closed_inquiries
 
   // get data for the progress donought chart
 
@@ -340,11 +306,11 @@ getDataForStatCards(){
 getDataForOverallEfficiencyandEffectivenessDntChart(){
 
 
-  this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
+  this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
     console.log("data for overall efficiency and effectiveness", data)
-    this.dntChartDataOverallEfficiency = [0,0,40,60]
+    this.dntChartDataOverallEfficiency = data.efficiency_percentages
     this.dntChartOverallEfficiencyLabels= data.efficiency_categories.reverse()
-    this.dntChartDataOverallEffeftiveness= [0,0,30,70]
+    this.dntChartDataOverallEffeftiveness= data.effectiveness_percentages
     this.dntChartOverallEffectivenessLabels = data.effectiveness_categories.reverse()
 
     this.isLoadingDCOverallEfficiency = false
@@ -354,101 +320,49 @@ getDataForOverallEfficiencyandEffectivenessDntChart(){
    });
 }
 
-getDataForEfficiencyDstriandEffectivenessDistri(){
+// getDataForEfficiencyDstriandEffectivenessDistri(){
    
-  let effi_issue_data: number[] = [] 
-  let effec_issue_date: number[] = []
-  this.dataService.getDataForEffiandEffecIssues(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssuesByEfficiencyEffectivenessResponse) => {
-    console.log("data for efficency and effectiveness of ISSUES DISTRIBUTION", data)
+//   let effi_issue_data: number[] = [] 
+//   let effec_issue_date: number[] = []
+//   this.DataForEffiandEffecIssuesSubscription = this.dataService.getDataForEffiandEffecIssues(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssuesByEfficiencyEffectivenessResponse) => {
+//     console.log("data for efficency and effectiveness of ISSUES DISTRIBUTION", data)
 
-    effi_issue_data = data.efficiency_frequencies
-    effec_issue_date = data.effectiveness_frequencies
+//     effi_issue_data = data.efficiency_frequencies
+//     effec_issue_date = data.effectiveness_frequencies
 
        
-   });
+//    });
 
-   this.dataService.getDataForEffiandEffecInquiries(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: InquiriesByEfficiencyEffectivenessResponse) => {
-    console.log("data for efficiency and effectiveness of INQUIRIES DISTRIBUTION", data)
+//    this.DataForEffiandEffecInquiriesSubscription = this.dataService.getDataForEffiandEffecInquiries(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: InquiriesByEfficiencyEffectivenessResponse) => {
+//     console.log("data for efficiency and effectiveness of INQUIRIES DISTRIBUTION", data)
     
-    this.effi_dstri_vert_bar_labels = data.efficiency_categories
-    this.effect_dstri_vert_bar_labels = data.effectiveness_categories
-    this.effi_distri_vert_var_inquiries_data = data.efficiency_frequencies
-    this.effect_distri_vert_var_inquiries_data = data.effectiveness_frequencies
-    this.effect_distri_vert_var_issues_data = effec_issue_date
-    this.effi_distri_vert_var_issues_data = effi_issue_data
+//     this.effi_dstri_vert_bar_labels = data.efficiency_categories
+//     this.effect_dstri_vert_bar_labels = data.effectiveness_categories
+//     this.effi_distri_vert_var_inquiries_data = data.efficiency_frequencies
+//     this.effect_distri_vert_var_inquiries_data = data.effectiveness_frequencies
+//     this.effect_distri_vert_var_issues_data = effec_issue_date
+//     this.effi_distri_vert_var_issues_data = effi_issue_data
 
-     this.isLoadingEffiDistri = false
-     this.isLoadingEffectDistri = false
+//      this.isLoadingEffiDistri = false
+//      this.isLoadingEffectDistri = false
       
-   });
+//    });
 
   
-}
-
-getDataForIssueandInquiryTypes(){
-  
- 
-  this.dataService.getDataForIssueandInquiryTypes(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssueInquiryFreqByTypeResponse) => {
-    console.log("data for issue and inquiry types",data)
-
-    this.issue_types_distri_labels = data.issue_type_labels
+// }
 
 
-    this.issue_types_distri_labels.forEach((label, index) => {
-      this.issue_types_distri_colors.push( this.documentStyle.getPropertyValue('--issue-color'));
-    });
-    
-
-    this.issue_types_distri_data = data.issue_type_frequencies   
-
-    this.inquiry_types_distri_labels =  data.inquiry_type_labels
-
-    this.inquiry_types_distri_labels.forEach((label, index) => {
-      this.inquiry_types_distri_colors.push(this.documentStyle.getPropertyValue('--inquiry-color'));
-    });
-
-    this.inquiry_types_distri_data = data.inquiry_type_frequencies
-
-    this.isLoadingIssueTypes = false
-    this.isLoadingInquiryTypes =  false
-
-
-   });
-
-
-   
-}
 
 getDataForIssuenadInquiryByProducts(){
 
-  this.dataService.getDataForProductsByIssueandInquiry(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssueInquiryFreqByProdcuts) => {
+  this.DataForProductsByIssueandInquirySubscription = this.dataService.getDataForProductsByIssueandInquiry(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssueInquiryFreqByProdcuts) => {
     console.log("data for Isseus and Inquiries by PRODUCTSSSSSS",data)
     
-    // ]
+    this.products_labels = data.product_labels
+    this.products_performance_scores = data.performence_scores
 
-      this.prodcuts_distri_of_issues_and_inquiries_labels = data.product_labels
-      this.prodcuts_distri_of_issues_and_inquiries_datasets = [
-        {
-          type: 'bar',
-          label: 'No of Issues',
-          backgroundColor: this.documentStyle.getPropertyValue('--issue-color'),
-          data: data.issue_freq
-      },
-      {
-          type: 'bar',
-          label: 'No of Inquiries',
-          backgroundColor: this.documentStyle.getPropertyValue('--inquiry-color'),
-          data: data.issue_freq
-      }
-
-      ]
-
-    this.bestProduct = data.best_product
-    this.worstProduct = data.worst_product
-
-    this.isLoadingBestProduct = false
-    this.isLoadingWorstProduct = false
-    this.isLoadingProductdistriOfIssuesnInquirires = false
+    this.isProductPerformanceChart = false
+    
 
 
 
@@ -457,82 +371,93 @@ getDataForIssuenadInquiryByProducts(){
 
 }
 
-getDataForEfficiencyByEmaiAcss(){
+// getDataForEfficiencyByEmaiAcss(){
 
   
-  this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
-    console.log("EFFICiency by emaila acc data", data)
+//   this.DataForEfficiencyByEmailAccSubscription = this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
+//     console.log("EFFICiency by emaila acc data", data)
     
-    this.email_acc_effi_labels = data.all_reading_email_accs
-    this.email_acc_effi_dataset = [
-      {
-        type: 'bar',
-        label: 'Inefficient Percentage',
-        backgroundColor:  this.documentStyle.getPropertyValue('--inefficient-color'),
-        data: data.ineff_percentages
-    },
-    {
-        type: 'bar',
-        label: 'Less Efficient Percentage',
-        backgroundColor: this.documentStyle.getPropertyValue('--less-efficient-color'),
-        data: data.less_eff_percentages
-    },
-    {
-      type: 'bar',
-      label: 'Moderately Efficient Percentage',
-      backgroundColor:   this.documentStyle.getPropertyValue('--moderately-efficient-color'),
-      data: data.mod_eff_percentages
-  },
-  {
-      type: 'bar',
-      label: 'High Efficient Percentage',
-      backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
-      // backgroundColor: "rgba(17, 193, 14, 0.9)",
-      data: data.highly_eff_percentages
-  }
+//     this.email_acc_effi_labels = data.all_reading_email_accs
+//     this.email_acc_effi_dataset = [
+//       {
+//         type: 'bar',
+//         label: 'Inefficient Percentage',
+//         backgroundColor:  this.documentStyle.getPropertyValue('--inefficient-color'),
+//         data: data.ineff_percentages
+//     },
+//     {
+//         type: 'bar',
+//         label: 'Less Efficient Percentage',
+//         backgroundColor: this.documentStyle.getPropertyValue('--less-efficient-color'),
+//         data: data.less_eff_percentages
+//     },
+//     {
+//       type: 'bar',
+//       label: 'Moderately Efficient Percentage',
+//       backgroundColor:   this.documentStyle.getPropertyValue('--moderately-efficient-color'),
+//       data: data.mod_eff_percentages
+//   },
+//   {
+//       type: 'bar',
+//       label: 'High Efficient Percentage',
+//       backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
+//       // backgroundColor: "rgba(17, 193, 14, 0.9)",
+//       data: data.highly_eff_percentages
+//   }
 
-    ]
+//     ]
 
-    this.isLoadingEffiByEmailAcc = false
-  });
-
-
-}
-
-getBestPerformingEmail(){
+//     this.isLoadingEffiByEmailAcc = false
+//   });
 
 
-  this.dataService.getBestPerformingEmail(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: BestPerformingEmailAccResponse) => {
-    console.log("best performing email account", data)
+// }
+
+// getBestPerformingEmail(){
+
+
+//   this.BestPerformingEmailSubscription = this.dataService.getBestPerformingEmail(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: BestPerformingEmailAccResponse) => {
+//     console.log("best performing email account", data)
  
-    this.bestEmail = data.best_performing_email_acc
-    this.isLoadingBestPerfEmail = false
+//     this.bestEmail = data.best_performing_email_acc
+//     this.isLoadingBestPerfEmail = false
   
        
-   });
-}
+//    });
+// }
 
 
-getOverdueIssuesdata(){
+// getOverdueIssuesdata(){
   
 
-  this.dataService.getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverdueIssuesResponse) => {
-    console.log("overdue issues related DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa", data)
+//   this.OverdueIssuesdataSubscription = this.dataService.getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverdueIssuesResponse) => {
+//     console.log("overdue issues related DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa", data)
  
-    this.overallOverdueIssuesHeader = `${data.sum_overdue_issues} OVERDUE ISSUES recorded`
-    this.overallOverdueIssuesContent = `out of ${data.total_ongoing_issues} ongoing issues `
-    this.isLoadingoverallOverdueIssuesCount = false
+//     this.overallOverdueIssuesHeader = `${data.sum_overdue_issues} OVERDUE ISSUES recorded`
+//     this.overallOverdueIssuesContent = `out of ${data.total_ongoing_issues} ongoing issues `
+//     this.isLoadingoverallOverdueIssuesCount = false
     
-    this.overdueIssByEmailsLabels = data.all_reading_email_accs
-    this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email
-    this.overdueIssByEmailsColors = []
-    for (let i of this.overdueIssByEmailsLabels){
-      this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
-    }
-    this.isLoadingOverdueIssByEmailAcc = false
+//     this.overdueIssByEmailsLabels = data.all_reading_email_accs
+//     this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email
+//     this.overdueIssByEmailsColors = []
+//     for (let i of this.overdueIssByEmailsLabels){
+//       this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
+//     }
+//     this.isLoadingOverdueIssByEmailAcc = false
   
        
-   });
-}
+//    });
+// }
 
+getDataForGaugeChart() {
+  this.isLoadingGC = true; // Set loading indicator to true before making the request
+
+  this.DataForGaugeChartSubscription = this.dataService.getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
+    .subscribe((data: GaugeChartResponse) => {
+      console.log("gauge chart data", data.value)
+      this.dataValue_forGaugeStart = data.value
+      console.log("datavaluefor gauge chart", this.dataValue_forGaugeStart)
+      this.isLoadingGC = false;
+    });
+}
 }

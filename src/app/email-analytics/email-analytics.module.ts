@@ -96,7 +96,11 @@ import { DashboardAccountInsightsComponent } from './components/dashboard-accoun
 import { DashboardProductInsightsComponent } from './components/dashboard-product-insights/dashboard-product-insights.component';
 import { DashboardIssueInquiryComponent } from './components/dashboard-issue-inquiry/dashboard-issue-inquiry.component';
 import { DashboardTimeGraphComponent } from './components/dashboard-time-graph/dashboard-time-graph.component';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { SelectButtonModule } from 'primeng/selectbutton';import { PerformanceInsightsDashboardComponent } from './components/performance-insights-dashboard/performance-insights-dashboard.component';
+import { PopUpProductInsightsDashboardComponent } from './components/pop-up-product-insights-dashboard/pop-up-product-insights-dashboard.component';
+import { PopUpIssuesAndInquiryInsightsDashboardComponent } from './components/pop-up-issues-and-inquiry-insights-dashboard/pop-up-issues-and-inquiry-insights-dashboard.component';
+import { PopUpEmailAccountInsightsDashboardComponent } from './components/pop-up-email-account-insights-dashboard/pop-up-email-account-insights-dashboard.component';
+
 
 @NgModule({
   declarations: [
@@ -150,6 +154,10 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     DashboardProductInsightsComponent,
     DashboardIssueInquiryComponent,
     DashboardTimeGraphComponent,
+    PerformanceInsightsDashboardComponent,
+    PopUpProductInsightsDashboardComponent,
+    PopUpIssuesAndInquiryInsightsDashboardComponent,
+    PopUpEmailAccountInsightsDashboardComponent,
   ],
   imports: [
     CommonModule,

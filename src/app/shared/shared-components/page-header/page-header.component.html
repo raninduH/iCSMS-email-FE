@@ -23,6 +23,16 @@
     </p-calendar>
 
     <p-calendar
+    [(ngModel)]="rangeDates"
+    selectionMode="range"
+    [readonlyInput]="true"
+    [showIcon]="true"
+    class="z-10"
+    (ngModelChange)="onDateRangeChangeNotifications()"
+     *ngIf="mainDashboardNotification">
+  </p-calendar>
+
+    <p-calendar
       [(ngModel)]="rangeDates"
       selectionMode="range"
       [readonlyInput]="true"
@@ -30,15 +40,37 @@
       class="z-10"
       (ngModelChange)="onRangeDateChange($event)"
       [minDate]="minDate"
-      [maxDate]="maxDate" *ngIf="!mainDashboardDate">
+      [maxDate]="maxDate" *ngIf="!mainDashboardDate && !callDashboardDate &&!mainDashboardNotification && !emailDashboardDate">
     </p-calendar>
 
-  </div>
-  
+    
+    <p-calendar
+      [(ngModel)]="emailDates"
+      selectionMode="range"
+      [readonlyInput]="true"
+      [showIcon]="true"
+      class="z-10"
+      (ngModelChange)="onRangeDateChange($event)"
+      [minDate]="minDate"
+      [maxDate]="maxDate" *ngIf="emailDashboardDate">
+    </p-calendar>
 
-  <div class="w-fit">
-    <app-right-sidebar [showAddMemberButton]="showAddMemberButton" [showAddWidgetButton]="showAddWidgetButton" [showAddRoleButton]="showAddRoleButton"></app-right-sidebar>
+    <p-calendar
+      [(ngModel)]="callDateRange"
+      selectionMode="range"
+      [readonlyInput]="true"
+      [showIcon]="true"
+      [showButtonBar]="true"
+      (ngModelChange)="onRangeSelect($event)"
+      *ngIf="callDashboardDate">   <-- Check if hide or show
+    </p-calendar>
   </div>
+
+
+  <ng-container class="w-fit" *ngIf="showRightSideBarButtons">
+    <app-right-sidebar [showAddMemberButton]="showAddMemberButton" [showAddWidgetButton]="showAddWidgetButton"
+                       [showAddRoleButton]="showAddRoleButton"></app-right-sidebar>
+  </ng-container>
 
   <!-- <ng-container ngIf="showAddMemberButton">
     <app-right-sidebar [showAddMemberButton]="showAddMemberButton"></app-right-sidebar>
@@ -47,8 +79,6 @@
   <ng-container ngIf="showAddRoleButton">
     <app-right-sidebar [showAddRoleButton]="showAddRoleButton"></app-right-sidebar>
   </ng-container> -->
-
-  
 
 </div>
 <p-divider></p-divider>

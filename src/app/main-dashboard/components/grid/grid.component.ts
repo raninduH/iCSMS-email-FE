@@ -1,6 +1,6 @@
 import {Component, Input, OnInit,Injector,ViewChild} from '@angular/core';
-import {GridsterConfig, GridsterItem, GridsterItemComponentInterface} from 'angular-gridster2';
-import { DisplayGrid, Draggable, PushDirections, Resizable} from 'angular-gridster2';
+import {GridsterConfig, GridsterItem} from 'angular-gridster2';
+import { DisplayGrid, Draggable, PushDirections, Resizable, GridType} from 'angular-gridster2';
 import { ChartData, ChartOptions } from 'chart.js';
 import {LineAreaChartComponent} from "../charts/line-area-chart/line-area-chart.component";
 import {GaugeChartComponent} from "../charts/gauge-chart/gauge-chart.component";
@@ -13,6 +13,8 @@ import { timer } from 'rxjs';
 import {MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
 import { AuthenticationService } from '../../../auth/services/authentication.service';
+import { GridsterItemComponentInterface } from 'angular-gridster2';
+
 interface Product {
   id: number;
   title: string;
@@ -39,9 +41,7 @@ interface Safe extends GridsterConfig {
   resizable: Resizable;
   pushDirections: PushDirections;
 }
-interface Safe extends GridsterConfig {
-  resizable: Resizable;
-}
+
 
 @Component({
   selector: 'app-grid',
@@ -50,7 +50,7 @@ interface Safe extends GridsterConfig {
 })
 
 export class GridComponent implements OnInit {
-  
+
   chartIcons: { [key: string]: string } = {
     'Bar Chart': 'pi pi-chart-bar', // Replace with your actual paths
     'Line Chart': 'pi pi-chart-line',
@@ -93,6 +93,8 @@ export class GridComponent implements OnInit {
 
   ChartSources:any;
 
+  menuItems: any[] = [];
+
   widgetData:any;
 
   @Input() userChartInfo: {
@@ -103,7 +105,7 @@ export class GridComponent implements OnInit {
 
 
   @Input() changes: boolean=false;
-  
+
   private socketSubscription: Subscription | undefined;
 
   constructor(private injector: Injector,
@@ -113,9 +115,20 @@ export class GridComponent implements OnInit {
     ,private authService:AuthenticationService
     ) {}
   ngOnInit(): void {
+    this.menuItems = [
+        {
+          label: 'Settings',
+          command: () => console.log('Settings')
+        },
+        {
+          label: 'Another Action',
+          command: () => console.log('Another Action')
+        },
+        // add more menu items here
+      ];
     this.gridStart = 0;
     this.widgetsUser();
-    
+
     timer(0,1000).subscribe(() => {
         if(this.changes){
           this.widgetsUser();
@@ -125,8 +138,8 @@ export class GridComponent implements OnInit {
 
     this.socketSubscription = this.ChartService.messages$.subscribe(
       message => {
-
         if (message.response === 'data') {
+          this.chartDataGet();
           this.dashboard.forEach((widget:any) => {
             if (widget.chartType === 'Pie Chart' && widget.sources.includes(message.name)) {
               widget.changes = true;
@@ -137,18 +150,17 @@ export class GridComponent implements OnInit {
             }
             if (widget.chartType === 'Line Chart' && widget.sources.includes(message.name)) {
               widget.changes = true;
- 
+
             }
             if (widget.chartType === 'Word Cloud' && widget.sources.includes(message.name)) {
               widget.changes = true;
             }
-            
+
           });
 
         }
       }
     );
-    // console.log(this.userChartInfo);
     this.grid();
     this.gridStart=1;
 }
@@ -190,7 +202,7 @@ saveStatus(item:any,status:string){
     );
   });
   }
-  
+
   saveLayout(change:any): void {
     this.authService.getIdToken().subscribe((token) =>{
     this.ChartService.saveGridLayout(token,change).subscribe(
@@ -218,26 +230,24 @@ gridDeleteConfirmed(id:any,title:string) {
     icon: 'pi pi-exclamation-triangle',
     accept: () => {
       this.authService.getIdToken().subscribe((token) =>{
-      this.ChartService.gridDeleted(id.id,token).subscribe(
+      this.ChartService.gridDeleted(id,token).subscribe(
         response => {
-          this.dashboard.splice(this.dashboard.indexOf(id), 1);
-          this.gridList.splice(this.gridList.indexOf(id), 1);
-          this.showMessage("Grid Deleted");
+          if(response!=false){
+            this.dashboard.splice(this.dashboard.indexOf(id), 1);
+            this.gridList.splice(this.gridList.indexOf(id), 1);
+            this.showMessage("Grid Deleted");
+          }
+
         },
-        error => {
-          // console.error('Error saving grid layout:', error);
-        }
       );
     });
-      
+
     },
     reject: () => {
       // Logic for rejection (optional)
     }
   });
-  // Logic to handle deletion confirmation
-  
-  // Optionally perform any action or update data in the parent component
+
 }
 
 
@@ -251,24 +261,22 @@ showMessage(detail: string) {
 chartDataGet(): void {
   this.authService.getIdToken().subscribe((token) =>{
   this.ChartService.chartData(token).subscribe(
-    (response) => {      
+    (response) => {
       caches.open('all-data').then(cache => {
         cache.match('data').then((cachedResponse) => {
           if (cachedResponse) {
             cachedResponse.json().then((cachedData: any) => {
-              // Compare the response with the cached data
+  
               if (!this.isEqual(response, cachedData)) {
-                // Update only the changed data in the cache
-                // const updatedData = { ...cachedData, ...response };
+
                 const dataResponse = new Response(JSON.stringify(response), {
                   headers: { 'Content-Type': 'application/json' }
                 });
                 cache.put('data', dataResponse);
-                // this.DataCacheChange = true;
               }
             });
           } else {
-            // Cache the response if no cached data exists
+
             const dataResponse = new Response(JSON.stringify(response), {
               headers: { 'Content-Type': 'application/json' }
             });
@@ -277,12 +285,8 @@ chartDataGet(): void {
         });
       });
     },
-    // (error) => {
-    //   console.error('Error fetching doughnut chart data:', error);
-    // } 
   );
-
-});
+  });
 }
 
 isEqual(obj1: any, obj2: any): boolean {
@@ -301,31 +305,35 @@ isEqual(obj1: any, obj2: any): boolean {
 }
 
 onChanges(event: boolean, index: number): void {
-  if (event === false) {
-    this.dashboard[index]['changes'] = false;
-  }
+
 }
+
 
 
 grid(){
   this.options = {
-    gridType: "scrollVertical",
+    gridType: GridType.ScrollVertical,
     compactType: "compactUp",
     // margin: 10,
     // outerMargin: true,
     // outerMarginTop: null,
     // outerMarginRight: null,
     // outerMarginBottom: null,
-    minCols: 6,
+
+    // min/max cols/rows in grid
+    minCols: 7,
     maxCols: 7,
+
     minRows: 6,
     maxRows: 80,
-    maxItemCols: 7,
-    minItemCols: 1,
-    maxItemRows: 10,
-    minItemRows: 1,
-    maxItemArea: 25,
-    minItemArea: 8,
+
+    // min/max item cols/rows
+    maxItemCols: 6,
+    maxItemRows: 6,
+
+    minItemCols: 2,
+    minItemRows: 2,
+
     defaultItemCols: 1,
     defaultItemRows: 1,
     fixedColWidth: 20,
@@ -349,7 +357,7 @@ grid(){
         ne: false,
         sw: false,
         nw: false,
-      }
+      },
     },
     swap: true,
     pushItems: true,
@@ -359,7 +367,7 @@ grid(){
     // enableBoundaryControl:true,
     pushDirections: {north: true, east: true, south: true, west: true},
     pushResizeItems: false,
-    displayGrid: DisplayGrid.None,
+    displayGrid: DisplayGrid.OnDragAndResize,
     disableAutoPositionOnConflict:false,
     // disableWindowResize:false,
     disableWarnings: true,
@@ -368,7 +376,8 @@ grid(){
     disableScrollHorizontal:true,
 
     //janith
-    itemResizeCallback: this.itemResize.bind(this), // Add this line
+    setGridSize: true,
+    margin:20,
     itemChangeCallback: this.itemChange.bind(this),
   };
 
@@ -420,6 +429,11 @@ widgetsUser(){
   });
 }
 
+  onresize(event: any): void {
+    console.log('Element was resized', event);
+  }
+
+
 
 
 processGridData(titles: string[], chartTypes: string[], sources: any[], grids: any[],ids:any[],topic:any[],yAxis:any[],xAxis:any[],status:any[]): any[] {
@@ -441,7 +455,6 @@ processGridData(titles: string[], chartTypes: string[], sources: any[], grids: a
       y: grid.y,
       x: grid.x,
       chartType: chartType,
-      initialRatio: Math.round(grid.cols / grid.rows),
       sources: source,
       title,
       changes:false,
@@ -453,7 +466,7 @@ processGridData(titles: string[], chartTypes: string[], sources: any[], grids: a
     };
 
     datasetList.push(dataset);
-    
+
     // Populate the changedList object
     if (!changedList[title]) {
       changedList[title] = [];
@@ -464,6 +477,7 @@ processGridData(titles: string[], chartTypes: string[], sources: any[], grids: a
   // this.ChartSources=changedList;
 
   return [datasetList, changedList ];
+
 }
 
 
@@ -483,12 +497,13 @@ processGridData(titles: string[], chartTypes: string[], sources: any[], grids: a
         return DoughnutChartComponent;
       case 'word-cloud':
         return WordcloudComponent;
-        
+
       default:
         throw new Error(`Unknown chart type: ${chartType}`);
     }
   }
 
+  
 resize(event: Event, item: GridsterItem): void {
   // Calculate the new ratio in real-time
   const newRatio = item.cols / item.rows;
@@ -540,6 +555,7 @@ itemResize(item: GridsterItem, itemComponent: GridsterItemComponentInterface): v
 itemChange(item: GridsterItem, itemComponent: GridsterItemComponentInterface): void {
   // This method will be called when the item is moved or resized
 
+  console.log(item);
   if (item && this.gridStart==1){
     const change = {
       id: item["id"],   // Assuming item.key is the unique identifier
@@ -549,7 +565,7 @@ itemChange(item: GridsterItem, itemComponent: GridsterItemComponentInterface): v
       y: item.y
       // Add other properties as needed
     };
-    
+
     const existingChangeIndex = this.changesQueue.findIndex(c => c.id === change.id);
     if (existingChangeIndex !== -1) {
       this.changesQueue[existingChangeIndex] = change;
@@ -558,14 +574,44 @@ itemChange(item: GridsterItem, itemComponent: GridsterItemComponentInterface): v
     }
 
     // Debounce or delay sending changes to backend for efficiency
-    clearTimeout(this.timeoutId); // Clear previous timeout if any
-    this.timeoutId = setTimeout(() => this.saveLayout(this.changesQueue), 1000); // Delay sending changes for 1 second
+    clearTimeout(this.timeoutId);
+    this.timeoutId = setTimeout(() => {
+      this.saveLayout(this.changesQueue);
+      this.updateCache(this.changesQueue);
+    }, 1000);
 
     
   }
-  
-
 }
+
+updateCache(changesQueue: { id: string, cols: number, rows: number, x: number, y: number }[]): void {
+  caches.open('widgets').then(cache => {
+    cache.match('widgets-data').then(cachedResponse => {
+      if (cachedResponse) {
+        cachedResponse.json().then((data: any[]) => {
+          changesQueue.forEach(change => {
+            const index = data.findIndex(item => item.id === change.id);
+            if (index !== -1) {
+              data[index].grid.cols = change.cols;
+              data[index].grid.rows = change.rows;
+              data[index].grid.x = change.x;
+              data[index].grid.y = change.y;
+            }
+          });
+
+          const updatedResponse = new Response(JSON.stringify(data));
+          cache.put('widgets-data', updatedResponse);
+          console.log(data);
+        });
+      }
+    });
+  });
+}
+  openSettings(item: any) {
+  // Open the settings dialog for the clicked grid item
+  // ...
+}
+
 
 
 

@@ -50,10 +50,10 @@ export class DataService {
   }
 
 
-getDataForGaugeChart(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<GaugeChartResponse> {
+  getDataForGaugeChart(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<GaugeChartResponse> {
   const url = `${this.baseUrl}/get_data_value_for_gauge_chart?intervalInDaysStart=${intervalInDaysStart}&intervalInDaysEnd=${intervalInDaysEnd}`;
   return this.http.get<GaugeChartResponse>(url);
-}
+  }
 
 
 
