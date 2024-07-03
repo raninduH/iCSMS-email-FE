@@ -26,14 +26,23 @@ export class LineChartInstagramComponent {
       .subscribe(
         (data: any) => {
           console.log(data);
-          
+
+          const convertDateFormat = (dateString: string): string => {
+            const date = new Date(dateString);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${month}-${day}`;
+          };
+
+          const labels = Object.keys(data['1']).map(dateString => convertDateFormat(dateString));
+
           this.data = {
             labels: Object.keys(data['1']),
             datasets: [
               {
                 label: 'Reacts',
                 data: Object.values(data['1']),
-                borderColor: document.documentElement.style.getPropertyValue('--yellow-500'),
+                borderColor: document.documentElement.style.getPropertyValue('rgb(234, 179, 8)'),
               },
               {
                 label: 'Comments',
