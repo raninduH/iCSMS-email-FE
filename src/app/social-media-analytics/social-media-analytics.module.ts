@@ -21,6 +21,7 @@ import { ChipsModule } from 'primeng/chips';
 import { TabViewModule } from 'primeng/tabview';
 import { CardModule } from 'primeng/card';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { SkeletonModule } from 'primeng/skeleton';
 
 import { DashboardComponent } from "./pages/dashboard/dashboard.component";
 import { CAComponent } from "./pages/campaign-analysis/ca.component";
@@ -44,6 +45,8 @@ import { GaugeChartInstagramComponent } from './components/charts/gauge-chart-in
 import { GaugeChartFacebookComponent } from './components/charts/gauge-chart-facebook/gauge-chart-facebook.component';
 import { ModalExportPIComponent } from './components/Modals/modal-export-pi/modal-export-pi.component';
 import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
+import { ModalSetAlertComponent } from './components/Modals/modal-set-alert/modal-set-alert.component';
+import { ModalSetThresholdComponent } from './components/Modals/modal-set-threshold/modal-set-threshold.component';
 
 
 @NgModule({
@@ -71,8 +74,11 @@ import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-
     GaugeChartInstagramComponent,
     GaugeChartFacebookComponent
     
+  
+    
   ],
   imports: [
+    SkeletonModule,
     PanelModule,
     CommonModule,
     SharedModule,
@@ -101,6 +107,8 @@ import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-
     ButtonModule,
     ModalExportPIComponent,
     ModalAddNewCampaignComponent,
+    ModalSetAlertComponent,
+    ModalSetThresholdComponent,
     NgxEchartsModule.forRoot({echarts: () => import('echarts')}),
   ]
 })
