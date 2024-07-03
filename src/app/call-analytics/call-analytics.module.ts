@@ -118,9 +118,7 @@ import { PasswordModule } from "primeng/password";
         MultiSelectModule,
         PasswordModule
     ],
-  providers: [
-    CallAnalyticsService
-  ]
+  providers: []
 })
 export class CallAnalyticsModule {
 }
