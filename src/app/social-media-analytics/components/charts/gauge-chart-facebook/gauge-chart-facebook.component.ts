@@ -30,14 +30,14 @@ export class GaugeChartFacebookComponent implements OnInit {
           endAngle: 0,
           center: ['50%', '75%'],
           radius: '90%',
-          min: -1,
+          min: 0,
           max: 1,
           axisLine: {
             lineStyle: {
               width: 30,
               color: [
-                [-0.7, '#db0b0b'],
-                [0.3, '#ffdc28'],
+                [0.15, '#db0b0b'],
+                [0.65, '#ffdc28'],
                 [1, '#44c022'],
               ]
             }
