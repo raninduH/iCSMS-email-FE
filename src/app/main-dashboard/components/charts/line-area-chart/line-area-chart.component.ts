@@ -177,9 +177,16 @@ export class LineAreaChartComponent implements OnInit,OnChanges {
     this.deletedConfirmed.emit();
   }
 
-  onEdit(){
-    console.log('Edit');
-  }
+  
+edit:boolean=false;
+onEdit(){
+    this.edit=true;
+  
+}
+
+editOff(){
+  this.edit=false;
+}
 
  confirmDeleted() {
         console.log('confirm button');

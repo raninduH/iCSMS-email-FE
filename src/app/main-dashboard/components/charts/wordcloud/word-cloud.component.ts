@@ -125,8 +125,15 @@ export class WordcloudComponent implements OnInit, OnChanges{
     this.deletedConfirmed.emit();
   }
 
+
+  edit:boolean=false;
   onEdit(){
-    console.log('Edit');
+      this.edit=true;
+    
+  }
+
+  editOff(){
+    this.edit=false;
   }
 
  confirmDeleted() {
