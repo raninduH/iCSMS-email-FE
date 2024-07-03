@@ -30,27 +30,24 @@ export class SettingsApiService {
     return this.http.get<any>(`${this.apiUrl}/sentiment_shifts`);
   }
 
-  setKeywordAlerts(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/keyword_alerts`, data);
+  setCampaigns(data: any): Observable<any> {
+    return this.http.post<any>(`${socialMediaBackendAPI}/social-media/campaign-analysis/create-campaign`, data, { headers: headers });
   }
 
-  setCampaigns(data: any): Observable<any> {
-    return this.http.post<any>('http://127.0.0.1:8000/social-media/campaign-analysis/create-campaign', data, { headers: headers });
-  }
   setTopicAlerts(data: any): Observable<any> {
-    return this.http.post<any>(`http://127.0.0.1:8000/social-media/settings/add_topic_alert`, data, { headers: headers });
+    return this.http.post<any>(`${this.apiUrl}/add_product_alert`, data, { headers: headers });
   }
   
   setSentimentShift(data: any): Observable<any> {
-    return this.http.post<any>(`http://127.0.0.1:8000/social-media/settings/add_sentiment_shift_threshold`, data, { headers: headers });
+    return this.http.post<any>(`${this.apiUrl}/add_sentiment_shift_threshold`, data, { headers: headers });
   }
 
   updateTopicAlerts(id: string, data: any): Observable<any> {
-    return this.http.put<any>(`http://127.0.0.1:8000/social-media/settings/product_alert/${id}`, data, { headers: headers });
+    return this.http.put<any>(`${this.apiUrl}/product_alert/${id}`, data, { headers: headers });
   }
 
   updateSentimentShift(id: string, data: any): Observable<any> {
-    return this.http.put<any>(`http://127.0.0.1:8000/social-media/settings/sentiment_shift_threshold/${id}`, data, { headers: headers });
+    return this.http.put<any>(`${this.apiUrl}/sentiment_shift_threshold/${id}`, data, { headers: headers });
   }
 
 }
