@@ -40,6 +40,11 @@ getSentimentScoreFacebook(startDate:string,endDate:string):Observable<any>{
   
 }
 
+getSentimentScoreInstagram(startDate:string,endDate:string):Observable<any>{
+  return this.http.get<any>(`${this.apiUrl}/sentimentscore_instagram?startDate=${startDate}&endDate=${endDate}`);
+  
+}
+
 
 
  

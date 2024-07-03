@@ -1,10 +1,12 @@
-<app-page-header pageTitle="Social Media Analytics Dashboard" class="w-full h-fit" [breadcrumbItems]="breadcrumbItems" />
+<app-page-header pageTitle="Social Media Analytics Dashboard" class="w-full h-fit" [breadcrumbItems]="breadcrumbItems" [showDatePicker]="true" [callDashboardDate]="true"
+                 (callDateRangeChanged)="DateChanged($event[0], $event[1])" />
 
 <div class="flex flex-col">
   <div class="flex gap-4 flex-wrap">
 
     <doughnut-chart title="Overall Sentiment" [percentages]="data_doughnut" />
     <app-gauge-chart-facebook />
+    <app-gauge-chart-instagram/>
 
     <word-cloud-topics [words]="myData1" title="Product Trends"/>
 
