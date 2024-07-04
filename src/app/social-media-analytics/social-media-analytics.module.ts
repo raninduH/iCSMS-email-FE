@@ -47,6 +47,7 @@ import { ModalExportPIComponent } from './components/Modals/modal-export-pi/moda
 import { ModalCampaignComponent } from './components/Modals/modal-campaign/modal-campaign.component';
 import { ModalAlertComponent } from './components/Modals/modal-alert/modal-alert.component';
 import { ModalThresholdComponent } from './components/Modals/modal-threshold/modal-threshold.component';
+import { ComparisonInsightComponent } from './components/Modals/comparison-insight/comparison-insight.component';
 
 
 @NgModule({
@@ -72,7 +73,8 @@ import { ModalThresholdComponent } from './components/Modals/modal-threshold/mod
     CaCardsComponent,
     LineChartInstagramComponent,
     GaugeChartInstagramComponent,
-    GaugeChartFacebookComponent
+    GaugeChartFacebookComponent,
+    ComparisonInsightComponent
     
   
     
