@@ -14,7 +14,7 @@
     [value]="users"
     selectionMode="single"
     [(selection)]="selectedUsers"
-    (onRowSelect)="updateActions()"
+    (onRowSelect)="updateActions();logs=[];"
     (onRowUnselect)="updateActions()"
     dataKey="username"
     [tableStyle]="{'min-width': '50rem'}"
