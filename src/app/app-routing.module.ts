@@ -43,7 +43,7 @@ const routes: Routes = [
     pathMatch: "full"
   },
   {
-    path: "www.youtube.com",
+    path: "**",
     component: PageNotFoundComponent
   }
 ];
