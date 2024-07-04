@@ -42,6 +42,11 @@ export class PageHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+    // get last month date
+    this.callDateRange = [
+      new Date(),
+      new Date(new Date().setMonth(new Date().getMonth() - 1))
+    ]
     this.rangeDates = this.getCurrentDateRange();
     this.dateRangeService.changeDateRange(this.rangeDates);
     this.home = {icon: 'pi pi-home', routerLink: '/'};
