@@ -59,7 +59,7 @@ export class PageHeaderComponent implements OnInit {
     this.home = {icon: 'pi pi-home', routerLink: '/'};
     this.showOldDate();
     let permissions = this.tokenStorageService.getStorageKeyValue("permissions");
-    this.isAbleToAddCall = permissions.includes("Add Call Recordings");
+    this.isAbleToAddCall = permissions.includes("Add Call Recording");
     this.isAbleToAddOperator = permissions.includes("Add Call Operator");
   }
 
