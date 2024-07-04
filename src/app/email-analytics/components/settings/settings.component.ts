@@ -294,7 +294,7 @@ export class SettingsComponent implements OnInit{
       
       }
 
-      onSubmitIssueTypes(): void {
+  onSubmitIssueTypes(): void {
   
         const issue_types_to_check = this.issueninqyiryTypesConfigurations.value.issueTypesToCheck;
         const inquiry_types_to_check = this.issueninqyiryTypesConfigurations.value.inquiryTypesToCheck;
