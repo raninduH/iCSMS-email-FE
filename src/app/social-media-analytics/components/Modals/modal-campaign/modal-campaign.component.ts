@@ -9,15 +9,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { AlertType } from '../../../models/settings';
 import { SettingsApiService } from '../../../services/settings-api.service';
+
 interface Platform {
   name: string;
   icon: string;
 }
 
 @Component({
-  selector: 'app-modal-add-new-campaign',
-  templateUrl: './modal-add-new-campaign.component.html',
-  styleUrls: ['./modal-add-new-campaign.component.scss'],
+  selector: 'modal-campaign',
+  templateUrl: './modal-campaign.component.html',
+  styleUrls: ['./modal-campaign.component.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -29,7 +30,7 @@ interface Platform {
     DropdownModule
   ],
 })
-export class ModalAddNewCampaignComponent {
+export class ModalCampaignComponent {
   visible: boolean = false;
   postTitle: string | undefined;
   company: string | undefined;

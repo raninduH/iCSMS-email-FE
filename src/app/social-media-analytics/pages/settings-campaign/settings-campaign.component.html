@@ -1,3 +1,4 @@
+<modal-campaign></modal-campaign>
 <div class="flex flex-col">
   <div>
     <p-panel>
@@ -9,8 +10,9 @@
       </tabs>
 
       <ng-template #topBarRight let-content="content">
-        <p class="text-top-right-bar">{{ topBarCaption }} :</p>
-        <app-modal-add-new-campaign></app-modal-add-new-campaign>
+        <!-- <p class="text-top-right-bar">{{ topBarCaption }} :</p> -->
+        <!-- <modal-campaign></modal-campaign> -->
+        <p-button label="Add New" [text]="true" (click)="openAddNew()" icon="pi pi-bookmark" [outlined]="true" severity="secondary" size="small" />
       </ng-template>
 
       <ng-template #contentRef let-content="content">
@@ -59,8 +61,6 @@
                   </td>
                   <td>
                     <div class="flex align-items-center justify-content-center gap-2">
-                      <button pButton pRipple type="button" icon="pi pi-pencil" (click)="onRowEdit(item)"
-                        class="p-button-text p-button-Primary"></button>
                       <button pButton pRipple type="button" icon="pi pi-trash" (click)="onRowDelete(item)"
                         class="p-button-text p-button-danger"></button>
                     </div>

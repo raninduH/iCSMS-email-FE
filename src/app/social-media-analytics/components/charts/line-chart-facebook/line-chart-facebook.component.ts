@@ -49,7 +49,7 @@ export class LineChartFacebookComponent {
               {
                 label: 'Comments',
                 data: Object.values(data['2']),
-                borderColor: document.documentElement.style.getPropertyValue('--grey-500'),
+                borderColor: document.documentElement.style.getPropertyValue('rgba(255, 235, 59, 1)'),
               },
             ]
           };

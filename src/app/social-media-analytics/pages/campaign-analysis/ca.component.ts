@@ -1,8 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MenuItem } from "primeng/api";
 import { CampaignAnalysisApiService } from '../../services/campaign-analysis-api.service';
 import { TabStateService } from '../../services/tab-state.service';
 import { Subscription } from 'rxjs';
+import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-ca',
@@ -30,9 +32,12 @@ export class CAComponent implements OnInit, OnDestroy {
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
 
+  @ViewChild(ModalCampaignComponent) modalCampaignComponent!: ModalCampaignComponent;
+
   constructor(
     private campaignAnalysisApiService: CampaignAnalysisApiService,
-    private tabStateService: TabStateService
+    private tabStateService: TabStateService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -61,6 +66,14 @@ export class CAComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  openAddNew(){
+    this.modalCampaignComponent.showDialog();
+  }
+
+  onEdit(){
+    this.router.navigate(['/social-media/settings']);
   }
 
   toggleAdditionalCards(): void {

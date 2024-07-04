@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SortEvent } from 'primeng/api';
 import { Campaign, CampaignData } from '../../models/campaign-analysis';
 import { SettingsApiService } from '../../services/settings-api.service';
-import { ModalAddNewCampaignComponent } from '../../components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
+import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
 
 @Component({
   selector: 'settings-campaign',
@@ -18,6 +18,9 @@ export class SettingsCampaignComponent implements OnInit {
 
   contentFacebook: CampaignData = { subtitle: 'Facebook', data: [] };
   contentInstagram: CampaignData = { subtitle: 'Instagram', data: [] };
+
+  @ViewChild(ModalCampaignComponent) modalCampaignComponent!: ModalCampaignComponent;
+  campaigns: any;
 
   constructor(private settingsApiService: SettingsApiService) { }
 
@@ -52,13 +55,14 @@ export class SettingsCampaignComponent implements OnInit {
     );
   }
 
-
-  onRowEdit(item: Campaign): void {
-    // Implement edit functionality
+  openAddNew(){
+    this.modalCampaignComponent.showDialog();
   }
 
   onRowDelete(item: Campaign): void {
-    // Implement delete functionality
+    this.settingsApiService.deleteCampaign(item.id).subscribe(() => {
+      this.campaigns = this.campaigns.filter((val: Campaign) => val.id !== item.id);
+     });
   }
 
   topBarCaption = 'Add New';
