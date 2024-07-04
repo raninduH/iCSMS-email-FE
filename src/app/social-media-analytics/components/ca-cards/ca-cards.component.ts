@@ -1,21 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-ca-cards',
   templateUrl: './ca-cards.component.html',
   styleUrls: ['./ca-cards.component.scss']
 })
-export class CaCardsComponent implements OnInit {
+export class CaCardsComponent implements OnChanges {
   OptionsSideCards: any;
   DataSentiments: any[] = [];
   @Input() campaigns: any[] = [];
   @Input() showAdditionalCards: boolean = false;
+  @Input() loading: boolean = true;
 
   viewCampaign(card: any) {
-    window.open(card.postUrl, '_blank');
+    window.open(card.post_url, '_blank');
   }
 
-  ngOnInit() {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['loading'] && !changes['loading'].currentValue) {
+      this.initializeDataSentiments();
+    }
+  }
+
+  initializeDataSentiments() {
     this.OptionsSideCards = {
       maintainAspectRatio: false,
       aspectRatio: 3.5,
@@ -49,13 +56,15 @@ export class CaCardsComponent implements OnInit {
       },
     };
 
+    this.DataSentiments = [];
+
     for (let i = 0; i < this.campaigns.length; i++) {
       this.DataSentiments.push({
         labels: this.campaigns[i].dataSentimentLabels,
         datasets: [
           {
             label: 'Sentiments',
-            data: this.campaigns[i].dataSentimentValues,
+            data: this.campaigns[i].s_score_arr,
             fill: false,
             borderColor: this.campaigns[i].color,
             borderWidth: 1.5,
@@ -67,6 +76,5 @@ export class CaCardsComponent implements OnInit {
         ]
       });
     }
-
   }
 }

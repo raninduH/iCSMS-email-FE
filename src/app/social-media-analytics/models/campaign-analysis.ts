@@ -4,7 +4,7 @@ export interface Content {
 }
 
 export interface Campaign {
-  _id?: string;
+  id?: string | undefined;
   platform?: string;
   description?: string;
   title?: string;

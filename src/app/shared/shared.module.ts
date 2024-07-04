@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from "./shared-components/page-header/page-header.component";
 import { SidenavComponent } from "./shared-components/sidenav/sidenav.component";
@@ -31,7 +31,11 @@ import {CheckboxModule} from "primeng/checkbox";
 import {InputGroupModule} from "primeng/inputgroup";
 import {InputGroupAddonModule} from "primeng/inputgroupaddon";
 import {ToastModule} from "primeng/toast";
+import { ViewUserComponent } from './shared-components/right-sidebar/view-user/view-user.component';
 
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { DialogModule } from 'primeng/dialog';
+import { SkeletonModule } from "primeng/skeleton";
 
 @NgModule({
   declarations: [
@@ -46,38 +50,43 @@ import {ToastModule} from "primeng/toast";
     AddchartComponent,
     PageNotFoundComponent,
     AddRoleBarComponent,
+    ViewUserComponent,
+
   ],
   exports: [
     PageHeaderComponent,
     SidenavComponent,
     TopMenuComponent,
-    WordcloudComponent
+    WordcloudComponent,
   ],
-  imports: [
-    CommonModule,
-    PanelMenuModule,
-    PanelModule,
-    BreadcrumbModule,
-    DividerModule,
-    CalendarModule,
-    FormsModule,
-    HttpClientModule,
-    SidebarModule,
-    ChartModule,
-    InputTextModule,
-    FieldsetModule,
-    CardModule,
-    ImageModule,
-    DropdownModule,
-    SelectButtonModule,
-    MultiSelectModule,
-    ReactiveFormsModule,
-    InputSwitchModule,
-    CheckboxModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ToastModule,
-  ]
+    imports: [
+        CommonModule,
+        PanelMenuModule,
+        PanelModule,
+        BreadcrumbModule,
+        DividerModule,
+        CalendarModule,
+        FormsModule,
+        HttpClientModule,
+        SidebarModule,
+        ChartModule,
+        InputTextModule,
+        FieldsetModule,
+        CardModule,
+        ImageModule,
+        DropdownModule,
+        SelectButtonModule,
+        MultiSelectModule,
+        ReactiveFormsModule,
+        InputSwitchModule,
+        CheckboxModule,
+        InputGroupModule,
+        InputGroupAddonModule,
+        ToastModule,
+        OverlayPanelModule,
+        DialogModule,
+        SkeletonModule
+    ],
 
 })
 export class SharedModule {

@@ -1,0 +1,18 @@
+
+.notification-card {
+  width: 100%;
+}
+
+.full-width-card {
+  width: 100%;
+}
+
+:host ::ng-deep .p-component, .p-component * {
+  box-sizing: border-box;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+:host ::ng-deep .p-card .p-card-body {
+  padding: 0 1.25rem;
+}

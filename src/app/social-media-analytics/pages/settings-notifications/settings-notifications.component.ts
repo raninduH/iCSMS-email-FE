@@ -86,38 +86,6 @@ export class SettingsNotificationsComponent implements OnInit {
     });
   }
 
-  onSubmitsentimentshigtcongif(): void {
-    if (this.notificationsSettingsFormSentiment.valid) {
-      const formData = this.notificationsSettingsFormSentiment.value;
-      this.settingsApiService.setSentimentShift(formData).subscribe(
-        response => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Sentiment shift settings saved successfully!' });
-        },
-        error => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to save sentiment shift settings.' });
-        }
-      );
-    } else {
-      this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please fill out the form correctly.' });
-    }
-  }
-
-  onSubmitKeywordConfig(): void {
-    if (this.notificationsSettingsFormKeywordAlert.valid) {
-      const formData = this.notificationsSettingsFormKeywordAlert.value;
-      this.settingsApiService.setKeywordAlerts(formData).subscribe(
-        response => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Keyword alert settings saved successfully!' });
-        },
-        error => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to save keyword alert settings.' });
-        }
-      );
-    } else {
-      this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Please fill out the form correctly.' });
-    }
-  }
-
   onSubmitChannelConfig(): void {
     if (this.notificationsSettingsFormChannelConfig.valid) {
       const formData = this.notificationsSettingsFormChannelConfig.value;
