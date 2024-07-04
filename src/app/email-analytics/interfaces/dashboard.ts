@@ -170,3 +170,11 @@ export interface OverdueIssuesResponse{
     overdue_issues_count_per_each_email: number[];
     total_ongoing_issues: number;  
 }
+
+export interface TimeCardResponse {
+    // emailLoad: number[];
+    firstResponseTimes: number[];
+    overdueCount: number;
+    avgFirstResponseTime: number;
+    clientMsgTimes: string[];
+}

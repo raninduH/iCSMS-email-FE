@@ -1,8 +1,10 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { FormBuilder } from '@angular/forms';
 import { MenuItem } from "primeng/api";
-import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse, stat_card_single_response } from '../../interfaces/dashboard';
+import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, 
+  InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, 
+  IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, 
+  OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, 
+  OverdueIssuesResponse, stat_card_single_response, TimeCardResponse } from '../../interfaces/dashboard';
 import { DataService } from '../../services/dashboardMain.service';
 import { Subscription } from 'rxjs';
 
@@ -21,7 +23,7 @@ interface TrendingWord {
   templateUrl: './dashboard2.component.html',
   styleUrl: './dashboard2.component.scss'
 })
-export class Dashboard2Component implements OnInit{
+export class Dashboard2Component implements OnInit {
   breadcrumbItems: MenuItem[] = [
     {label: "Email Analytics"},
     {label: "Dashboard"}
@@ -114,8 +116,13 @@ export class Dashboard2Component implements OnInit{
   overdueIssByEmailsData: number[]=[]
   isLoadingOverdueIssByEmailAcc: boolean = true
 
-
-
+  // time card
+  avgFirstResponseTime: number = 0;
+  overdueCount: number = 0;
+  emailLoad: number[] = [];
+  firstResponseTimes: number[] = [];
+  clientMsgTimes: string[] = [];
+  isLoadingTimeCard: boolean = false;
 
   // wordcloudMostOccuringProblemTypes
   wordCloudData: TrendingWord[] = []
@@ -154,49 +161,42 @@ export class Dashboard2Component implements OnInit{
   private CurrentOverallEfficiencyandEffectivenessSubscription: Subscription | undefined;
   private DataForGaugeChartSubscription: Subscription | undefined;
   private DataForProductsByIssueandInquirySubscription: Subscription | undefined;
-
-  private DataForEffiandEffecInquiriesSubscription: Subscription | undefined;
-  private DataForIssueandInquiryTypesSubscription: Subscription | undefined;
-  private DataForEfficiencyByEmailAccSubscription: Subscription | undefined;
-  private BestPerformingEmailSubscription: Subscription | undefined;
-  private OverdueIssuesdataSubscription: Subscription | undefined;
+  private DataForTimeGraphSubscription: Subscription | undefined;
+  // private DataForEffiandEffecInquiriesSubscription: Subscription | undefined;
+  // private DataForIssueandInquiryTypesSubscription: Subscription | undefined;
+  // private DataForEfficiencyByEmailAccSubscription: Subscription | undefined;
+  // private BestPerformingEmailSubscription: Subscription | undefined;
+  // private OverdueIssuesdataSubscription: Subscription | undefined;
 
 
   _isPerfInsightsOpened: boolean = false;
+
   set isPerfInsightsOpened(value: boolean) {
     this._isPerfInsightsOpened = value;
     if (value) {
       this.unsubscribeAll();
     }
   }
+
   get isPerfInsightsOpened(): boolean {
     return this._isPerfInsightsOpened;
   }
  
-  constructor(private fb: FormBuilder, private http: HttpClient, private dataService: DataService) {}
+  constructor(private dataService: DataService) {}
 
- 
-
-
-  ngOnInit(): void {
-      
-      
-      // calendar configuration
-      let today = new Date();
-      let month = today.getMonth();
-      let year = today.getFullYear();
-      let prevMonth = (month === 0) ? 11 : month -1;
-      let prevYear = year;
-      this.minDate = new Date();
-      this.minDate.setMonth(prevMonth);
-      this.minDate.setFullYear(prevYear);
-      this.maxDate = today;
-
- 
+  ngOnInit(): void { 
+    // calendar configuration
+    let today = new Date();
+    let month = today.getMonth();
+    let year = today.getFullYear();
+    let prevMonth = (month === 0) ? 11 : month -1;
+    let prevYear = year;
+    this.minDate = new Date();
+    this.minDate.setMonth(prevMonth);
+    this.minDate.setFullYear(prevYear);
+    this.maxDate = today;
 
     this.subscribeALL()
-
-      
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -207,118 +207,100 @@ export class Dashboard2Component implements OnInit{
   }
 
    ngOnDestroy(): void {
-    this.unsubscribeAll()
-    
+    this.unsubscribeAll()  
+  }
+  
+  onRangeDatesChanged(rangeDates: Date[]) {
+    this.rangeDates = rangeDates;
+    // console.log('Selected Range Dates:', this.rangeDates);
+    const endDate = rangeDates[1];
+    const startDate = rangeDates[0];
+    const today = new Date();
+
+    // Ensure dates are in the same time zone for correct comparison
+    const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
+    const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
+    const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
+
+    // Calculate the difference in milliseconds
+    const differenceStartMs = todayMidnight.getTime() - startDateMidnight.getTime();
+    const differenceEndMs = todayMidnight.getTime() - endDateMidnight.getTime();
+
+    // Calculate the difference in days
+    this.intervalInDaysStart = Math.floor(differenceStartMs / (1000 * 60 * 60 * 24))
+    this.intervalInDaysEnd = Math.floor(differenceEndMs / (1000 * 60 * 60 * 24))
+
+    // console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
+    this.unsubscribeAll();
+    this.subscribeALL();
   }
 
+  subscribeALL(){
+    this.getDataForStatCards()
+    this.getDataForEmailAccCards()
+    this.getDataForOverallEfficiencyandEffectivenessDntChart()
+    this.getDataForGaugeChart()
+    this.getDataForIssuenadInquiryByProducts()
+    this.getDataForTimeGraph()
+  }
 
+  unsubscribeAll(){
+    this.statCardsSubscription?.unsubscribe();
+    this.CurrentOverallEfficiencyandEffectivenessSubscription?.unsubscribe();
+    this.DataForStatCardsSubscription?.unsubscribe();
+    this.DataForGaugeChartSubscription?.unsubscribe();
+    this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
+    this.DataForTimeGraphSubscription?.unsubscribe();
 
-  
-onRangeDatesChanged(rangeDates: Date[]) {
-  this.rangeDates = rangeDates;
-  
-  console.log('Selected Range Dates:', this.rangeDates);
-  const endDate = rangeDates[1];
-  const startDate = rangeDates[0];
-  const today = new Date();
+    // this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
+    // this.DataForEfficiencyByEmailAccSubscription?.unsubscribe();
+    // this.BestPerformingEmailSubscription?.unsubscribe();
+    // this.OverdueIssuesdataSubscription?.unsubscribe();
+  }
 
-  // Ensure dates are in the same time zone for correct comparison
-  const startDateMidnight = new Date(startDate.setHours(0, 0, 0, 0));
-  const endDateMidnight = new Date(endDate.setHours(0, 0, 0, 0));
-  const todayMidnight = new Date(today.setHours(0, 0, 0, 0));
+  getDataForEmailAccCards(){
+    this.isLoadingEmailCards = true;
+    this.DataForStatCardsSubscription = this.dataService
+      .getDataForEmailCards(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data:stat_card_single_response[]) => {
+        // console.log("DATA FOR EMAIL ACC CARDS",data)
+        this.EmailAccData = data;
+        this.isLoadingEmailCards = false;
+      });
+  }
 
-  // Calculate the difference in milliseconds
-  const differenceStartMs = todayMidnight.getTime() - startDateMidnight.getTime();
-  const differenceEndMs = todayMidnight.getTime() - endDateMidnight.getTime();
+  getDataForStatCards(){
+    this.statCardsSubscription =  this.dataService
+      .getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: OngoingAndClosedStatsResponse) => {
+    // console.log("ISSUE AND INQUIRY COUNT DATA", data)
+        this.openedIssuesCount = data.count_total_ongoing_issues
+        this.closedIssuesCount = data.count_total_closed_issues
+        this.openedInquiriesCount = data.count_total_ongoing_inquiries
+        this.closedInquiriesCount = data.count_total_closed_inquiries
 
-  // Calculate the difference in days
-  this.intervalInDaysStart = Math.floor(differenceStartMs / (1000 * 60 * 60 * 24))
-  this.intervalInDaysEnd = Math.floor(differenceEndMs / (1000 * 60 * 60 * 24))
+        // get data for the progress donought chart
+        this.dntChartDataProgress = [data.ongoing_percentage, data.closed_percentage]
+        this.dntChartProgressLabels = ["ongoing percentage", "closed percentage"]
+        this.isLoadingDCProgress = false
+      });
+  this.isLoadingStatcards = false
+  }
 
-  console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
-  
-  this.unsubscribeAll()
-  this.subscribeALL()
+  getDataForOverallEfficiencyandEffectivenessDntChart(){
+    this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService
+      .getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
+        // console.log("data for overall efficiency and effectiveness", data)
+        this.dntChartDataOverallEfficiency = data.efficiency_percentages
+        this.dntChartOverallEfficiencyLabels= data.efficiency_categories.reverse()
+        this.dntChartDataOverallEffeftiveness= data.effectiveness_percentages
+        this.dntChartOverallEffectivenessLabels = data.effectiveness_categories.reverse()
 
-
-
-}
-
-subscribeALL(){
-  this.getDataForStatCards()
-  this.getDataForEmailAccCards()
-  this.getDataForOverallEfficiencyandEffectivenessDntChart()
-  this.getDataForGaugeChart()
-  this.getDataForIssuenadInquiryByProducts()
-}
-
-unsubscribeAll(){
-  this.statCardsSubscription?.unsubscribe();
-  this.CurrentOverallEfficiencyandEffectivenessSubscription?.unsubscribe();
-  this.DataForStatCardsSubscription?.unsubscribe();
-  this.DataForGaugeChartSubscription?.unsubscribe();
-  this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
-
-  // this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
-  // this.DataForEfficiencyByEmailAccSubscription?.unsubscribe();
-  // this.BestPerformingEmailSubscription?.unsubscribe();
-  // this.OverdueIssuesdataSubscription?.unsubscribe();
-}
-
-getDataForEmailAccCards(){
-  
-  this.isLoadingEmailCards = true
-  this.DataForStatCardsSubscription = this.dataService.getDataForEmailCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
-  console.log("DATA FOR EMAIL ACC CARDS",data)
-  this.EmailAccData = data
-
-  this.isLoadingEmailCards = false
-     
- });
-
-}
-
-getDataForStatCards(){
-  
-  this.statCardsSubscription =  this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
-  console.log("ISSUE AND INQUIRY COUNT DATA", data)
-
-  this.openedIssuesCount = data.count_total_ongoing_issues
-  this.closedIssuesCount = data.count_total_closed_issues
-  this.openedInquiriesCount = data.count_total_ongoing_inquiries
-  this.closedInquiriesCount = data.count_total_closed_inquiries
-
-  // get data for the progress donought chart
-
-  this.dntChartDataProgress = [data.ongoing_percentage, data.closed_percentage]
-  this.dntChartProgressLabels = ["ongoing percentage", "closed percentage"]
-
-  this.isLoadingDCProgress = false
-
-     
- });
-
- this.isLoadingStatcards = false
-
-}
-
-
-getDataForOverallEfficiencyandEffectivenessDntChart(){
-
-
-  this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
-    console.log("data for overall efficiency and effectiveness", data)
-    this.dntChartDataOverallEfficiency = data.efficiency_percentages
-    this.dntChartOverallEfficiencyLabels= data.efficiency_categories.reverse()
-    this.dntChartDataOverallEffeftiveness= data.effectiveness_percentages
-    this.dntChartOverallEffectivenessLabels = data.effectiveness_categories.reverse()
-
-    this.isLoadingDCOverallEfficiency = false
-    this.isLoadingDCOverallEffectiveness = false
-
-       
-   });
-}
+        this.isLoadingDCOverallEfficiency = false
+        this.isLoadingDCOverallEffectiveness = false
+    });
+  }
 
 // getDataForEfficiencyDstriandEffectivenessDistri(){
    
@@ -351,25 +333,16 @@ getDataForOverallEfficiencyandEffectivenessDntChart(){
   
 // }
 
-
-
-getDataForIssuenadInquiryByProducts(){
-
-  this.DataForProductsByIssueandInquirySubscription = this.dataService.getDataForProductsByIssueandInquiry(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: IssueInquiryFreqByProdcuts) => {
-    console.log("data for Isseus and Inquiries by PRODUCTSSSSSS",data)
-    
-    this.products_labels = data.product_labels
-    this.products_performance_scores = data.performence_scores
-
-    this.isProductPerformanceChart = false
-    
-
-
-
-  });
-
-
-}
+  getDataForIssuenadInquiryByProducts(){
+    this.DataForProductsByIssueandInquirySubscription = this.dataService
+      .getDataForProductsByIssueandInquiry(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: IssueInquiryFreqByProdcuts) => {
+      // console.log("data for Isseus and Inquiries by PRODUCTSSSSSS",data)
+        this.products_labels = data.product_labels
+        this.products_performance_scores = data.performence_scores
+        this.isProductPerformanceChart = false
+    });
+  }
 
 // getDataForEfficiencyByEmaiAcss(){
 
@@ -449,15 +422,28 @@ getDataForIssuenadInquiryByProducts(){
 //    });
 // }
 
-getDataForGaugeChart() {
-  this.isLoadingGC = true; // Set loading indicator to true before making the request
+  getDataForGaugeChart() {
+    this.isLoadingGC = true; // Set loading indicator to true before making the request
+    this.DataForGaugeChartSubscription = this.dataService
+      .getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: GaugeChartResponse) => {
+        console.log("gauge chart data", data.value)
+        this.dataValue_forGaugeStart = data.value
+        console.log("datavaluefor gauge chart", this.dataValue_forGaugeStart)
+        this.isLoadingGC = false;
+      });
+  }
 
-  this.DataForGaugeChartSubscription = this.dataService.getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
-    .subscribe((data: GaugeChartResponse) => {
-      console.log("gauge chart data", data.value)
-      this.dataValue_forGaugeStart = data.value
-      console.log("datavaluefor gauge chart", this.dataValue_forGaugeStart)
-      this.isLoadingGC = false;
-    });
-}
+  getDataForTimeGraph(){
+    this.isLoadingTimeCard = true;
+    this.DataForTimeGraphSubscription = this.dataService
+      .getDataForTimeGraph(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: TimeCardResponse) => {
+        this.avgFirstResponseTime = data.avgFirstResponseTime;
+        this.overdueCount = data.overdueCount;
+        this.firstResponseTimes = data.firstResponseTimes;
+        this.clientMsgTimes = data.clientMsgTimes;
+        this.isLoadingTimeCard = false;
+      });
+  }
 }

@@ -8,9 +8,9 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 export class DashboardProductInsightsComponent {
   dialogVisible = false;
   @Input() intervalInDaysStart!: number;
-  @Input() intervalInDaysEnd!: number;
-  @Input() product_labels!:string[];
-  @Input() product_performance_scores!: number[];
+  @Input() intervalInDaysEnd!: number;
+  @Input() product_labels!: string[];
+  @Input() product_performance_scores!: number[];
 
   popup() {
     this.dialogVisible = true;

@@ -100,7 +100,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';import { PerformanceIn
 import { PopUpProductInsightsDashboardComponent } from './components/pop-up-product-insights-dashboard/pop-up-product-insights-dashboard.component';
 import { PopUpIssuesAndInquiryInsightsDashboardComponent } from './components/pop-up-issues-and-inquiry-insights-dashboard/pop-up-issues-and-inquiry-insights-dashboard.component';
 import { PopUpEmailAccountInsightsDashboardComponent } from './components/pop-up-email-account-insights-dashboard/pop-up-email-account-insights-dashboard.component';
-
+import 'chartjs-adapter-moment';
 
 @NgModule({
   declarations: [

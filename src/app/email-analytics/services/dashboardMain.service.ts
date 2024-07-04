@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, interval } from 'rxjs';
-import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse, stat_card_single_response } from '../interfaces/dashboard';
+import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, OverdueIssuesResponse, stat_card_single_response, TimeCardResponse } from '../interfaces/dashboard';
 import { INTERVALS, URLS } from './app.constants';
 import { startWith, switchMap } from 'rxjs/operators';
 
@@ -113,7 +113,12 @@ getDataForGaugeChart(intervalInDaysStart: number, intervalInDaysEnd: number): Ob
     startWith(0),
     switchMap(() => this.http.get<GaugeChartResponse>(url))
   );
-  }
+}
 
-
+getDataForTimeGraph(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<TimeCardResponse> {
+  return interval(this.pollingInterval).pipe(
+    startWith(0),
+    switchMap(() => this.http.get<TimeCardResponse>(`${URLS.baseUrlv2}/dashboard/time-graph?intervalInDaysStart=${intervalInDaysStart}&intervalInDaysEnd=${intervalInDaysEnd}`))
+  );
+}
 }
