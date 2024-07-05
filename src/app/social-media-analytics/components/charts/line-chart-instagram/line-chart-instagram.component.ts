@@ -37,7 +37,7 @@ export class LineChartInstagramComponent {
           const labels = Object.keys(data['1']).map(dateString => convertDateFormat(dateString));
 
           this.data = {
-            labels: Object.keys(data['1']),
+            labels: labels,
             datasets: [
               {
                 label: 'Reacts',

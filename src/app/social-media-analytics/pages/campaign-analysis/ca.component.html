@@ -1,3 +1,4 @@
+<modal-campaign></modal-campaign>
 <app-page-header pageTitle="Campaign Analysis" class="w-full h-fit" [breadcrumbItems]="breadcrumbItems" />
 
 <div class="flex flex-col">
@@ -18,9 +19,7 @@
           <h3>{{ content.subtitle }}</h3>
           <div style="display: flex; flex-direction: row; align-items: center">
             <!-- <p class="text-top-right-bar semi-balted">Custom Campaigns :</p> -->
-            <!-- <modal-campaign></modal-campaign> -->
-            <p-button label="Edit" [text]="true" icon="pi pi-pencil" [outlined]="true" severity="secondary" size="small" (click)="onEdit()" />
-            <p-button label="Add New" [text]="true" icon="pi pi-bookmark" [outlined]="true" severity="secondary" size="small" (click)="openAddNew()" />
+            <p-button label="Add New" [text]="true" icon="pi pi-plus" [outlined]="true" severity="secondary" size="small" (click)="openAddNew()" />
           </div>
         </div>
 

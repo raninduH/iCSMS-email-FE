@@ -77,7 +77,7 @@ export class GaugeChartFacebookComponent implements OnInit {
   updateGaugeChart(startDate: string, endDate: string): void {
     this.getfacebookscore.getSentimentScoreFacebook(startDate, endDate).subscribe(
       (data: number) => {
-        this.score = data;
+        this.score = (Math.round((data * 2 - 1) * 10) / 10);
         console.log(data)
         if (this.options.series && Array.isArray(this.options.series) && this.options.series.length > 0) {
           const firstSeries = this.options.series[0];

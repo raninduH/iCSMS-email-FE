@@ -4,7 +4,6 @@ import { CampaignAnalysisApiService } from '../../services/campaign-analysis-api
 import { TabStateService } from '../../services/tab-state.service';
 import { Subscription } from 'rxjs';
 import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
-import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-ca',
@@ -37,7 +36,6 @@ export class CAComponent implements OnInit, OnDestroy {
   constructor(
     private campaignAnalysisApiService: CampaignAnalysisApiService,
     private tabStateService: TabStateService,
-    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -56,7 +54,11 @@ export class CAComponent implements OnInit, OnDestroy {
           }
           item.dataSentimentLabels = Array.from({ length: item.s_score_arr.length }, (_, i) => `${i + 1}`);
         });
+
         this.caPageContent.topCampaigns = campaignsContent;
+        // this.caPageContent.topCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] >= -0.1);
+        // this.caPageContent.additionalCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] < 0);
+
         this.loading = false;
       });
     });
@@ -70,10 +72,6 @@ export class CAComponent implements OnInit, OnDestroy {
 
   openAddNew(){
     this.modalCampaignComponent.showDialog();
-  }
-
-  onEdit(){
-    this.router.navigate(['/social-media/settings']);
   }
 
   toggleAdditionalCards(): void {
