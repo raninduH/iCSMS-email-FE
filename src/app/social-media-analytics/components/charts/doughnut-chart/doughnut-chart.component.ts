@@ -52,10 +52,10 @@ export class DoughnutChartComponent implements OnInit {
 
           this.options = {
             cutout: '50%',
-            height: 600,
+            height: 800,
             overrides: {
               legend: {
-                padding: 50
+                padding: 200
               }
             },
             plugins: {

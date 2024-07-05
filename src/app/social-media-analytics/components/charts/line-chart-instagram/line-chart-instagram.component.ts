@@ -37,17 +37,17 @@ export class LineChartInstagramComponent {
           const labels = Object.keys(data['1']).map(dateString => convertDateFormat(dateString));
 
           this.data = {
-            labels: Object.keys(data['1']),
+            labels: labels,
             datasets: [
               {
                 label: 'Reacts',
                 data: Object.values(data['1']),
-                borderColor: document.documentElement.style.getPropertyValue('rgb(234, 179, 8)'),
+                borderColor: 'rgb(255, 220, 128)',
               },
               {
                 label: 'Comments',
                 data: Object.values(data['2']),
-                borderColor: document.documentElement.style.getPropertyValue('--pink-500'),
+                borderColor:'rgb(193, 53, 132)' ,
               },
             ]
           };

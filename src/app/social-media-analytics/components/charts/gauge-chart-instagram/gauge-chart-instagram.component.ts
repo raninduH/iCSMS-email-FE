@@ -29,7 +29,7 @@ export class GaugeChartInstagramComponent {
           type: 'gauge',
           startAngle: 180,
           endAngle: 0,
-          center: ['50%', '75%'],
+          center: ['50%', '65%'],
           radius: '90%',
           min: 0,
           max: 1,
@@ -37,9 +37,9 @@ export class GaugeChartInstagramComponent {
             lineStyle: {
               width: 30,
               color: [
-                [0.15, '#db0b0b'],
-                [0.65, '#ffdc28'],
-                [1, '#44c022'],
+                [0.15, '#FF6E76'],
+                [0.65, '#e7cb59'],
+                [1, '#5dd28d'],
               ]
             }
           },
@@ -49,10 +49,10 @@ export class GaugeChartInstagramComponent {
           pointer: {
             icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
             length: '50%',
-            width: 20,
+            width: 10,
             offsetCenter: [0, '-15%'],
             itemStyle: {
-              color: 'auto'
+              color: 'black'
             }
           },
           axisLabel: {
