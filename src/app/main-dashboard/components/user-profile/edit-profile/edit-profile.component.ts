@@ -45,10 +45,10 @@ export class EditProfileComponent implements OnInit {
     this.authService.getIdToken().subscribe((token: any) => {
       this.userProfileDataService.getUserProfileData(token).subscribe((data: any) => {
         console.log(data)
-        this.username = data[0].Value;
-        this.email = data[0].Value;
-        this.phone = data[5].Value;
-        this.profileImage = data[4].Value;
+        this.username = data['username'];
+        this.email = data['email'];
+        this.phone = data['custom:phone_number'];
+        this.profileImage = data['custom:profile_image'];
       });
     });
   }
@@ -104,10 +104,10 @@ export class EditProfileComponent implements OnInit {
     this.authService.getIdToken().subscribe((token: any) => {
       this.userProfileDataService.getUserProfileData(token).subscribe((data: any) => {
         console.log(data);
-        this.username = data[0].Value;
-        this.email = data[0].Value;
-        this.phone = data[5].Value;
-        this.profileImage = data[4].Value;
+        this.username = data['username'];
+        this.email = data['email'];
+        this.phone = data['custom:phone_number'];
+        this.profileImage = data['custom:profile_image'];
       });
     });
   }
