@@ -51,7 +51,7 @@ import {PanelMenuModule} from "primeng/panelmenu";
 import {MenubarModule} from "primeng/menubar";
 import {SkeletonModule} from "primeng/skeleton";
 import {RippleModule} from "primeng/ripple";
-// import zoomPlugin from 'chartjs-plugin-zoom';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   declarations: [
@@ -64,13 +64,13 @@ import {RippleModule} from "primeng/ripple";
     UserSecurityComponent,
     NotificationsComponent,
     UnreadNotificationsComponent,
-    ReadNotificationsComponent,
     HorizontalBarChartComponent,
     GaugeChartComponent,
     GridComponent,
     WordcloudComponent,
     VerticalBerChartComponent,
     BarChartComponent,
+    ReadNotificationsComponent
 
   ],
   imports: [
@@ -111,7 +111,7 @@ import {RippleModule} from "primeng/ripple";
     MenubarModule,
     SkeletonModule,
     RippleModule,
-
+    InputNumberModule,
 
   ],
   exports: [

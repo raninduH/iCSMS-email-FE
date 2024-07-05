@@ -3,6 +3,7 @@ import { Message } from 'primeng/api';
 import {NotificationService} from "../../../services/notification.service"
 import { Subscription } from 'rxjs';
 import { DateRangeService } from '../../../services/shared-date-range/date-range.service';
+import { AuthenticationService } from '../../../../auth/services/authentication.service';
 
 @Component({
   selector: 'app-unread-notifications',
@@ -32,7 +33,8 @@ export class UnreadNotificationsComponent implements OnInit {
   private socketSubscription: Subscription | undefined;
 
   constructor(private notificationService: NotificationService,
-    private dateRangeService:DateRangeService
+    private dateRangeService:DateRangeService,
+    private authService: AuthenticationService
   )
   {}
 
@@ -76,11 +78,13 @@ export class UnreadNotificationsComponent implements OnInit {
     this.notifications = [];
     this.readNotifications= [];
     this.filteredNotifications=[];
-    this.notificationService.updateUnreadNotifications(existingNotificationDicts).subscribe(
+    this.authService.getIdToken().subscribe((token) =>{
+    this.notificationService.updateUnreadNotifications(token,existingNotificationDicts).subscribe(
       (response) => {
 
       },
   );
+});
   }
 
   ignoreMessages(notificationID:any){
@@ -91,10 +95,12 @@ export class UnreadNotificationsComponent implements OnInit {
       this.notificationCount = this.notifications.length;
     }
 
-    this.notificationService.updateUnreadNotifications([{ id: notificationID }]).subscribe(
+    this.authService.getIdToken().subscribe((token) =>{
+    this.notificationService.updateUnreadNotifications(token,[{ id: notificationID }]).subscribe(
       (response) => {
       },
   );
+});
 
   }
 
@@ -109,7 +115,8 @@ export class UnreadNotificationsComponent implements OnInit {
   }
 
   fetchNotifications() {
-    this.notificationService.getNotifications().subscribe(
+    this.authService.getIdToken().subscribe((token) =>{
+    this.notificationService.getNotifications(token).subscribe(
       (newNotifications) => {
 
         if(newNotifications.length!==0){
@@ -150,6 +157,8 @@ export class UnreadNotificationsComponent implements OnInit {
 
       }
     );
+  });
+
   }
 
 
