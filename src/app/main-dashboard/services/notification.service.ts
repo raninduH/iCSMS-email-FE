@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable,Subject } from 'rxjs';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 
@@ -12,7 +12,7 @@ export class NotificationService {
   private messagesSubject$ = new Subject<any>();
   public messages$ = this.messagesSubject$.asObservable();
 
-  private baseUrl = 'http://13.233.199.31:8001/Notifications';
+  private baseUrl = 'http://15.207.16.169:8001/Notifications';
   // private baseUrl = 'http://127.0.0.1:8001/Notifications';
 
   constructor(private http: HttpClient) {
@@ -47,29 +47,50 @@ export class NotificationService {
   }
 
 
-  getNotifications(): Observable<any> {
+  getNotifications(token:string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+
     // Replace 'apiEndpoint' with your actual API endpoint
-    return this.http.get<any>(`${this.baseUrl}/Newnotification`);
+    return this.http.get<any>(`${this.baseUrl}/Newnotification`,{headers});
   }
 
-  getNotificationsCounts(): Observable<any> {
+  getNotificationsCounts(token:string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     // Replace 'apiEndpoint' with your actual API endpoint
-    return this.http.get<any>(`${this.baseUrl}/NewnotificationCounts`);
+    return this.http.get<any>(`${this.baseUrl}/NewnotificationCounts`,{headers});
   }
 
-  updateUnreadNotifications(notificationData: any): Observable<any> {
+  updateUnreadNotifications(token:string,notificationData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     // Replace 'apiEndpoint' with your actual API endpoint
-    return this.http.post<any>(`${this.baseUrl}/Unreadpost`,{"id":notificationData});
+    return this.http.post<any>(`${this.baseUrl}/Unreadpost`,{"id":notificationData},{ headers });
   }
 
-  updateReadNotifications(notificationData: any): Observable<any> {
+  updateReadNotifications(token:string,notificationData: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     // Replace 'apiEndpoint' with your actual API endpoint
-    return this.http.post<any>(`${this.baseUrl}/Readpost`,{"id":notificationData});
+    return this.http.post<any>(`${this.baseUrl}/Readpost`,{"id":notificationData},{ headers });
   }
 
-  getReadNotifications(): Observable<any> {
+  getReadNotifications(token:string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
     // Replace 'apiEndpoint' with your actual API endpoint
-    return this.http.get<any>(`${this.baseUrl}/Readnotification`);
+    return this.http.get<any>(`${this.baseUrl}/Readnotification`,{headers});
   }
 
 

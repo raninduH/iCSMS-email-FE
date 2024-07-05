@@ -73,6 +73,9 @@ export class BarChartComponent  implements OnInit,OnChanges{
 
   items:MenuItem[] = [];
 
+//   currentChunkIndex = 0;
+// chunks = [];
+
   ngOnInit() {
 
     this.items= [
@@ -150,6 +153,14 @@ export class BarChartComponent  implements OnInit,OnChanges{
 
 
   }
+
+  // splitDataIntoChunks(data: any[], chunkSize: number): any[][] {
+  //   const chunks = [];
+  //   for (let i = 0; i < data.length; i += chunkSize) {
+  //     chunks.push(data.slice(i, i + chunkSize));
+  //   }
+  //   return chunks;
+  // }
 
 
 
@@ -624,15 +635,24 @@ isDateInRange(dateStr: string): boolean {
   }
 
 
-chart(){
+  chart() {
     const documentStyle = getComputedStyle(document.documentElement);
-    // const textColor = documentStyle.getPropertyValue('--text-color');
+  
+    // Define your desired range for labels and datasets
+    const labelStartIndex = 0;
+    const labelEndIndex = 10;
 
+  
+    // Slice the labels and datasets accordingly
+    const slicedLabels = this.labels.slice(labelStartIndex, labelEndIndex);
+   
+    // Assign sliced data to this.data
     this.data = {
-      labels: this.labels,
+      labels: slicedLabels,
       datasets: this.datasets
     };
-
+  
+    // Configure options for the chart
     this.options = {
       indexAxis: 'x',
       maintainAspectRatio: false,
@@ -661,13 +681,20 @@ chart(){
         }
       },
     };
-}
+  }
+  
+  
 
 
 setupChart() {
+  const labelStartIndex = 0;
+  const labelEndIndex = 4;
+  const datasetStartIndex = 0;
+  const datasetEndIndex = 4;
+
   this.data = {
-    labels: this.labels,
-    datasets: this.datasets
+    labels: this.labels.slice(labelStartIndex, labelEndIndex),
+    datasets: this.datasets.slice(datasetStartIndex, datasetEndIndex)
   };
 
   this.options = {

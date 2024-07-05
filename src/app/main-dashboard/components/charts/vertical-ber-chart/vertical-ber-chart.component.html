@@ -25,6 +25,31 @@
         (ngModelChange)="onSourceChange(category)"/>
      </div>
      <div class="field-checkbox flex align-items-center">
+     <!-- <button pButton type="button" label="Done" (click)="editOff()" ></button> -->
+   <!-- </div>
+  </div>
+
+  <div *ngIf="edit==true">
+    <div class="pt-5">
+      <span>
+        <p-inputNumber 
+    [(ngModel)]="positiveMin" 
+    [showButtons]="true" 
+    inputId="stacked" 
+    mode="currency" 
+    currency="USD" />
+
+<p-inputNumber 
+    [(ngModel)]="positiveMax" 
+    mode="decimal" 
+    [showButtons]="true" 
+    inputId="minmax-buttons" 
+    [min]="0" 
+    [max]="100" /> 
+
+      </span>
+    </div>
+    <div> -->
      <button pButton type="button" label="Done" (click)="editOff()" ></button>
    </div>
   </div>

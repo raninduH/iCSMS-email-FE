@@ -11,14 +11,15 @@ export class UserChangePasswordService {
 
   constructor(private http: HttpClient) { }
 
-  changePassword(token: string, currentPassword:any, newPassword: any): any {
+  changePassword(idtoken: string, accessToken:string, currentPassword:any, newPassword: any): any {
     let headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${idtoken}`
     });
     //application/json
     return this.http.post(this.apiUrl, {
-      current_password: currentPassword,
-      new_password: newPassword
+      PreviousPassword: currentPassword,
+      ProposedPassword: newPassword,
+      AccessToken: accessToken
     }, { headers });
   }
 }

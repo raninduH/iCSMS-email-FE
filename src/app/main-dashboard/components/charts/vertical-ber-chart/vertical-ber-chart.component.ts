@@ -33,6 +33,8 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
   @Input() topics: string[] = [];
   @Input() sources: string[] = ['call', 'email', 'social'];
 
+  // positiveMin:number=1;
+  // positiveMax:number=10;
 
   labels: string[] = [];
   total: number = 0;
@@ -308,6 +310,17 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
                 this.updateAllData(this.transformData(sourceData[1]), 'closed');
               }
             });
+
+          //   if (this.xAxis === 'topics' || this.xAxis === 'keywords') {
+          //   const filteredTopicsPositive = this.topics.filter(topic =>
+          //     (this.allDataTpoic[topic]?.positive >= 5 && this.allDataTpoic[topic]?.positive <= 12) || 
+          //     (this.allDataTpoic[topic]?.negative >= 5 && this.allDataTpoic[topic]?.negative <= 12) ||
+          //     (this.allDataTpoic[topic]?.neutral >= 5 && this.allDataTpoic[topic]?.neutral <= 10)
+          //   );
+          //   this.topics=filteredTopicsPositive
+          // }
+
+            
 
             this.createDatasets(documentStyle);
             this.getMaxValues(this.datasets);
@@ -602,15 +615,24 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
 
   }
 
-  chart(){
+  chart() {
     const documentStyle = getComputedStyle(document.documentElement);
-    // const textColor = documentStyle.getPropertyValue('--text-color');
+  
+    // // Define your desired range for labels and datasets
+    // const labelStartIndex = 0;
+    // const labelEndIndex = 10;
 
+  
+    // // Slice the labels and datasets accordingly
+    // const slicedLabels = this.labels.slice(labelStartIndex, labelEndIndex);
+   
+    // // Assign sliced data to this.data
     this.data = {
       labels: this.labels,
       datasets: this.datasets
     };
-
+  
+    // Configure options for the chart
     this.options = {
       indexAxis: 'x',
       maintainAspectRatio: false,
@@ -640,5 +662,7 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
       },
     };
   }
+  
+  
   
 }
