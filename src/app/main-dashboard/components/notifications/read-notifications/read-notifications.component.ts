@@ -3,6 +3,7 @@ import { Message } from 'primeng/api';
 import { NotificationService } from '../../../services/notification.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { DateRangeService } from '../../../services/shared-date-range/date-range.service';
+import { AuthenticationService } from '../../../../auth/services/authentication.service';
 
 interface CustomMessage extends Message {
   read: boolean;
@@ -33,7 +34,8 @@ export class ReadNotificationsComponent implements OnInit {
   private socketSubscription: Subscription | undefined;
 
   constructor(private notificationService: NotificationService,
-    private dateRangeService:DateRangeService
+    private dateRangeService:DateRangeService,
+    private authService: AuthenticationService
   )
   {}
 
@@ -74,11 +76,13 @@ export class ReadNotificationsComponent implements OnInit {
     this.showData=[notification['summary'],notification['data'],notification['detail']];
     if(notification.read==true)
       {
-        this.notificationService.updateUnreadNotifications(notification.id).subscribe(
+        this.authService.getIdToken().subscribe((token) =>{
+        this.notificationService.updateUnreadNotifications(token,notification.id).subscribe(
           (response) => {
             
                     },
         );
+      });
         
       }
   }
@@ -93,11 +97,13 @@ export class ReadNotificationsComponent implements OnInit {
     this.readnotifications = [];
     this.unreadnotifications= [];
     this.filteredNotifications=[];
-    this.notificationService.updateReadNotifications(existingNotificationDicts).subscribe(
+    this.authService.getIdToken().subscribe((token) =>{
+    this.notificationService.updateReadNotifications(token,existingNotificationDicts).subscribe(
       (response) => {
 
       },
   );
+});
   }
 
   onDateRangeChange() {
@@ -178,9 +184,10 @@ export class ReadNotificationsComponent implements OnInit {
 
 
   readNotification(): void {
+    this.authService.getIdToken().subscribe((token) =>{
     forkJoin([
-      this.notificationService.getReadNotifications(),
-      this.notificationService.getNotifications()
+      this.notificationService.getReadNotifications(token),
+      this.notificationService.getNotifications(token)
     ]).subscribe(([readNotifications, unreadNotifications]) => {
       console.log(readNotifications, unreadNotifications);
   
@@ -238,6 +245,7 @@ export class ReadNotificationsComponent implements OnInit {
   
       this.readnotifications = allNotifications;
     });
+  });
   }
 
   }
