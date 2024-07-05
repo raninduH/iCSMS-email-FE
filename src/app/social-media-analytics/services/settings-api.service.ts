@@ -62,6 +62,14 @@ export class SettingsApiService {
     return this.http.delete<any>(`${this.apiUrl}/product_alert/${id}`);
   }
 
+  getNotificationSettings(): Observable<any> {
+    return this.http.get(`http://127.0.0.1:8000/social-media/settings/settings/notifications`);
+  }
+
+  updateNotificationSettings(settings: any): Observable<any> {
+    return this.http.put(`http://127.0.0.1:8000/social-media/settings/settings/notifications`, settings);
+  }
+
 
 
 }
