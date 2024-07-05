@@ -3,6 +3,8 @@ import { ProfileSettingsService } from "../../../../app-settings/services/profil
 import  {AuthenticationService} from "../../../../auth/services/authentication.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {UserProfileDataService} from "../../../services/user-profile-data.service";
+import {apiEndpoint} from "../../../../app-settings/config";
+import {MessageService} from "primeng/api";
 
 
 @Component({
@@ -17,7 +19,13 @@ export class EditProfileComponent implements OnInit {
   profileImage: string = ''
   timestamp!: number;
 
-  constructor(private http: HttpClient,private authService: AuthenticationService, private profileService: ProfileSettingsService, private userProfileDataService: UserProfileDataService) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthenticationService,
+    private profileService: ProfileSettingsService,
+    private userProfileDataService: UserProfileDataService,
+    private messageService: MessageService
+  ) { }
 
 
   // @ViewChild('fileUploader') fileUploader: any;
@@ -39,48 +47,11 @@ export class EditProfileComponent implements OnInit {
         console.log(data)
         this.username = data[0].Value;
         this.email = data[0].Value;
-        this.phone = data[2].Value;
+        this.phone = data[5].Value;
         this.profileImage = data[4].Value;
       });
     });
   }
-
-
-  // fetchUserDetails(): void {
-  //   const token = this.cookieService.get('token');
-  //   if (token) {
-  //     // Call the AuthService method to fetch user details
-  //     this.authService.userDetails(token).subscribe(
-  //       (response) => {
-  //         this.username = response[0].username;
-  //         this.email = response[0].email;
-  //         this.phone = response[0].contact;
-  //         this.user = response; // Store user details in component variable
-  //       },
-  //     );
-  //   } else {
-  //
-  //   }
-  // }
-
-
-  // changeUserDetails() {
-  //   const profileUpdateData = {
-  //     "username": this.username,
-  //     "email": this.email,
-  //     "contact": this.phone
-  //   };
-  //
-  //
-  //   console.log("Profile update data:", profileUpdateData);
-  //   this.authService.profileUpdate(profileUpdateData, this.cookieService.get('token')).subscribe(
-  //     (response) => {
-  //
-  //     },
-  //   );
-  //
-  //
-  // }
 
 
   //janith
@@ -105,7 +76,7 @@ export class EditProfileComponent implements OnInit {
           'Authorization': `Bearer ${token}`
         });
       });
-      this.http.post('http://localhost:8000/uploadProfileImage', formData, { headers })
+      this.http.post(apiEndpoint+ '/uploadProfileImage', formData, { headers })
         .subscribe((response: any) => {
           console.log(response);
           window.location.reload();
@@ -113,6 +84,32 @@ export class EditProfileComponent implements OnInit {
           console.error(error);
         });
     }
+  }
+
+  updateProfile() {
+    const profileUpdateData = {
+      "email": this.email,
+      "phone_number": this.phone
+    };
+
+    this.authService.getIdToken().subscribe((token: any) => {
+      this.userProfileDataService.updateUserProfileData(profileUpdateData, token).subscribe((response: any) => {
+        this.messageService.add({severity:'success', summary: 'Success', detail: 'Profile updated successfully'});
+        this.loadUserData(); // Call the method to load user data again
+      });
+    });
+  }
+
+  loadUserData() {
+    this.authService.getIdToken().subscribe((token: any) => {
+      this.userProfileDataService.getUserProfileData(token).subscribe((data: any) => {
+        console.log(data);
+        this.username = data[0].Value;
+        this.email = data[0].Value;
+        this.phone = data[5].Value;
+        this.profileImage = data[4].Value;
+      });
+    });
   }
 
   getProfileImageUrl() {

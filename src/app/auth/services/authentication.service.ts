@@ -126,6 +126,35 @@ export class AuthenticationService {
     });
   }
 
+  getAccessToken(): Observable<string> {
+    return new Observable(observer => {
+      const currentUser = this.userPool.getCurrentUser();
+      if (currentUser) {
+        currentUser.getSession((err: any, session: CognitoUserSession) => {
+          if (err) {
+            observer.error(err);
+            this.router.navigate(['/auth/signin']).then(() => {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Sign in error. Please sign in again.' });
+            });
+          } else if (session.isValid()) {
+            observer.next(session.getAccessToken().getJwtToken());
+            observer.complete();
+          } else {
+            observer.error('Session expired. Please sign in again.');
+            this.router.navigate(['/auth/signin']).then(() => {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Session expired. Please sign in again.' });
+            });
+          }
+        });
+      } else {
+        observer.error('No user found');
+        this.router.navigate(['/auth/signin']).then(() => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Session expired. Please sign in again.' });
+        });
+      }
+    });
+  }
+
   getLastAuthUser(): CognitoUser | null {
     return this.userPool.getCurrentUser();
   }
