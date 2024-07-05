@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MenuItem } from "primeng/api";
 import { CampaignAnalysisApiService } from '../../services/campaign-analysis-api.service';
 import { TabStateService } from '../../services/tab-state.service';
 import { Subscription } from 'rxjs';
+import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
 
 @Component({
   selector: 'app-ca',
@@ -30,9 +31,11 @@ export class CAComponent implements OnInit, OnDestroy {
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
 
+  @ViewChild(ModalCampaignComponent) modalCampaignComponent!: ModalCampaignComponent;
+
   constructor(
     private campaignAnalysisApiService: CampaignAnalysisApiService,
-    private tabStateService: TabStateService
+    private tabStateService: TabStateService,
   ) { }
 
   ngOnInit(): void {
@@ -51,7 +54,11 @@ export class CAComponent implements OnInit, OnDestroy {
           }
           item.dataSentimentLabels = Array.from({ length: item.s_score_arr.length }, (_, i) => `${i + 1}`);
         });
+
         this.caPageContent.topCampaigns = campaignsContent;
+        // this.caPageContent.topCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] >= -0.1);
+        // this.caPageContent.additionalCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] < 0);
+
         this.loading = false;
       });
     });
@@ -61,6 +68,10 @@ export class CAComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  openAddNew(){
+    this.modalCampaignComponent.showDialog();
   }
 
   toggleAdditionalCards(): void {

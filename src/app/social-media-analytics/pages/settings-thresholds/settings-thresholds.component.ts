@@ -44,9 +44,9 @@ export class SettingsThresholdsComponent implements OnInit {
   }
 
   onRowDelete(item: Thresholds): void {
-    // this.settingsApiService.deleteThreshold(item.id).subscribe(() => {
-    //   this.thresholds = this.thresholds.filter((val: Thresholds) => val.id !== item.id);
-    // });
+     this.settingsApiService.deleteThreshold(item.id).subscribe(() => {
+      this.thresholds = this.thresholds.filter((val: Thresholds) => val.id !== item.id);
+     });
   }
 
 }

@@ -13,6 +13,7 @@ export class SettingsAlerts implements OnInit {
   list_alerts: AlertItem[] = [];
 
   @ViewChild(ModalAlertComponent) modalAlertComponent!: ModalAlertComponent;
+  alertitem: any;
 
   constructor(private settingsApiService: SettingsApiService) { }
 
@@ -36,9 +37,9 @@ export class SettingsAlerts implements OnInit {
   }
 
   onRowDelete(item: AlertItem): void {
-    // this.settingsApiService.deleteThreshold(item.id).subscribe(() => {
-    //   this.thresholds = this.thresholds.filter((val: Thresholds) => val.id !== item.id);
-    // });
+     this.settingsApiService.deleteAlertItem(item.id).subscribe(() => {
+       this.alertitem = this.alertitem.filter((val: AlertItem) => val.id !== item.id);
+     });
   }
 
   topBarCaption = "Add New";
