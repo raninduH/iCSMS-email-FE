@@ -3,7 +3,7 @@ import { AbstractControl, FormArray, FormBuilder, ValidatorFn, Validators } from
 import { MenuItem, Message, MessageService } from 'primeng/api';
 import { FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { DataService } from './settings.data.service';
+import { DataService } from '../../services/settings.service';
 import { AuthenticationService } from '../../../auth/services/authentication.service';
 import { DeleteNotiSendingEmail, DeleteReadingEmail, EmailAcc, EmailAccWithNickName, EmailINtegrationPostResponseMessage, GetEditingEmailResponse, GetNewIntergratingEmailID, IssInqType, NotiSendingChannelsRecord, PostEditingEmail, PostNewIntegratingEmail, PostingCriticalityData, IssueInqTypeData, PostingNotiSendingChannelsRecord, PostingOverdueIssuesData, SSShiftData, SendSystemConfigData, UserRoleResponse } from '../../interfaces/settings';
 import { forbiddenEmailValidator } from '../../validators/custom-validators';

@@ -12,7 +12,7 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
   
-  private baseUrl: string = `${URLS.baseUrl}/dashboard`;
+  private baseUrl: string = `${URLS.baseUrlv2}/dashboard`;
   private pollingInterval: number = INTERVALS.pollingInterval;
 
   getCurrentOverallSentiments(intervalInDaysStart: number, intervalInDaysEnd: number): Observable<get_current_overall_sentiments_response> {

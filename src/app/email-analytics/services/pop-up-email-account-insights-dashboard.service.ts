@@ -12,7 +12,7 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
   
-  private baseUrl: string = `${URLS.baseUrl}/dashboard`;
+  private baseUrl: string = `${URLS.baseUrlv2}/dashboard`;
   private pollingInterval: number = INTERVALS.pollingInterval;
 
 

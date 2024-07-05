@@ -9,7 +9,7 @@ import { startWith, switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class DataService {
-  private baseUrl: string = `${URLS.baseUrl}/dashboard`;
+  private baseUrl: string = `${URLS.baseUrlv2}/dashboard`;
   private pollingInterval: number = INTERVALS.pollingInterval;
 
   constructor(private http: HttpClient) { }
