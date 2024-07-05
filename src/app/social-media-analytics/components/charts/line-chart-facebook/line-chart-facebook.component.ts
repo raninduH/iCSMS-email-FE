@@ -1,4 +1,6 @@
-import { Component ,Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { DashboardApiService } from '../../../services/dashboard-api.service';
+
 
 @Component({
   selector: 'line-chart-facebook',
@@ -9,33 +11,54 @@ export class LineChartFacebookComponent {
   @Input() title!: string;
   data: any;
 
+
   options: any;
+
+  constructor(private facebookdataApiservice: DashboardApiService) { }
 
   ngOnInit() {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+    const startDate = '2024-05-01';
+    const endDate = '2024-07-01';
+    
+    this.facebookdataApiservice.getFacebookAnalysisData(startDate, endDate)
+      .subscribe(
+        (data: any) => {
+          console.log(data);
 
-    this.data = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-      datasets: [
-        {
-          label: 'Reacts',
-          data: [65, 59, 80, 81, 56, 55, 40],
-          borderColor: documentStyle.getPropertyValue('--blue-500'),
-          
-          
+          const convertDateFormat = (dateString: string): string => {
+            const date = new Date(dateString);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${month}-${day}`;
+          };
+
+          const labels = Object.keys(data['1']).map(dateString => convertDateFormat(dateString));
+
+          this.data = {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Reacts',
+                data: Object.values(data['1']),
+                borderColor: document.documentElement.style.getPropertyValue('--blue-500'),
+              },
+              {
+                label: 'Comments',
+                data: Object.values(data['2']),
+                borderColor: document.documentElement.style.getPropertyValue('rgba(255, 235, 59, 1)'),
+              },
+            ]
+          };
         },
-        {
-          label: 'Comments',
-          data: [28, 48, 40, 19, 86, 27, 90],
-          borderColor: documentStyle.getPropertyValue('--grey-500'),
-          
-          
-        },
-      ]
-    };
+        error => {
+          console.error('Error fetching Facebook Analysis Data:', error);
+          // Handle error (e.g., show error message in UI)
+        }
+      );
 
     this.options = {
       maintainAspectRatio: false,
@@ -67,5 +90,4 @@ export class LineChartFacebookComponent {
       }
     };
   }
-
 }

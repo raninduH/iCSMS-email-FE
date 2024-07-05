@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { DashboardApiService } from '../../../services/dashboard-api.service';
 
 @Component({
   selector: 'doughnut-chart',
@@ -12,45 +13,66 @@ export class DoughnutChartComponent implements OnInit {
   data: any;
 
   options: any;
+  
+
+  constructor(private DashboardAPiService:DashboardApiService){}
 
   ngOnInit() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
+    const startDate = '2024-05-01';
+    const endDate = '2024-07-30';
 
-    this.data = {
-      labels: ['Negative', 'Positive', 'Neutral'],
-      datasets: [
-        {
-          data: this.percentages,
-          backgroundColor: [
-            documentStyle.getPropertyValue('--negative-color'),
-            documentStyle.getPropertyValue('--positive-color'),
-            documentStyle.getPropertyValue('--neutral-color'),
-          ],
-          hoverBackgroundColor: [documentStyle.getPropertyValue('--red-400'), documentStyle.getPropertyValue('--green-400'), documentStyle.getPropertyValue('--yellow-400')]
+    this.fetchSentimentPercentages(startDate,endDate);
+  }
+
+  fetchSentimentPercentages(startDate:string,endDate:string) {
+    this.DashboardAPiService.getSentimentPercentage(startDate,endDate)
+      .subscribe(
+        (data: any) => {
+          this.percentages = data.percentage; // Update percentages with data from backend
+
+          // Update chart data and options
+          this.data = {
+            labels: ['Negative', 'Neutral', 'Positive'],
+            datasets: [
+              {
+                data: this.percentages,
+                backgroundColor: [
+                  '#FF6E76',
+                  '#e7cb59',
+                  '#5dd28d'
+                ],
+                hoverBackgroundColor: [
+                  '#f87171',
+                  '#facc15',
+                  '#4ade80'
+                ]
+              }
+            ]
+          };
+
+          this.options = {
+            cutout: '50%',
+            height: 600,
+            overrides: {
+              legend: {
+                padding: 50
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  color: '--text-color'
+                },
+              }
+            }
+          };
+        },
+        (error) => {
+          console.error('Error fetching sentiment percentages:', error);
         }
-      ]
-    };
-
-
-    this.options = {
-      cutout: '50%',
-      height: 600,
-      overrides: {
-        legend: {
-          padding: 50
-        }
-      },
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: {
-            usePointStyle: true,
-
-            color: textColor
-          },
-        }
-      }
-    };
+      );
   }
 }
+

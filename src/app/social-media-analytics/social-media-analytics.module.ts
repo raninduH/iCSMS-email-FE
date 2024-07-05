@@ -21,6 +21,7 @@ import { ChipsModule } from 'primeng/chips';
 import { TabViewModule } from 'primeng/tabview';
 import { CardModule } from 'primeng/card';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { SkeletonModule } from 'primeng/skeleton';
 
 import { DashboardComponent } from "./pages/dashboard/dashboard.component";
 import { CAComponent } from "./pages/campaign-analysis/ca.component";
@@ -36,13 +37,17 @@ import { TabsComponent } from './components/tabs/tabs.component';
 import { DoughnutChartComponent } from './components/charts/doughnut-chart/doughnut-chart.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { LineChartFacebookComponent } from './components/charts/line-chart-facebook/line-chart-facebook.component'
-import { GaugeChartComponent } from './components/charts/gauge-chart/gauge-chart.component';
 import { WordCloudSmComponent } from './components/word-cloud-topics/word-cloud-topics.component';
 import { WordCloudSm2Component } from './components/word-cloud-keywords/word-cloud-keywords.component';
 import { CaCardsComponent } from './components/ca-cards/ca-cards.component';
 import { LineChartInstagramComponent } from './components/charts/line-chart-instagram/line-chart-instagram.component';
+import { GaugeChartInstagramComponent } from './components/charts/gauge-chart-instagram/gauge-chart-instagram.component';
+import { GaugeChartFacebookComponent } from './components/charts/gauge-chart-facebook/gauge-chart-facebook.component';
 import { ModalExportPIComponent } from './components/Modals/modal-export-pi/modal-export-pi.component';
-import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
+import { ModalCampaignComponent } from './components/Modals/modal-campaign/modal-campaign.component';
+import { ModalAlertComponent } from './components/Modals/modal-alert/modal-alert.component';
+import { ModalThresholdComponent } from './components/Modals/modal-threshold/modal-threshold.component';
+import { ComparisonInsightComponent } from './components/Modals/comparison-insight/comparison-insight.component';
 
 
 @NgModule({
@@ -62,15 +67,20 @@ import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-
     SettingsCampaignComponent,
     SettingsNotificationsComponent,
     SettingsThresholdsComponent,
-    GaugeChartComponent,
     LineChartFacebookComponent,
     WordCloudSmComponent,
     WordCloudSm2Component,
     CaCardsComponent,
-    LineChartInstagramComponent
+    LineChartInstagramComponent,
+    GaugeChartInstagramComponent,
+    GaugeChartFacebookComponent,
+    ComparisonInsightComponent
+    
+  
     
   ],
   imports: [
+    SkeletonModule,
     PanelModule,
     CommonModule,
     SharedModule,
@@ -98,7 +108,9 @@ import { ModalAddNewCampaignComponent } from './components/Modals/modal-add-new-
     ChartModule,
     ButtonModule,
     ModalExportPIComponent,
-    ModalAddNewCampaignComponent,
+    ModalCampaignComponent,
+    ModalAlertComponent,
+    ModalThresholdComponent,
     NgxEchartsModule.forRoot({echarts: () => import('echarts')}),
   ]
 })
