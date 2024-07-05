@@ -1,21 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-ca-cards',
   templateUrl: './ca-cards.component.html',
   styleUrls: ['./ca-cards.component.scss']
 })
-export class CaCardsComponent implements OnInit {
+export class CaCardsComponent implements OnChanges {
   OptionsSideCards: any;
   DataSentiments: any[] = [];
   @Input() campaigns: any[] = [];
   @Input() showAdditionalCards: boolean = false;
+  @Input() loading: boolean = true;
 
   viewCampaign(card: any) {
-    // Handle the click event, e.g., navigate to a campaign detail page
+    window.open(card.post_url, '_blank');
   }
 
-  ngOnInit() {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['loading'] && !changes['loading'].currentValue) {
+      this.initializeDataSentiments();
+    }
+  }
+
+  initializeDataSentiments() {
     this.OptionsSideCards = {
       maintainAspectRatio: false,
       aspectRatio: 3.5,
@@ -49,24 +56,25 @@ export class CaCardsComponent implements OnInit {
       },
     };
 
+    this.DataSentiments = [];
+
     for (let i = 0; i < this.campaigns.length; i++) {
       this.DataSentiments.push({
         labels: this.campaigns[i].dataSentimentLabels,
         datasets: [
           {
             label: 'Sentiments',
-            data: this.campaigns[i].dataSentimentValues,
+            data: this.campaigns[i].s_score_arr,
             fill: false,
-            borderColor: '#2391ff',
-            borderWidth: 1,
-            pointBackgroundColor: "#2391ff",
-            pointBorderColor: "#2391ff",
-            pointRadius: 1.5,
+            borderColor: this.campaigns[i].color,
+            borderWidth: 1.5,
+            pointBackgroundColor: this.campaigns[i].color,
+            pointBorderColor: this.campaigns[i].color,
+            pointRadius: 2,
             tension: 0.2
           }
         ]
       });
     }
-
   }
 }

@@ -1,105 +1,78 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { MenuItem } from "primeng/api";
-import { Content } from '../../models/main-types';
+import { CampaignAnalysisApiService } from '../../services/campaign-analysis-api.service';
+import { TabStateService } from '../../services/tab-state.service';
+import { Subscription } from 'rxjs';
+import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
 
 @Component({
   selector: 'app-ca',
   templateUrl: './ca.component.html',
   styleUrls: ['./ca.component.scss']
 })
-export class CAComponent {
+export class CAComponent implements OnInit, OnDestroy {
+  loading: boolean = true;
 
   breadcrumbItems: MenuItem[] = [
     { label: "Social Media Analytics" },
     { label: "Campaign Analysis" }
   ];
 
+  private subscription: Subscription = new Subscription();
+
   tabFacebook = { title: 'Facebook', img: 'assets/social-media/icons/facebook.png' };
-  tabInstergram = { title: 'Instergram', img: 'assets/social-media/icons/instargram.png' };
-  tabTwitter = { title: 'Twitter', img: 'assets/social-media/icons/twitter.png' };
+  tabInstagram = { title: 'Instagram', img: 'assets/social-media/icons/instargram.png' };
 
-  caPageItem1: Content = { title: 'Top Performing Campaigns on Facebook' };
-  caPageItem2: Content = { title: 'Top Performing Campaigns on Instergram' };
-  caPageItem3: Content = { title: 'Top Performing Campaigns on Twitter' };
+  caPageContent = { subtitle: 'Top Performing Campaigns', topCampaigns: [], additionalCampaigns: [] };
 
-  topBarCaption = "Custom Campaigns";
-
+  topBarCaption = "Add New:";
   showAdditionalCards: boolean = false;
-
-  topCampaigns: any[] = [
-    {
-      name: 'Vega EVX Electric Super Car',
-      campaignName: 'VEGA Innovation',
-      sentiment: 80,
-      progress: 80,
-      color: '#23B103',
-      likesCount: 643,
-      likesChange: +53,
-      commentsCount: 123,
-      commentsChange: +12,
-      dataSentimentLabels: [1,2,3,4],
-      dataSentimentValues: [1,2,3,4],
-      imageUrl: 'https://th.bing.com/th/id/OIP.Eak-XmLRk42PkzvDtgT2QwHaEu?w=350&h=183&c=7&r=0&o=5&pid=1.7'
-    },
-    {
-      name: 'Lia Demo Video Artificial Intelligence Chatbot Serve Your Customers 24/7',
-      campaignName: 'CodeGen',
-      sentiment: 30,
-      progress: 30,
-      color: '#EF6327',
-      likesCount: 123,
-      likesChange: -12,
-      commentsCount: 53,
-      commentsChange: -5,
-      dataSentimentLabels: ["qw", "er", "ty", "ui"],
-      dataSentimentValues: [1,2,3,4],
-      imageUrl: 'https://th.bing.com/th/id/OIP.CHSYo7LrEZdfmUUvGkyPigHaEK?w=311&h=180&c=7&r=0&o=5&pid=1.7'
-    },
-    {
-      name: 'Lia Demo Video Artificial Intelligence Chatbot Serve Your Customers 24/7',
-      campaignName: 'CodeGen',
-      sentiment: 90,
-      progress: 90,
-      color: '#0BB783',
-      likesCount: 543,
-      likesChange: +23,
-      commentsCount: 223,
-      commentsChange: +32,
-      dataSentimentLabels: [1,2,3,4],
-      dataSentimentValues: [1,2,3,4],
-      imageUrl: 'https://th.bing.com/th/id/OIP.gIC1WV1MozLQa0sZzSxGtgAAAA?w=222&h=178&c=7&r=0&o=5&pid=1.7'
-    },
-  ];
-
-  additionalCampaigns1: any[] = [
-    {
-      name: 'Vega EVX Electric Super Car Headed To Geneva With 804 HP',
-      campaignName: 'VEGA Innovation',
-      sentiment: 75,
-      progress: 50,
-      color: '#93B103',
-      imageUrl: 'https://th.bing.com/th/id/OIP.Eak-XmLRk42PkzvDtgT2QwHaEu?w=350&h=183&c=7&r=0&o=5&pid=1.7'
-    },
-    {
-      name: 'Lia Demo Video Artificial Intelligence Chatbot Serve Your Customers 24/7',
-      campaignName: 'CodeGen',
-      sentiment: 75,
-      progress: 50,
-      color: '#23B103',
-      imageUrl: 'https://th.bing.com/th/id/OIP.CHSYo7LrEZdfmUUvGkyPigHaEK?w=311&h=180&c=7&r=0&o=5&pid=1.7'
-    },
-    {
-      name: 'Lia Demo Video Artificial Intelligence Chatbot Serve Your Customers 24/7',
-      campaignName: 'CodeGen',
-      sentiment: 75,
-      progress: 50,
-      color: '#23B103',
-      imageUrl: 'https://th.bing.com/th/id/OIP.gIC1WV1MozLQa0sZzSxGtgAAAA?w=222&h=178&c=7&r=0&o=5&pid=1.7'
-    },
-  ];
 
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
+
+  @ViewChild(ModalCampaignComponent) modalCampaignComponent!: ModalCampaignComponent;
+
+  constructor(
+    private campaignAnalysisApiService: CampaignAnalysisApiService,
+    private tabStateService: TabStateService,
+  ) { }
+
+  ngOnInit(): void {
+    this.subscription = this.tabStateService.activeTab$.subscribe((tabName: string) => {
+      let platform = "SM01";
+      if (tabName === "Instagram") {
+        platform = "SM02";
+      }
+      this.loading = true;
+
+      this.campaignAnalysisApiService.getCAData(platform).subscribe(response => {
+        const campaignsContent = response;
+        campaignsContent.forEach((item: any) => {
+          if (item.description.length > 40) {
+            item.description = item.description.slice(0, 40) + '...';
+          }
+          item.dataSentimentLabels = Array.from({ length: item.s_score_arr.length }, (_, i) => `${i + 1}`);
+        });
+
+        this.caPageContent.topCampaigns = campaignsContent;
+        // this.caPageContent.topCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] >= -0.1);
+        // this.caPageContent.additionalCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] < 0);
+
+        this.loading = false;
+      });
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  openAddNew(){
+    this.modalCampaignComponent.showDialog();
+  }
 
   toggleAdditionalCards(): void {
     this.showAdditionalCards = !this.showAdditionalCards;
@@ -108,5 +81,4 @@ export class CAComponent {
   selectPlatform(platform: string) {
     console.log('Selected platform:', platform);
   }
-
 }
