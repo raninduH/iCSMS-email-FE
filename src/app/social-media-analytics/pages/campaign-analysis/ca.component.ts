@@ -14,7 +14,7 @@ export class CAComponent implements OnInit, OnDestroy {
   loading: boolean = true;
 
   breadcrumbItems: MenuItem[] = [
-    { label: "Social Media Analytics" },
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     { label: "Campaign Analysis" }
   ];
 
