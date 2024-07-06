@@ -37,7 +37,7 @@ export class GaugeChartInstagramComponent {
             lineStyle: {
               width: 30,
               color: [
-                [0.15, '#FF6E76'],
+                [0.35, '#FF6E76'],
                 [0.65, '#e7cb59'],
                 [1, '#5dd28d'],
               ]
@@ -67,7 +67,7 @@ export class GaugeChartInstagramComponent {
           },
           data: [
             {
-              value: 4
+              value: 0.2
             }
           ]
         }
@@ -83,7 +83,7 @@ export class GaugeChartInstagramComponent {
         if (this.options.series && Array.isArray(this.options.series) && this.options.series.length > 0) {
           const firstSeries = this.options.series[0];
           if ('data' in firstSeries && Array.isArray(firstSeries.data) && firstSeries.data.length > 0) {
-            firstSeries.data[0].value = data;
+            firstSeries.data[0].value = (data+1)/2;
 
             // Trigger change detection if using ngx-echarts
             this.options = { ...this.options };

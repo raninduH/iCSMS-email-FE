@@ -10,7 +10,7 @@
 <div class="flex flex-col">
   <div class="flex gap-7 flex-wrap">
 
-    <doughnut-chart title="Overall Sentiment" [percentages]="data_doughnut" />
+    <doughnut-chart title="Overall Sentiment" />
 
     <app-gauge-chart-facebook />
 
@@ -27,12 +27,10 @@
     <line-chart-facebook title="Insights from Facebook"/>
 
     <line-chart-instagram title="Insights from Instagram"/>
-
-    <line-chart-instagram title="Insights from Instagram" />
   </div>
+
   <div class="flex gap-3 flex-wrap">
     <app-comparison-insight></app-comparison-insight>
   </div>
-
 
 </div>
