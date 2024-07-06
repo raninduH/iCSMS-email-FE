@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MenuItem } from "primeng/api";
+import { MenuItem, MessageService } from "primeng/api";
 import { CampaignAnalysisApiService } from '../../services/campaign-analysis-api.service';
 import { TabStateService } from '../../services/tab-state.service';
+import UserMessages from "../../../shared/user-messages";
 import { Subscription } from 'rxjs';
 import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/modal-campaign.component';
 
@@ -12,6 +13,8 @@ import { ModalCampaignComponent } from '../../components/Modals/modal-campaign/m
 })
 export class CAComponent implements OnInit, OnDestroy {
   loading: boolean = true;
+  isError: boolean = false;
+  protected readonly userMessages = UserMessages;
 
   breadcrumbItems: MenuItem[] = [
     { label: "Social Media Analytics" },
@@ -36,10 +39,12 @@ export class CAComponent implements OnInit, OnDestroy {
   constructor(
     private campaignAnalysisApiService: CampaignAnalysisApiService,
     private tabStateService: TabStateService,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit(): void {
     this.subscription = this.tabStateService.activeTab$.subscribe((tabName: string) => {
+
       let platform = "SM01";
       if (tabName === "Instagram") {
         platform = "SM02";
@@ -60,6 +65,9 @@ export class CAComponent implements OnInit, OnDestroy {
         // this.caPageContent.additionalCampaigns = campaignsContent.filter((item: any) => item.s_score_arr[campaignsContent[0].s_score_arr.length - 1] < 0);
 
         this.loading = false;
+      }, (error) => {
+        this.isError = true;
+        this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
       });
     });
   }
@@ -70,15 +78,11 @@ export class CAComponent implements OnInit, OnDestroy {
     }
   }
 
-  openAddNew(){
+  openAddNew() {
     this.modalCampaignComponent.showDialog();
   }
 
   toggleAdditionalCards(): void {
     this.showAdditionalCards = !this.showAdditionalCards;
-  }
-
-  selectPlatform(platform: string) {
-    console.log('Selected platform:', platform);
   }
 }

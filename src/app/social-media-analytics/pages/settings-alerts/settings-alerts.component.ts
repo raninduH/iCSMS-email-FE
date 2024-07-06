@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { SettingAlertsData, AlertItem } from '../../models/settings';
+import { AlertItem } from '../../models/settings';
+import { MessageService } from 'primeng/api';
 import { SettingsApiService } from '../../services/settings-api.service';
 import { ModalAlertComponent } from '../../components/Modals/modal-alert/modal-alert.component';
 
@@ -13,9 +14,11 @@ export class SettingsAlerts implements OnInit {
   list_alerts: AlertItem[] = [];
 
   @ViewChild(ModalAlertComponent) modalAlertComponent!: ModalAlertComponent;
-  alertitem: any;
 
-  constructor(private settingsApiService: SettingsApiService) { }
+  constructor(
+    private settingsApiService: SettingsApiService,
+    private messageService: MessageService
+  ) { }
 
   ngOnInit() {
     this.settingsApiService.getTopicAlerts().subscribe(
@@ -23,12 +26,12 @@ export class SettingsAlerts implements OnInit {
         this.list_alerts = response;
       },
       error => {
-        console.error('Error fetching data:', error);
+        this.messageService.add({ severity: "error", summary: "Error", detail: "Error fetching Data" });
       }
     );
   }
 
-  openAddNew(){
+  openAddNew() {
     this.modalAlertComponent.showDialog();
   }
 
@@ -37,9 +40,12 @@ export class SettingsAlerts implements OnInit {
   }
 
   onRowDelete(item: AlertItem): void {
-     this.settingsApiService.deleteAlertItem(item.id).subscribe(() => {
-       this.alertitem = this.alertitem.filter((val: AlertItem) => val.id !== item.id);
-     });
+    this.settingsApiService.deleteAlertItem(item.id).subscribe(() => {
+      this.list_alerts = this.list_alerts.filter((val: AlertItem) => val.id !== item.id);
+      this.messageService.add({ severity: "success", summary: "Success", detail: "Threshold Deleted Successfully" });
+    }, (error) => {
+      this.messageService.add({ severity: "error", summary: "Error", detail: "Error Deleting Data" });
+    });
   }
 
   topBarCaption = "Add New";
