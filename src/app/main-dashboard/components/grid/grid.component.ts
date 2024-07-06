@@ -14,6 +14,7 @@ import {MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
 import { AuthenticationService } from '../../../auth/services/authentication.service';
 import { GridsterItemComponentInterface } from 'angular-gridster2';
+import { ChangeDetectorRef,NgZone } from '@angular/core';
 
 interface Product {
   id: number;
@@ -113,7 +114,8 @@ export class GridComponent implements OnInit {
     private messageService: MessageService,
     private confirmationService: ConfirmationService
     ,private authService:AuthenticationService
-    ) {}
+    ) {
+    }
   ngOnInit(): void {
     this.menuItems = [
         {
@@ -161,7 +163,7 @@ export class GridComponent implements OnInit {
         }
       }
     );
-    this.grid();
+    this.grid(true);
     this.gridStart=1;
 }
 
@@ -310,7 +312,7 @@ onChanges(event: boolean, index: number): void {
 
 
 
-grid(){
+grid(draggablebool:boolean){
   this.options = {
     gridType: GridType.ScrollVertical,
     compactType: "compactUp",
@@ -341,7 +343,7 @@ grid(){
     scrollSensitivity: 10,
     scrollSpeed: 8,
     draggable: {
-      enabled: true,
+      enabled: draggablebool,
       dropOverItems:false
     },
     resizable: {
@@ -381,23 +383,29 @@ grid(){
     itemChangeCallback: this.itemChange.bind(this),
   };
 
-this.data = {
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  datasets: [
-    {
-      label: 'My First Dataset',
-      data: [65, 59, 80, 81, 56, 55, 40],
-      backgroundColor: '#42A5F5',
-      hoverBackgroundColor: '#64B5F6'
-    }
-  ]
-};
+  console.log('option',this.options.draggable.enabled);
 
 this.chartOptions = {
   responsive: true,
   maintainAspectRatio: false
 };
 }
+
+
+handleSliderInteraction(isInteracting: boolean) {
+
+  if (isInteracting) {
+    this.options.draggable.enabled = false;
+    this.options.resizable.enabled = false;
+  } else {
+    this.options.draggable.enabled = true;
+    this.options.resizable.enabled = true;
+  }
+  this.grid(!isInteracting);
+
+}
+
+
 
 widgetsUser(){
   caches.open('widgets').then(cache => {
@@ -413,11 +421,11 @@ widgetsUser(){
           this.widgetGrid = data.map((item: any) => item.grid);
           this.ID = data.map((item: any) => item.id);
           this.status = data.map((item: any) => item.status);
-          console.log(data);
+          
           // this.widgetData = this.processWidgetData(this.widgetTitle, this.widgetChart, this.widgetSoucrce);
           const response = this.processGridData(this.widgetTitle, this.widgetChart, this.widgetSoucrce, this.widgetGrid,this.ID,this.topic,this.yAxis,this.xAxis,this.status);
           this.dashboard= response[0].filter((item:any) => item['status'] !== 'hide');
-          console.log(this.dashboard);
+          
           this.gridList = response[0].filter((item:any) => item['status'] !== 'show');
           this.ChartSources=response[1];
         });
@@ -430,7 +438,7 @@ widgetsUser(){
 }
 
   onresize(event: any): void {
-    console.log('Element was resized', event);
+    
   }
 
 
@@ -601,7 +609,7 @@ updateCache(changesQueue: { id: string, cols: number, rows: number, x: number, y
 
           const updatedResponse = new Response(JSON.stringify(data));
           cache.put('widgets-data', updatedResponse);
-          console.log(data);
+          
         });
       }
     });
