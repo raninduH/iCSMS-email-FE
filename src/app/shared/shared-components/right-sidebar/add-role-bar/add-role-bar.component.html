@@ -1,9 +1,10 @@
 <p-sidebar position="right" [(visible)]="sidebarVisible">
 
-  <ng-template pTemplate="header" class="justify-content-center">
-    <span class="title"><h3>New Role</h3></span>
-
+  <ng-template  pTemplate="header" class="justify-content-center">
+    <span *ngIf="!isRoleUpdate" class="title"><h3>New Role</h3></span>
+    <span *ngIf="isRoleUpdate" class="title"><h3>Update Role</h3></span>
   </ng-template>
+
 
   <ng-template pTemplate="content">
     <p-divider></p-divider>

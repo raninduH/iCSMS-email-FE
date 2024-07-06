@@ -31,25 +31,17 @@ constructor(
     this.sendDataToParent.emit(dataToSend);
   }
   changePassword(){
-    if(this.newPassword === this.confirmPassword){
-      if(this.newPassword.length >= 8){
-        this.authService.getIdToken().subscribe((token: any) => {
-          console.log(token);
-          this.changePasswordService.changePassword(token, this.currentPassword, this.newPassword).subscribe((data: any) => {
-            this.messageService.add({severity:'success', summary: 'Success', detail: 'Password changed successfully'});
-            this.currentPassword = '';
-            this.newPassword = '';
-            this.confirmPassword = '';
-          }, (error: any) => {
-            this.messageService.add({severity:'error', summary: 'Error', detail: 'Error changing password'});
-          });
+    this.authService.getIdToken().subscribe((token: any) => {
+      this.authService.getAccessToken().subscribe((accessToken: any) => {
+        this.changePasswordService.changePassword(token, accessToken, this.currentPassword, this.newPassword).subscribe((data: any) => {
+          console.log(data);
+          this.messageService.add({severity:'success', summary: 'Success', detail: 'Password changed successfully'});
+        }, (error: any) => {
+          console.log(error);
+          this.messageService.add({severity:'error', summary: 'Error', detail: 'Password change failed'});
         });
-      } else {
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Password must be at least 8 characters long'});
-      }
-    }else{
-      this.messageService.add({severity:'error', summary: 'Error', detail: 'Passwords do not match'});
-    }
+      });
+    });
   }
 
 

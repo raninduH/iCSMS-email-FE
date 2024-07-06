@@ -20,6 +20,13 @@ export class UserProfileDataService {
 
   }
 
+  updateUserProfileData(data: any, token: string): any {
+    let headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+    });
+    return this.http.post<any>(this.apiUrl+'/editUserProfile', data, {headers});
+  }
+
 
 
 

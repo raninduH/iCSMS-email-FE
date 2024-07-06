@@ -31,6 +31,8 @@ export class RoleManagementComponent implements OnInit{
 
   permissions: string[] = [];
 
+  isLoading: boolean = true;
+
 
   actions!: MenuItem[];
 
@@ -50,6 +52,8 @@ export class RoleManagementComponent implements OnInit{
   ngOnInit() {
 
     this.checkLoginService.checkLogin();
+
+    this.isLoading = true;
 
 
 
@@ -180,14 +184,17 @@ export class RoleManagementComponent implements OnInit{
   }
 
   getRoleDetails() {
+    this.isLoading = true;
     this.authService.getIdToken().subscribe((token: any) => {
       this.roleService.getRoleDetails(token, this.selectedRoles.group_name).subscribe(
         (data: any) => {
           console.log(data);
+          this.isLoading = false;
           this.userGroupData = data;
         },
         (error: any) => {
           console.log(error);
+          this.isLoading = false;
           this.messageService.add({severity: 'error', summary: 'Error', detail: 'Failed to get role details'});
         }
       );
