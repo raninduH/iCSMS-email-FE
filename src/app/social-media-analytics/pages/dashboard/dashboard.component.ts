@@ -9,7 +9,7 @@ import {ComparisonInsightComponent} from '../../components/Modals/comparison-ins
 export class DashboardComponent {
  
   breadcrumbItems: MenuItem[] = [
-    {label: "Social Media Analytics"},
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     {label: "Dashboard"}
   ];
 
