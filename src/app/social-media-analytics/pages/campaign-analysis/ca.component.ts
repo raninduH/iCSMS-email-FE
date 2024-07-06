@@ -17,7 +17,7 @@ export class CAComponent implements OnInit, OnDestroy {
   protected readonly userMessages = UserMessages;
 
   breadcrumbItems: MenuItem[] = [
-    { label: "Social Media Analytics" },
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     { label: "Campaign Analysis" }
   ];
 

@@ -9,17 +9,19 @@ import { MenuItem } from "primeng/api";
 export class DashboardComponent {
  
   breadcrumbItems: MenuItem[] = [
-    {label: "Social Media Analytics"},
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     {label: "Dashboard"}
   ];
 
-  myData1 = [
-  ]
+  myData1 = []
+     
+  
 
-  myData2 = [
-  ]
+  myData2 = []
+    
 
-  data_doughnut: number[] = [100, 50, 100];
+  
+  data_doughnut: number[] = [];
  
   DateChanged(start: string, end: string) {
 

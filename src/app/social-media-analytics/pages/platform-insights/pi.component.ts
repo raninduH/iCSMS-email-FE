@@ -310,7 +310,7 @@ export class PIComponent implements OnInit, OnDestroy {
   }
 
   breadcrumbItems: MenuItem[] = [
-    { label: "Social Media Analytics" },
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     { label: "Platform Insights" }
   ];
 
