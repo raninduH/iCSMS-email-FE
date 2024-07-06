@@ -35,6 +35,20 @@ export class UsersComponent implements OnInit {
   logsVisible: boolean = false;
 
   logs: { action: string, is_success: boolean, time:string }[] = [];
+  authLogs!:{
+    "action": String,
+    "is_pass": String,
+    "time": String,
+    "event_data": {
+      "IpAddress": String,
+      "DeviceName": String,
+      "City": String,
+      "Country": String
+    }
+  }[];
+
+  //add some sample data
+
 
   constructor(
     private customerService: UserDataService,
@@ -273,7 +287,19 @@ export class UsersComponent implements OnInit {
         },
         (error: any) => {
           console.log(error);
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch logs' });
+          // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No logs for  '+ this.selectedUsers.username });
+        }
+      );
+      this.customerService.getUserAuthLogs(token, this.selectedUsers.username, '2024-07-01', '2024-07-31').subscribe(
+        (data: any) => {
+          console.log(data);
+          this.authLogs = data;
+          // this.logsVisible = true;
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Auth Logs fetched successfully' });
+        },
+        (error: any) => {
+          console.log(error);
+          // this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No auth logs for  '+ this.selectedUsers.username });
         }
       );
     });
