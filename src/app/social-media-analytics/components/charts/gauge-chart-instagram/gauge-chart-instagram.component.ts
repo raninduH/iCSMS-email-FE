@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import {EChartsOption} from "echarts";
-import { DashboardApiService } from '../../../services/dashboard-api.service';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { EChartsOption } from "echarts";
 
 
 @Component({
@@ -8,28 +7,28 @@ import { DashboardApiService } from '../../../services/dashboard-api.service';
   templateUrl: './gauge-chart-instagram.component.html',
   styleUrl: './gauge-chart-instagram.component.scss'
 })
-export class GaugeChartInstagramComponent {
+
+export class GaugeChartInstagramComponent implements OnChanges {
+  @Input() inputData!: number;
 
   options!: EChartsOption;
   score!: number;
+  data!: number;
 
-  constructor(private getinstagramscore: DashboardApiService) {}
 
-  ngOnInit(): void {
-    this.initializeChart();
-    const startDate = '2024-05-01';
-    const endDate = '2024-08-01';
-    this.updateGaugeChart(startDate, endDate);
-  }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['inputData']) {
+      this.data = this.inputData;
+      this.score = this.data;
+    }
 
-  initializeChart(): void {
     this.options = {
       series: [
         {
           type: 'gauge',
           startAngle: 180,
           endAngle: 0,
-          center: ['50%', '75%'],
+          center: ['50%', '65%'],
           radius: '90%',
           min: 0,
           max: 1,
@@ -37,9 +36,9 @@ export class GaugeChartInstagramComponent {
             lineStyle: {
               width: 30,
               color: [
-                [0.15, '#db0b0b'],
-                [0.65, '#ffdc28'],
-                [1, '#44c022'],
+                [0.35, '#FF6E76'],
+                [0.65, '#e7cb59'],
+                [1, '#5dd28d'],
               ]
             }
           },
@@ -49,10 +48,10 @@ export class GaugeChartInstagramComponent {
           pointer: {
             icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
             length: '50%',
-            width: 20,
+            width: 10,
             offsetCenter: [0, '-15%'],
             itemStyle: {
-              color: 'auto'
+              color: 'black'
             }
           },
           axisLabel: {
@@ -73,27 +72,15 @@ export class GaugeChartInstagramComponent {
         }
       ]
     };
-  }
 
-  updateGaugeChart(startDate: string, endDate: string): void {
-    this.getinstagramscore.getSentimentScoreInstagram(startDate, endDate).subscribe(
-      (data: number) => {
-        this.score = data;
-        console.log(data)
-        if (this.options.series && Array.isArray(this.options.series) && this.options.series.length > 0) {
-          const firstSeries = this.options.series[0];
-          if ('data' in firstSeries && Array.isArray(firstSeries.data) && firstSeries.data.length > 0) {
-            firstSeries.data[0].value = data;
-
-            // Trigger change detection if using ngx-echarts
-            this.options = { ...this.options };
-          }
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching sentiment score', error);
+    if (this.options.series && Array.isArray(this.options.series) && this.options.series.length > 0) {
+      const firstSeries = this.options.series[0];
+      if ('data' in firstSeries && Array.isArray(firstSeries.data) && firstSeries.data.length > 0) {
+        firstSeries.data[0].value = (this.data + 1) / 2;
+        this.options = { ...this.options };
       }
-    );
+    }
   }
- 
+
+
 }
