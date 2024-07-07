@@ -4,6 +4,7 @@ import { timer } from 'rxjs';
 import { NotificationCountService } from '../../shared-services/notification-count.service';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../../main-dashboard/services/notification.service';
+import { AuthenticationService } from '../../../auth/services/authentication.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -14,15 +15,18 @@ export class TopMenuComponent implements OnInit {
   notificationCount: number = 0;
 
   private socketSubscription: Subscription | undefined;
-  constructor(private notificationService: NotificationService) {}
+  constructor(private notificationService: NotificationService,
+    private authService: AuthenticationService
+  ) {}
 
   ngOnInit(): void {
-    
-      this.notificationService.getNotificationsCounts().subscribe(
+    this.authService.getIdToken().subscribe((token) =>{
+      this.notificationService.getNotificationsCounts(token).subscribe(
         (notifications) => {
           this.notificationCount = notifications;
         },
       );
+    });
 
     // timer(0, 1000).subscribe(() => {
     //   // this.notificationService.getNotificationsCounts().subscribe(
@@ -34,11 +38,13 @@ export class TopMenuComponent implements OnInit {
 
     this.socketSubscription = this.notificationService.messages$.subscribe(
       message => {
-        this.notificationService.getNotificationsCounts().subscribe(
+        this.authService.getIdToken().subscribe((token) =>{
+        this.notificationService.getNotificationsCounts(token).subscribe(
           (notifications) => {
             this.notificationCount = notifications;
           },
         );
+      });
       }
       );
 

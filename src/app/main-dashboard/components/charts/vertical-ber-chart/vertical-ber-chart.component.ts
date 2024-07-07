@@ -14,12 +14,36 @@ import {MenuItem, MenuItemCommandEvent} from "primeng/api";
 
 export class VerticalBerChartComponent implements OnInit,OnChanges{
 
+  @Output() sliderInteraction: EventEmitter<boolean> = new EventEmitter();
   @Output() deletedConfirmed: EventEmitter<void> = new EventEmitter<void>();
   @Output() hideConfirmed: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() closable:boolean = true;
 
   @Input() id!:string;
+
+  // Example component method to delay layout changes
+onInputChange() {
+  setTimeout(() => {
+    // Perform layout-changing actions here
+    console.log('Input changed');
+  }, 0); // Delay execution to ensure input focus is maintained
+}
+
+  
+  positiveMin:number=5;
+  positiveMax:number=2;
+  negativeMin:number=2;
+  negativeMax:number=10;
+  neutralMin:number=2;
+  neutralMax:number=2;
+
+  wordYAxisOptions = [
+    { label: 'Topics', value: 'topics' },
+    { label: 'Keywords', value: 'keywords' },
+    { label: 'Products', value: 'products' },
+  ];
+
 
   data:any;
   @Input() persentages: any[]=[];
@@ -33,6 +57,8 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
   @Input() topics: string[] = [];
   @Input() sources: string[] = ['call', 'email', 'social'];
 
+  // positiveMin:number=1;
+  // positiveMax:number=10;
 
   labels: string[] = [];
   total: number = 0;
@@ -143,13 +169,41 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
   }
 
 
+  onSliderChange(event: any) {
+    this.sliderInteraction.emit(true);
+  }
+
+  showOverlay(op:any):void{
+    op.toggle(event);
+  }
   onDelete(){
     console.log('delete');
     this.deletedConfirmed.emit();
   }
 
+
+  edit:boolean=false;
   onEdit(){
-    console.log('Edit');
+    if(this.xAxis=='topics' || this.xAxis=='keywords'){
+      console.log('edit');
+      this.edit = true;
+      this.sliderInteraction.emit(true);
+    }
+    
+  }
+
+  editOffApply(){
+    this.edit=false;
+    this.sliderInteraction.emit(false);
+    if(this.selectedCategories){
+
+      this.barChartExtract(this.selectedCategories);
+    }
+  }
+
+  editOffCancel(){
+    this.edit=false;
+    this.sliderInteraction.emit(false);
   }
 
  confirmDeleted() {
@@ -271,6 +325,7 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
 
               if (source === 'email') {
                 emailTopics = this.extractTopics(data, 'email');
+                
                 allTopics.push(...emailTopics);
               }
             });
@@ -300,6 +355,25 @@ export class VerticalBerChartComponent implements OnInit,OnChanges{
                 this.updateAllData(this.transformData(sourceData[1]), 'closed');
               }
             });
+
+          //   if (this.xAxis === 'topics' || this.xAxis === 'keywords') {
+          //   const filteredTopicsPositive = this.topics.filter(topic =>
+          //     (this.allDataTpoic[topic]?.positive >= 5 && this.allDataTpoic[topic]?.positive <= 12) || 
+          //     (this.allDataTpoic[topic]?.negative >= 5 && this.allDataTpoic[topic]?.negative <= 12) ||
+          //     (this.allDataTpoic[topic]?.neutral >= 5 && this.allDataTpoic[topic]?.neutral <= 10)
+          //   );
+          //   this.topics=filteredTopicsPositive
+          // }
+
+          if (this.xAxis === 'topics' || this.xAxis === 'keywords') {
+            const filteredTopicsPositive = this.topics.filter(topic =>
+              (this.allDataTpoic[topic]?.positive >= this.positiveMin && this.allDataTpoic[topic]?.positive <= this.positiveMax) || 
+              (this.allDataTpoic[topic]?.negative >= this.negativeMin && this.allDataTpoic[topic]?.negative <= this.negativeMax) ||
+              (this.allDataTpoic[topic]?.neutral >= this.neutralMin && this.allDataTpoic[topic]?.neutral <= this.neutralMax)
+            );
+            this.topics=filteredTopicsPositive
+          }
+            
 
             this.createDatasets(documentStyle);
             this.getMaxValues(this.datasets);
@@ -430,19 +504,29 @@ extractTopics(data: any, sourceType: string): any[] {
       .filter((sourceItem: any) => this.isDateInRange(sourceItem.Date))
       .flatMap((sourceItem: any) => {
         if (this.xAxis === 'topics') {
-          return sourceItem.data.flatMap((dataItem: any) => dataItem.topic);
+          return sourceItem.data
+            .filter((dataItem: any) => dataItem.topic !== undefined && dataItem.topic.length > 0)
+            .flatMap((dataItem: any) => dataItem.topic);
         } else if (this.xAxis === 'keywords') {
-          return sourceItem.data.flatMap((dataItem: any) => dataItem.keywords);
+          return sourceItem.data
+            .filter((dataItem: any) => dataItem.keywords !== undefined && dataItem.keywords.length > 0)
+            .flatMap((dataItem: any) => dataItem.keywords);
         } else if (this.xAxis === 'issues') {
-          return sourceItem.data.flatMap((dataItem: any) => dataItem.issue_type);
-        } else if (this.xAxis === 'inquiries') {
-          return sourceItem.data.flatMap((dataItem: any) => dataItem.inquiry_type);
+          return sourceItem.data
+            .filter((dataItem: any) => dataItem.issue_type !== undefined && dataItem.issue_type.length > 0)
+            .flatMap((dataItem: any) => dataItem.issue_type);
+        } else if (this.xAxis === 'inquries') {
+          return sourceItem.data
+            .filter((dataItem: any) => dataItem.inquiry_type !== undefined && dataItem.inquiry_type.length > 0)
+            .flatMap((dataItem: any) => dataItem.inquiry_type);
         } else {
           return [];
         }
-      }).filter((element: any) => element != null)
+      })
+      .filter((element: any) => element != null)
   );
 }
+
 
 extractCounts(data: any, sourceType: string): any[] {
   return data.flatMap((item: any) =>
@@ -479,7 +563,7 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
 
       if (this.xAxis === 'topics') {
         itemTopics = Array.isArray(item.topic) ? item.topic : (item.topic ? [item.topic] : []);
-      } else if (this.xAxis === 'inquiries') {
+      } else if (this.xAxis === 'inquries') {
         itemTopics = Array.isArray(item.inquiry_type) ? item.inquiry_type : (item.inquiry_type ? [item.inquiry_type] : []);
       } else if (this.xAxis === 'issues') {
         itemTopics = Array.isArray(item.issue_type) ? item.issue_type : (item.issue_type ? [item.issue_type] : []);
@@ -538,8 +622,10 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
       percentage: parseFloat(((categoryMapNeutral[topic] / this.total) * 100).toFixed(2))
     }));
 
+    console.log([positiveData, negativeData, neutralData]);
     return [positiveData, negativeData, neutralData];
-  } else {
+  } 
+  else {
     const ongoingData = topics.map(topic => ({
       category: topic,
       count: categoryMapOngoing[topic],
@@ -551,7 +637,7 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
       count: categoryMapClosed[topic],
       percentage: parseFloat(((categoryMapClosed[topic] / this.total) * 100).toFixed(2))
     }));
-
+    console.log([ongoingData, closedData]);
     return [ongoingData, closedData];
   }
 
@@ -582,15 +668,24 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
 
   }
 
-  chart(){
+  chart() {
     const documentStyle = getComputedStyle(document.documentElement);
-    // const textColor = documentStyle.getPropertyValue('--text-color');
+  
+    // // Define your desired range for labels and datasets
+    // const labelStartIndex = 0;
+    // const labelEndIndex = 10;
 
+  
+    // // Slice the labels and datasets accordingly
+    // const slicedLabels = this.labels.slice(labelStartIndex, labelEndIndex);
+   
+    // // Assign sliced data to this.data
     this.data = {
       labels: this.labels,
       datasets: this.datasets
     };
-
+  
+    // Configure options for the chart
     this.options = {
       indexAxis: 'x',
       maintainAspectRatio: false,
@@ -620,4 +715,7 @@ aggregateWordCloudData(allCount: any, topics: string[]): any[] {
       },
     };
   }
+  
+  
+  
 }

@@ -35,6 +35,8 @@ import { ViewUserComponent } from './shared-components/right-sidebar/view-user/v
 
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { DialogModule } from 'primeng/dialog';
+import { SkeletonModule } from "primeng/skeleton";
+import { UnauthorizedComponent } from './shared-components/unauthorized/unauthorized.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { DialogModule } from 'primeng/dialog';
     PageNotFoundComponent,
     AddRoleBarComponent,
     ViewUserComponent,
+    UnauthorizedComponent,
 
   ],
   exports: [
@@ -58,33 +61,34 @@ import { DialogModule } from 'primeng/dialog';
     TopMenuComponent,
     WordcloudComponent,
   ],
-  imports: [
-    CommonModule,
-    PanelMenuModule,
-    PanelModule,
-    BreadcrumbModule,
-    DividerModule,
-    CalendarModule,
-    FormsModule,
-    HttpClientModule,
-    SidebarModule,
-    ChartModule,
-    InputTextModule,
-    FieldsetModule,
-    CardModule,
-    ImageModule,
-    DropdownModule,
-    SelectButtonModule,
-    MultiSelectModule,
-    ReactiveFormsModule,
-    InputSwitchModule,
-    CheckboxModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ToastModule,
-    OverlayPanelModule,
-    DialogModule
-  ],
+    imports: [
+        CommonModule,
+        PanelMenuModule,
+        PanelModule,
+        BreadcrumbModule,
+        DividerModule,
+        CalendarModule,
+        FormsModule,
+        HttpClientModule,
+        SidebarModule,
+        ChartModule,
+        InputTextModule,
+        FieldsetModule,
+        CardModule,
+        ImageModule,
+        DropdownModule,
+        SelectButtonModule,
+        MultiSelectModule,
+        ReactiveFormsModule,
+        InputSwitchModule,
+        CheckboxModule,
+        InputGroupModule,
+        InputGroupAddonModule,
+        ToastModule,
+        OverlayPanelModule,
+        DialogModule,
+        SkeletonModule
+    ],
 
 })
 export class SharedModule {

@@ -1,67 +1,61 @@
+<modal-campaign></modal-campaign>
+<p-toast></p-toast>
 <app-page-header pageTitle="Campaign Analysis" class="w-full h-fit" [breadcrumbItems]="breadcrumbItems" />
 
 <div class="flex flex-col">
   <div>
     <p-panel>
-
       <tabs>
-        <tab-item [tabItem]="tabFacebook" [templateContentRef]="tempFacebook" [content]="caPageItem1"></tab-item>
-        <tab-item [tabItem]="tabInstergram" [templateContentRef]="tempInstergram" [content]="caPageItem2"></tab-item>
-        <tab-item [tabItem]="tabTwitter" [templateContentRef]="tempTwitter" [content]="caPageItem3"></tab-item>
+        <tab-item [tabItem]="tabFacebook" [templateContentRef]="contentRef" [content]="caPageContent"></tab-item>
+        <tab-item [tabItem]="tabInstagram" [templateContentRef]="contentRef" [content]="caPageContent"></tab-item>
       </tabs>
 
-      <ng-template #tempFacebook let-content="content">
-        <h3>{{ content.title }}</h3>
-        <p-panel>
-          <div class="flex justify-between w-full py-2 mb-2">
-            <div>
-              <h4 class="p-0 m-0">{{topCampaigns.length}} top performing campaigns</h4>
-            </div>
-            <div>
-              <button class="p-button p-button-sm p-button-secondary" (click)="toggleAdditionalCards()">
-                See More
-              </button>
-            </div>
-          </div>
-          <app-ca-cards [campaigns]="topCampaigns" [showAdditionalCards]="true"></app-ca-cards>
-          <app-ca-cards [campaigns]="additionalCampaigns1" [showAdditionalCards]="showAdditionalCards"></app-ca-cards>
-        </p-panel>
-      </ng-template>
+      <ng-template #contentRef let-content="content">
 
-      <ng-template #tempInstergram let-content="content">
-        <h3>{{ content.title }}</h3>
-        <p-panel>
-          <div class="flex justify-between w-full py-2 mb-2">
-            <div>
-              <h4 class="p-0 m-0">{{topCampaigns.length}} top performing campaigns</h4>
-            </div>
-            <div>
-              <button class="p-button p-button-sm p-button-secondary" (click)="toggleAdditionalCards()">
-                See More
-              </button>
-            </div>
+        <p-panel class="text-center justify-center" [style.display]="isError ? 'block' : 'none'">
+          <div class="flex justify-between items-center px-3 mb-5">
+            <img src="./assets/img/500.jpg" style="width: 60%;">
+            <p class="text-4xl">Internal Server Error</p>
+            <p>{{ userMessages.FETCH_ERROR_USER_MSG }}</p>
           </div>
-          <app-ca-cards [campaigns]="topCampaigns" [showAdditionalCards]="true"></app-ca-cards>
-          <app-ca-cards [campaigns]="additionalCampaigns1" [showAdditionalCards]="showAdditionalCards"></app-ca-cards>
         </p-panel>
-      </ng-template>
 
-      <ng-template #tempTwitter let-content="content">
-        <h3>{{ content.title }}</h3>
-        <p-panel>
-          <div class="flex justify-between w-full py-2 mb-2">
-            <div>
-              <h4 class="p-0 m-0">{{topCampaigns.length}} top performing campaigns</h4>
-            </div>
-            <div>
-              <button class="p-button p-button-sm p-button-secondary" (click)="toggleAdditionalCards()">
-                See More
-              </button>
+        <div [style.display]="isError ? 'none' : 'block'">
+
+          <div style="
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+          ">
+            <h3>{{ content.subtitle }}</h3>
+            <div style="display: flex; flex-direction: row; align-items: center">
+              <!-- <p class="text-top-right-bar semi-balted">Custom Campaigns :</p> -->
+              <p-button label="Add New" [text]="true" icon="pi pi-plus" [outlined]="true" severity="secondary"
+                size="small" (click)="openAddNew()" />
             </div>
           </div>
-          <app-ca-cards [campaigns]="topCampaigns" [showAdditionalCards]="true"></app-ca-cards>
-          <app-ca-cards [campaigns]="additionalCampaigns1" [showAdditionalCards]="showAdditionalCards"></app-ca-cards>
-        </p-panel>
+
+          <p-panel>
+            <div class="flex justify-between w-full py-2 mb-2">
+              <div>
+                <h4 class="p-0 m-0">
+                  {{ content.topCampaigns.length }} top performing campaigns
+                </h4>
+              </div>
+              <div>
+                <button class="p-button p-button-sm p-button-secondary" (click)="toggleAdditionalCards()">
+                  See More
+                </button>
+              </div>
+            </div>
+            <app-ca-cards [campaigns]="content.topCampaigns" [showAdditionalCards]="true"
+              [loading]="loading"></app-ca-cards>
+            <app-ca-cards [campaigns]="content.additionalCampaigns" [showAdditionalCards]="showAdditionalCards"
+              [loading]="loading"></app-ca-cards>
+          </p-panel>
+
+        </div>
       </ng-template>
 
     </p-panel>

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuItem } from "primeng/api";
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MenuItem, MessageService } from "primeng/api";
 import { PiPageItem } from '../../models/platform-insights';
 import { PlatformInsightsApiService } from '../../services/platform-insights-api.service';
-import { ModalAddNewCampaignComponent } from '../../components/Modals/modal-add-new-campaign/modal-add-new-campaign.component';
+import UserMessages from "../../../shared/user-messages";
+import { TabStateService } from '../../services/tab-state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pi',
@@ -10,8 +12,17 @@ import { ModalAddNewCampaignComponent } from '../../components/Modals/modal-add-
   styleUrls: ['./pi.component.scss']
 })
 
-export class PIComponent implements OnInit {
+export class PIComponent implements OnInit, OnDestroy {
+  loadingReactions: boolean = true;
+  loadingComments: boolean = true;
+  loadingHighlightedComments: boolean = true;
+  loadingSentiment: boolean = true;
+  loadingKeywordTrends: boolean = true;
+  isError: boolean = false;
+  protected readonly userMessages = UserMessages;
+
   items: any;
+  platform = "SM01";
   DataReactions: any;
   DataComments: any;
   DataSentimentOverTime: any;
@@ -20,33 +31,42 @@ export class PIComponent implements OnInit {
   OptionsKeywordThrends: any;
   OptionsSentimentOverTime: any;
 
-  constructor(private platformInsightsApiService: PlatformInsightsApiService) { }
+  private subscription: Subscription = new Subscription();
+
+  constructor(
+    private platformInsightsApiService: PlatformInsightsApiService,
+    private tabStateService: TabStateService,
+    private messageService: MessageService,
+  ) { }
+
 
   ngOnInit() {
-    let keywordThrendsLabels: string[] = [];
-    let keywordThrendsData: any[] = [];
+    var today = new Date();
+    var lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    this.subscription = this.tabStateService.activeTab$.subscribe((tabName: string) => {
+      if (tabName === "Instagram") {
+        this.platform = "SM02";
+      }
 
-    let totalReactionsLabels: string[] = [];
-    let totalReactionsData: any[] = [];
+      this.fetchDashboardData(lastMonth.toISOString().split('T')[0], today.toISOString().split('T')[0]);
+    });
+  }
 
-    let totalCommentsLabels: string[] = [];
-    let totalCommentsData: any[] = [];
-
-    let SentimentOverTimeLabels: string[] = [];
-    let SentimentOverTimeReactsData: any[] = [];
-    let SentimentOverTimeCommentsData: any[] = [];
-
+  fetchDashboardData(Date: string, Date2: string) {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-    this.platformInsightsApiService.getPIData("2024-05-01", "2024-05-30").subscribe(response => {
-      console.log(response);
+    this.platformInsightsApiService.getKeywordTrendCount(this.platform, Date, Date2).subscribe(response => {
 
       // ############ 0: Keyword Trends ############
 
-      const keyword_trends = response[0];
+      const keyword_trends = response;
+
+      let keywordThrendsLabels: string[] = [];
+      let keywordThrendsData: any[] = [];
 
       for (const [key, value] of Object.entries(keyword_trends)) {
         keywordThrendsLabels.push(key);
@@ -64,11 +84,20 @@ export class PIComponent implements OnInit {
           }
         ]
       };
+      this.loadingKeywordTrends = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
 
+    this.platformInsightsApiService.getTotalReactions(this.platform, Date, Date2).subscribe(response => {
 
       // ############ 1: Get total reactions of posts ############
 
-      const total_reactions = response[1];
+      const total_reactions = response;
+
+      let totalReactionsLabels: string[] = [];
+      let totalReactionsData: any[] = [];
 
       for (const [key, value] of Object.entries(total_reactions)) {
         totalReactionsLabels.push(key);
@@ -87,11 +116,20 @@ export class PIComponent implements OnInit {
           }
         ]
       };
+      this.loadingReactions = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
 
+    this.platformInsightsApiService.getTotalComments(this.platform, Date, Date2).subscribe(response => {
 
       // ############ 2: Get total comments of posts ############
 
-      const total_comments = response[2];
+      const total_comments = response;
+
+      let totalCommentsLabels: string[] = [];
+      let totalCommentsData: any[] = [];
 
       for (const [key, value] of Object.entries(total_comments)) {
         totalCommentsLabels.push(key);
@@ -110,11 +148,17 @@ export class PIComponent implements OnInit {
           }
         ]
       };
+      this.loadingComments = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
 
+    this.platformInsightsApiService.getHighlightedComments(this.platform, Date, Date2).subscribe(response => {
 
       // ############ 3: Get Highlighted comments ############
 
-      const highlighted_comments = response[3];
+      const highlighted_comments = response;
       highlighted_comments.forEach((item: any) => {
         if (item.description.length > 100) {
           item.description = item.description.slice(0, 150) + '...';
@@ -122,27 +166,37 @@ export class PIComponent implements OnInit {
         item.s_score = Math.round((item.s_score + 1) * 50);
       });
       this.items = highlighted_comments;
+      this.loadingHighlightedComments = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
 
+    this.platformInsightsApiService.getAverageSentimentScore(this.platform, Date, Date2).subscribe(response => {
 
       // ############ 4: Get average sentiment score of comments and reacts ############
 
-      const sentiment_scores = response[4];
+      const sentiment_scores = response;
 
-      for (const [key, value] of Object.entries(sentiment_scores.comment_sentiment_scores)) {
+      let SentimentOverTimeLabels: string[] = [];
+      let SentimentOverTimeSubCommentsData: any[] = [];
+      let SentimentOverTimeCommentsData: any[] = [];
+
+      for (const [key, value] of Object.entries(sentiment_scores.comments)) {
         SentimentOverTimeLabels.push(key);
         SentimentOverTimeCommentsData.push(value);
       }
 
-      for (const [key, value] of Object.entries(sentiment_scores.post_sentiment_scores)) {
-        SentimentOverTimeReactsData.push(value);
+      for (const [key, value] of Object.entries(sentiment_scores.subcomments)) {
+        SentimentOverTimeSubCommentsData.push(value);
       }
 
       this.DataSentimentOverTime = {
         labels: SentimentOverTimeLabels,
         datasets: [
           {
-            label: 'Reacts',
-            data: SentimentOverTimeReactsData,
+            label: 'Sub Comments',
+            data: SentimentOverTimeSubCommentsData,
             fill: false,
             borderColor: documentStyle.getPropertyValue('--blue-500'),
             tension: 0.2
@@ -156,11 +210,11 @@ export class PIComponent implements OnInit {
           }
         ]
       };
-
-    },
-      error => {
-        console.error('Error fetching data:', error);
-      });
+      this.loadingSentiment = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
 
 
     this.OptionsKeywordThrends = {
@@ -245,24 +299,35 @@ export class PIComponent implements OnInit {
     };
   }
 
-  onRowEdit(item: any) {
+  DateChanged(start: string, end: string): void {
+    this.loadingReactions = true;
+    this.loadingComments = true;
+    this.loadingHighlightedComments = true;
+    this.loadingSentiment = true;
+    this.loadingKeywordTrends = true;
+    this.isError = false;
+
+    const startDate = start.split('-').slice(0, 3).join('-');
+    const endDate = end.split('-').slice(0, 3).join('-');
+    this.fetchDashboardData(startDate, endDate);
   }
 
-  onRowOpen(item: any) {
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   breadcrumbItems: MenuItem[] = [
-    { label: "Social Media Analytics" },
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     { label: "Platform Insights" }
   ];
 
   tabFacebook = { title: 'Facebook', img: 'assets/social-media/icons/facebook.png' };
-  tabInstergram = { title: 'Instergram', img: 'assets/social-media/icons/instargram.png' };
-  tabTwitter = { title: 'Twitter', img: 'assets/social-media/icons/twitter.png' };
+  tabInstergram = { title: 'Instagram', img: 'assets/social-media/icons/instargram.png' };
 
   piPageItem1: PiPageItem = { title: '40+ new comments', totalComments: 47, commentsImprovement: -12, totalReactions: 560, reactionsImprovement: +28, HighlightedComments: 40 };
   piPageItem2: PiPageItem = { title: '40+ new comments', totalComments: 47, commentsImprovement: -12, totalReactions: 560, reactionsImprovement: +28, HighlightedComments: 40 };
-  piPageItem3: PiPageItem = { title: '40+ new comments', totalComments: 47, commentsImprovement: -12, totalReactions: 560, reactionsImprovement: +28, HighlightedComments: 40 };
 
   topBarCaption = "Custom Alerts";
 

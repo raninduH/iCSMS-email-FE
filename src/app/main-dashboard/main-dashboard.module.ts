@@ -51,7 +51,9 @@ import {PanelMenuModule} from "primeng/panelmenu";
 import {MenubarModule} from "primeng/menubar";
 import {SkeletonModule} from "primeng/skeleton";
 import {RippleModule} from "primeng/ripple";
-
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { SliderModule } from 'primeng/slider';
 
 @NgModule({
   declarations: [
@@ -64,13 +66,13 @@ import {RippleModule} from "primeng/ripple";
     UserSecurityComponent,
     NotificationsComponent,
     UnreadNotificationsComponent,
-    ReadNotificationsComponent,
     HorizontalBarChartComponent,
     GaugeChartComponent,
     GridComponent,
     WordcloudComponent,
     VerticalBerChartComponent,
-    BarChartComponent
+    BarChartComponent,
+    ReadNotificationsComponent
 
   ],
   imports: [
@@ -111,7 +113,9 @@ import {RippleModule} from "primeng/ripple";
     MenubarModule,
     SkeletonModule,
     RippleModule,
-
+    InputNumberModule,
+    SelectButtonModule,
+    SliderModule
   ],
   exports: [
     LineAreaChartComponent, // Ensure this component is exported

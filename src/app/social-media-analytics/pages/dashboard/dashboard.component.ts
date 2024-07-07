@@ -1,64 +1,122 @@
-import { Component,OnInit} from '@angular/core';
-import { MenuItem } from "primeng/api";
+import { Component, OnInit } from '@angular/core';
+import { MenuItem, MessageService } from "primeng/api";
+import UserMessages from "../../../shared/user-messages";
+import { DashboardApiService } from '../../services/dashboard-api.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
+
+export class DashboardComponent implements OnInit {
   breadcrumbItems: MenuItem[] = [
-    {label: "Social Media Analytics"},
-    {label: "Dashboard"}
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
+    { label: "Dashboard" }
   ];
 
-  myData1 = [
-    {word: 'Prashant', weight: 100, color: 'green'},
-    {word: 'Sandeep', weight: 70, color: 'green'},
-    {word: 'Ajinkya', weight: 20, color: 'green'},
-    {word: 'Kuldeep', weight: 56, color: 'green'},
-    {word: 'Vivek', weight: 59},
-    {word: 'Saheer', weight: 32, color: 'green'},
-    {word: 'Lohit', weight: 47},
-    {word: 'Anirudh', weight: 56},
-    {word: 'Raj', weight: 52},
-    {word: 'Mohan', weight: 60},
-    {word: 'Yadav', weight: 59},
-    {word: 'India', weight: 31, color: 'green'},
-    {word: 'USA', weight: 47},
-    {word: 'Sreekar', weight: 56},
-    {word: 'Ram', weight: 59},
-    {word: 'Deepali', weight: 32, color: 'green'},
-    {word: 'Kunal', weight: 47},
-    {word: 'Rishi', weight: 100},
-    {word: 'Chintan', weight: 42},
-    
-  ]
+  loadingFacebookScore: boolean = true;
+  loadingInstagramScore: boolean = true;
+  loadingDoughnut: boolean = true;
+  loadingWordCloudKeywords: boolean = true;
+  loadingWordCloudProduct: boolean = true;
+  loadingChartFacebook: boolean = true;
+  loadingChartInstagram: boolean = true;
 
-  myData2 = [
-    {word: 'Prashant', weight: 100, color: 'green'},
-    {word: 'Sandeep', weight: 70, color: 'green'},
-    {word: 'Ajinkya', weight: 20, color: 'green'},
-    {word: 'Kuldeep', weight: 56, color: 'green'},
-    {word: 'Vivek', weight: 59},
-    {word: 'Saheer', weight: 32, color: 'green'},
-    {word: 'Lohit', weight: 47},
-    {word: 'Anirudh', weight: 56},
-    {word: 'Raj', weight: 52},
-    {word: 'Mohan', weight: 60},
-    {word: 'Yadav', weight: 59},
-    {word: 'India', weight: 31, color: 'green'},
-    {word: 'USA', weight: 47},
-    {word: 'Sreekar', weight: 56},
-    {word: 'Ram', weight: 59},
-    {word: 'Deepali', weight: 32, color: 'green'},
-    {word: 'Kunal', weight: 47},
-    {word: 'Rishi', weight: 100},
-    {word: 'Chintan', weight: 42},
-    
-  ]
+  facebookScore: number = 0;
+  instagramScore: number = 0;
+  data_doughnut: number[] = [];
+  wordCloudKeywordsData: any[] = [];
+  wordCloudProductData: any[] = [];
+  chartFacebookData: any;
+  chartInstagramData: any;
+  isError: boolean = false;
+  protected readonly userMessages = UserMessages;
 
-  
-  data_doughnut: number[] = [100, 50, 100];
- 
+  constructor(
+    private DashboardApiService: DashboardApiService,
+    private messageService: MessageService
+  ) { }
+
+  ngOnInit() {
+    var today = new Date();
+    var lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    this.fetchDashboardData(lastMonth.toISOString().split('T')[0], today.toISOString().split('T')[0]);
+  }
+
+  fetchDashboardData(Date: string, Date2: string) {
+    this.DashboardApiService.getSentimentPercentage(Date, Date2).subscribe((data: any) => {
+      this.data_doughnut = data.percentage;
+      this.loadingDoughnut = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getSentimentScoreFacebook(Date, Date2).subscribe((data: number) => {
+      this.facebookScore = data;
+      this.loadingFacebookScore = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getSentimentScoreInstagram(Date, Date2).subscribe((data: number) => {
+      this.instagramScore = data;
+      this.loadingInstagramScore = false;
+    }, (error) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getKeywordTrendData(Date, Date2).subscribe((data: any) => {
+      this.wordCloudKeywordsData = data;
+      this.loadingWordCloudKeywords = false;
+    }, (error: any) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getProductTrendData(Date, Date2).subscribe((data: any) => {
+      this.wordCloudProductData = data;
+      this.loadingWordCloudProduct = false;
+    }, (error: any) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getFacebookAnalysisData(Date, Date2).subscribe((data: any) => {
+      this.chartFacebookData = data;
+      this.loadingChartFacebook = false;
+    }, (error: any) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+    this.DashboardApiService.getInstagramAnalysisData(Date, Date2).subscribe((data: any) => {
+      this.chartInstagramData = data;
+      this.loadingChartInstagram = false;
+    }, (error: any) => {
+      this.isError = true;
+      this.messageService.add({ severity: "error", summary: "Error", detail: UserMessages.FETCH_ERROR });
+    });
+
+  }
+
+  DateChanged(start: string, end: string): void {
+    this.loadingFacebookScore = true;
+    this.loadingInstagramScore = true;
+    this.loadingDoughnut = true;
+    this.loadingWordCloudKeywords = true;
+    this.loadingWordCloudProduct = true;
+    this.loadingChartFacebook = true;
+    this.loadingChartInstagram = true;
+    this.isError = false;
+    
+    const startDate = start.split('-').slice(0, 3).join('-');
+    const endDate = end.split('-').slice(0, 3).join('-');
+    this.fetchDashboardData(startDate, endDate);
+  }
+
 }

@@ -35,7 +35,7 @@
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="emailCallSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
-  
+
         <div class="choose-source mt-5" *ngIf="selectedYAxis=='keywords'">
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="socialCallSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
@@ -50,11 +50,11 @@
           <span class="mb-5">Add filter keywords</span>
           <p-multiSelect [options]="keywords" [showHeader]="true" [(ngModel)]="selectedKeywords" placeholder="Select keywords" optionLabel="name"></p-multiSelect>
         </div>
-  
+
 
       </div>
 
-      
+
 
       <!-- Conditionally show x-axis and y-axis options based on selected chart type -->
       <div *ngIf="selectedChartType === 'Line Chart'" class="chart-category mt-5">
@@ -76,12 +76,12 @@
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="allSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
-  
+
       </div>
 
 
 
-      
+
 
       <div *ngIf="selectedChartType === 'Bar Chart'" class="chart-category mt-5">
 
@@ -91,14 +91,14 @@
         <!-- <div class="pt-5"> -->
           <!-- <p-selectButton [options]="barChartXAxisOptions" [(ngModel)]="selectedXAxis" optionLabel="label" optionValue="value" (onChange)="onXAxisChange($event.value)"></p-selectButton>
         </div>-->
-        <div  class="chart-category mt-5"> 
+        <div  class="chart-category mt-5">
           <div class="chart-type mt-5">
             <span>Topics</span>
           </div>
 
           <div class="pt-5">
             <p-selectButton [options]="topicsOptions" [(ngModel)]="selectedXAxis" optionLabel="label" optionValue="value"></p-selectButton>
-          </div>          
+          </div>
         </div>
 
         <div class="chart-type mt-5">
@@ -112,7 +112,7 @@
           <p-selectButton [options]="emailBarChartYAxisOptions" [(ngModel)]="selectedYAxis" optionLabel="label" optionValue="value" ></p-selectButton>
         </div>
 
-        <div class="choose-source mt-5" *ngIf="selectedXAxis=='topics' && (selectedYAxis=='score' || selectedYAxis=='sentiment-count' || selectedYAxis=='sentiments')">
+        <div class="choose-source mt-5" *ngIf="selectedXAxis=='topics' && (selectedYAxis=='counts' || selectedYAxis=='sentiment-count' || selectedYAxis=='sources')">
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="emailCallSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
@@ -126,7 +126,7 @@
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="callSource" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
-        
+
       </div>
 
       <div *ngIf="selectedChartType === 'Horizontal Bar Chart'" class="chart-category mt-5">
@@ -137,14 +137,14 @@
         <!-- <div class="pt-5"> -->
           <!-- <p-selectButton [options]="barChartXAxisOptions" [(ngModel)]="selectedXAxis" optionLabel="label" optionValue="value" (onChange)="onXAxisChange($event.value)"></p-selectButton>
         </div>-->
-        <div  class="chart-category mt-5"> 
+        <div  class="chart-category mt-5">
           <div class="chart-type mt-5">
             <span>Topics</span>
           </div>
 
           <div class="pt-5">
             <p-selectButton [options]="wordYAxisOptions" [(ngModel)]="selectedXAxis" optionLabel="label" optionValue="value"></p-selectButton>
-          </div>          
+          </div>
         </div>
 
         <div class="chart-type mt-5">
@@ -168,7 +168,7 @@
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="socialCallSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
-        
+
       </div>
 
 
@@ -178,7 +178,7 @@
           <span class="mb-5">Choose source</span>
           <p-multiSelect [options]="allSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
         </div>
-  
+
       </div>
 
       <!-- Add other chart type conditions as needed -->
@@ -187,7 +187,7 @@
         <span class="mb-5">Choose source</span>
         <p-multiSelect [options]="allSources" [filter]="false" [showHeader]="false" [(ngModel)]="selectedCities" placeholder="Select source" optionLabel="name" display="chip" [showClear]="true" ></p-multiSelect>
       </div>
-      
+
       <div class="save-button mt-5">
         <p-button label="Save" class="saveButton" (click)="saveWidget()"></p-button>
       </div>
@@ -200,4 +200,4 @@
 </p-sidebar>
 
 
-<p-button severity="secondary" icon="pi pi-chart-bar" class="pe-3 addWidget" (click)="sidebarVisible = true"></p-button>
+<p-button  icon="pi pi-chart-bar" class="w-fit" (click)="sidebarVisible = true"></p-button>

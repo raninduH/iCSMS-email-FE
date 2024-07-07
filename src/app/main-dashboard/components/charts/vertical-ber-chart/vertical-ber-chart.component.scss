@@ -35,8 +35,15 @@
     justify-content: space-between;
     align-items: center;
     height:30px;
-    border-bottom: 2px solid #ccc;
 
+  }
+  .p-menubar p-menubarsub {
+    position: absolute;
+    right: 0;
+  }
+  .p-menubar .p-submenu-list {
+    position: relative;
+    right:0;
   }
 }
 
@@ -72,6 +79,20 @@
 
 .menu-icon {
   cursor: pointer;
+}
+
+.small-select-button {
+  font-size: 6px; /* Adjust font size */
+  padding: 1px 1px; /* Adjust padding */
+}
+
+.small-select-button .p-button {
+  height: 1px; /* Adjust height */
+  line-height: 1; /* Adjust line height to match height */
+}
+
+.small-select-button .p-button-label {
+  font-size: 1px; /* Adjust font size for the label */
 }
 
 

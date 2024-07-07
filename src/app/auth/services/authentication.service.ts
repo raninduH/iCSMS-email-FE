@@ -39,7 +39,7 @@ export class AuthenticationService {
   }
 
   signIn(username: string, password: string): Observable<any> {
-  const getIp$ = this.http.get('http://api.ipify.org/?format=json', { responseType: 'text' });
+  const getIp$ = this.http.get('https://api.ipify.org/?format=json', { responseType: 'text' });
     console.log('getIp$', getIp$);
     const authenticateUser$ = (ip: any) => new Observable(observer => {
       const authenticationDetails = new AuthenticationDetails({
@@ -109,6 +109,35 @@ export class AuthenticationService {
             });
           } else if (session.isValid()) {
             observer.next(session.getIdToken().getJwtToken());
+            observer.complete();
+          } else {
+            observer.error('Session expired. Please sign in again.');
+            this.router.navigate(['/auth/signin']).then(() => {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Session expired. Please sign in again.' });
+            });
+          }
+        });
+      } else {
+        observer.error('No user found');
+        this.router.navigate(['/auth/signin']).then(() => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Session expired. Please sign in again.' });
+        });
+      }
+    });
+  }
+
+  getAccessToken(): Observable<string> {
+    return new Observable(observer => {
+      const currentUser = this.userPool.getCurrentUser();
+      if (currentUser) {
+        currentUser.getSession((err: any, session: CognitoUserSession) => {
+          if (err) {
+            observer.error(err);
+            this.router.navigate(['/auth/signin']).then(() => {
+              this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Sign in error. Please sign in again.' });
+            });
+          } else if (session.isValid()) {
+            observer.next(session.getAccessToken().getJwtToken());
             observer.complete();
           } else {
             observer.error('Session expired. Please sign in again.');

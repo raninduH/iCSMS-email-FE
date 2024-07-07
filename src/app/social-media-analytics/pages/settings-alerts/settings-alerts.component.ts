@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { SettingAlertsData, AlertItem } from '../../models/settings';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AlertItem } from '../../models/settings';
+import { MessageService } from 'primeng/api';
 import { SettingsApiService } from '../../services/settings-api.service';
-
+import { ModalAlertComponent } from '../../components/Modals/modal-alert/modal-alert.component';
 
 @Component({
   selector: 'settings-alerts',
@@ -10,49 +11,42 @@ import { SettingsApiService } from '../../services/settings-api.service';
 })
 
 export class SettingsAlerts implements OnInit {
-  list_facebook: AlertItem[] = [];
-  list_instagram: AlertItem[] = [];
-  list_twitter: AlertItem[] = [];
+  list_alerts: AlertItem[] = [];
 
-  constructor(private settingsApiService: SettingsApiService) { }
+  @ViewChild(ModalAlertComponent) modalAlertComponent!: ModalAlertComponent;
+
+  constructor(
+    private settingsApiService: SettingsApiService,
+    private messageService: MessageService
+  ) { }
 
   ngOnInit() {
-    this.settingsApiService.getKeywordAlerts().subscribe(response => {
-      const alerts = response[0] as AlertItem[];
-      alerts.forEach(alert => {
-        switch (alert.sm_id) {
-          case "SM01":
-            this.list_facebook.push(alert);
-            break;
-          case "SM02":
-            this.list_instagram.push(alert);
-            break;
-          case "SM03":
-            this.list_twitter.push(alert);
-            break;
-          default:
-            console.log("Invalid sm_id:", alert.sm_id);
-        }
-      });
-    },
+    this.settingsApiService.getTopicAlerts().subscribe(
+      (response: AlertItem[]) => {
+        this.list_alerts = response;
+      },
       error => {
-        console.error('Error fetching data:', error);
-      });
+        this.messageService.add({ severity: "error", summary: "Error", detail: "Error fetching Data" });
+      }
+    );
   }
 
-  onRowEdit(item: AlertItem) {
+  openAddNew() {
+    this.modalAlertComponent.showDialog();
   }
 
-  onRowDelete(item: AlertItem) {
+  onRowEdit(item: AlertItem): void {
+    this.modalAlertComponent.showDialog(item);
   }
 
-  tabFacebook = { title: 'Facebook', img: 'assets/social-media/icons/facebook.png' };
-  tabInstergram = { title: 'Instergram', img: 'assets/social-media/icons/instargram.png' };
-  tabTwitter = { title: 'Twitter', img: 'assets/social-media/icons/twitter.png' };
-
-  contentFacebook: SettingAlertsData = { subtitle: "Facebook", data: this.list_facebook };
-  contentInstergram: SettingAlertsData = { subtitle: "Instergram", data: this.list_instagram };
-  contentTwitter: SettingAlertsData = { subtitle: "Twitter", data: this.list_twitter };
+  onRowDelete(item: AlertItem): void {
+    this.settingsApiService.deleteAlertItem(item.id).subscribe(() => {
+      this.list_alerts = this.list_alerts.filter((val: AlertItem) => val.id !== item.id);
+      this.messageService.add({ severity: "success", summary: "Success", detail: "Threshold Deleted Successfully" });
+    }, (error) => {
+      this.messageService.add({ severity: "error", summary: "Error", detail: "Error Deleting Data" });
+    });
+  }
 
   topBarCaption = "Add New";
 }

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GaugeChartComponent } from './gauge-chart.component';
+import { GaugeChartComponent } from './gauge-chart-facebook.component';
 
 describe('GaugeChartComponent', () => {
   let component: GaugeChartComponent;

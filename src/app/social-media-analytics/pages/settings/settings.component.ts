@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { MenuItem } from "primeng/api";
 import { Content } from '../../models/main-types';
-import { ModalExportPIComponent } from '../../components/Modals/modal-export-pi/modal-export-pi.component';
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
@@ -11,7 +10,7 @@ import { ModalExportPIComponent } from '../../components/Modals/modal-export-pi/
 export class settingsComponent {
   
   breadcrumbItems: MenuItem[] = [
-    {label: "Social Media Analytics"},
+    { label: "Social Media Analytics", routerLink: "/social-media/dashboard" },
     {label: "Settings"}
   ];
 

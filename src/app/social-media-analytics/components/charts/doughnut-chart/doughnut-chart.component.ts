@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'doughnut-chart',
@@ -6,39 +6,43 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrl: './doughnut-chart.component.scss'
 })
 
-export class DoughnutChartComponent implements OnInit {
+export class DoughnutChartComponent implements OnChanges {
   @Input() title!: string;
-  @Input() percentages!: number[];
+  @Input() percentages: number[] = [];
   data: any;
-
+  valuePercentage!: number[];
   options: any;
 
-  ngOnInit() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['percentages']) {
+      this.valuePercentage = this.percentages;
+    }
+    
     this.data = {
-      labels: ['Negative', 'Positive', 'Neutral'],
+      labels: ['Negative', 'Neutral', 'Positive'],
       datasets: [
         {
-          data: this.percentages,
+          data: this.valuePercentage,
           backgroundColor: [
-            documentStyle.getPropertyValue('--negative-color'),
-            documentStyle.getPropertyValue('--positive-color'),
-            documentStyle.getPropertyValue('--neutral-color'),
+            '#FF6E76',
+            '#e7cb59',
+            '#5dd28d'
           ],
-          hoverBackgroundColor: [documentStyle.getPropertyValue('--red-400'), documentStyle.getPropertyValue('--green-400'), documentStyle.getPropertyValue('--yellow-400')]
+          hoverBackgroundColor: [
+            '#f87171',
+            '#facc15',
+            '#4ade80'
+          ]
         }
       ]
     };
 
-
     this.options = {
       cutout: '50%',
-      height: 600,
+      height: 800,
       overrides: {
         legend: {
-          padding: 50
+          padding: 200
         }
       },
       plugins: {
@@ -46,11 +50,12 @@ export class DoughnutChartComponent implements OnInit {
           position: 'bottom',
           labels: {
             usePointStyle: true,
-
-            color: textColor
+            color: '--text-color'
           },
         }
       }
     };
   }
+
 }
+

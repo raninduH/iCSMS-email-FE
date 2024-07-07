@@ -5,6 +5,8 @@ import { CallOperatorDetails, OperatorListItem } from '../../types';
 import { CallOperatorService } from '../../services/call-operator.service';
 import UserMessages from '../../../shared/user-messages';
 import { CallAnalyticsConfig } from '../../config';
+import { TokenStorageService } from "../../../shared/shared-services/token-storage.service";
+import { delay } from "rxjs";
 
 @Component({
   selector: 'app-call-operators',
@@ -32,12 +34,16 @@ export class CallOperatorsComponent implements OnInit {
   operator!: CallOperatorDetails;
   sentiments: any[] = [];
   statusColors!: { [key: string]: string };
+  isAbilityToDelete: boolean = false;
+  isAbleToEdit: boolean = false;
 
   userMessages = UserMessages;
 
   operatorForm = new FormGroup({
-    name: new FormControl<string>('', Validators.required),
+    name: new FormControl<string>('', [Validators.required]),
     operatorId: new FormControl<number>(0),
+    email: new FormControl<string>('', [Validators.email, Validators.required]),
+    password: new FormControl<string>('', [Validators.required]),
   });
 
   data: any;
@@ -45,10 +51,14 @@ export class CallOperatorsComponent implements OnInit {
 
   constructor(
     private callOperatorService: CallOperatorService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private tokenStorageService: TokenStorageService
   ) {}
 
   ngOnInit() {
+    let permissions = this.tokenStorageService.getStorageKeyValue("permissions");
+    this.isAbilityToDelete = permissions.includes("Delete Call Operator");
+    this.isAbleToEdit = permissions.includes("Edit Call Operator");
     this.reloadDataSource();
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
@@ -166,6 +176,8 @@ export class CallOperatorsComponent implements OnInit {
       const operator: OperatorListItem = {
         name: this.operatorForm.controls['name'].value!,
         operator_id: this.operatorForm.controls['operatorId'].value!,
+        email: this.operatorForm.controls['email'].value!,
+        password: this.operatorForm.controls['password'].value!,
       };
       if (this.isEditMode) {
         operator.id = this.selectedOperator.id;
@@ -177,6 +189,7 @@ export class CallOperatorsComponent implements OnInit {
   }
 
   addOperator(operator: OperatorListItem) {
+    operator.id = " ";
     this.callOperatorService
       .addOperator(operator)
       .then((result) => {
@@ -267,6 +280,12 @@ export class CallOperatorsComponent implements OnInit {
     this.selectedOperator = callOperator;
     this.operatorForm.controls['name'].setValue(callOperator.name);
     this.operatorForm.controls['operatorId'].setValue(callOperator.operator_id);
+    this.operatorForm.controls['email'].setValue(callOperator.email);
+    if (this.isEditMode) {
+      this.operatorForm.controls['password'].setValue(' ');
+    } else {
+      this.operatorForm.controls['password'].setValue(callOperator.password!);
+    }
     this.isModelVisible = true;
   }
 
@@ -342,4 +361,30 @@ export class CallOperatorsComponent implements OnInit {
       }
     );
   }
+
+  getEmailError(): string {
+    if (this.operatorForm.controls['email'].hasError('email')) {
+      return "Invalid email address.";
+    }
+    if (this.operatorForm.controls['email'].hasError('required')) {
+      return "Operator email is required.";
+    }
+    return '';
+  }
+
+  getNameError(): string {
+    if (this.operatorForm.controls['name'].hasError('required')) {
+      return "Operator name is required.";
+    }
+    return '';
+  }
+
+  getPasswordError(): string {
+    if (this.operatorForm.controls['password'].hasError('required')) {
+      return "Operator password is required.";
+    }
+    return '';
+  }
+
+  protected readonly delay = delay;
 }
