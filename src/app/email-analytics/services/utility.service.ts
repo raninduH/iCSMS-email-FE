@@ -47,8 +47,12 @@ export class UtilityService {
     }
     if (filterCriteria.selectedDate.length === 2 && !exclude.includes("selectedDate")) {
       let from: string, to: string;
-      from = filterCriteria.selectedDate[0].toISOString().split("T")[0];  // To remove time values
-      to = filterCriteria.selectedDate[1].toISOString().split("T")[0];
+      const fromInTimeZero = filterCriteria.selectedDate[0];
+      const toInTimeZero = filterCriteria.selectedDate[1];
+      const fromFormatted = new Date(fromInTimeZero.getTime() - (fromInTimeZero.getTimezoneOffset() * 60000)).toISOString();
+      const toFormatted = new Date(toInTimeZero.getTime() - (toInTimeZero.getTimezoneOffset() * 60000)).toISOString();
+      from = fromFormatted.split("T")[0];  // To remove time values
+      to = toFormatted.split("T")[0];
       params += "&dateFrom=" + from + "&dateTo=" + to;
     }
     if (filterCriteria.importantOnly !== false && !exclude.includes("importantOnly")) {
