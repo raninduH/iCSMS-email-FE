@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { UtilityService } from '../../services/utility.service';
+
 @Component({
   selector: 'app-dashboard-time-graph',
   templateUrl: './dashboard-time-graph.component.html',
@@ -49,70 +50,61 @@ export class DashboardTimeGraphComponent implements OnInit {
         x: new Date(x), // Convert to Date object
         y: this.firstResponseTimes[index]
       }));
-      this.testData = {
-        datasets: [
-            {
-                label: 'First Response Time',
-                data: combinedData.sort((a, b) => a.x.getTime() - b.x.getTime()),
-                borderColor: '#42A5F5',
-                fill: false,
-                tension: 0.4,
-            }
-        ]
-      }
-      this.testOptions = {
-        responsive: true,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'hour',
-              tooltipFormat: 'll HH:mm',
-              displayFormats: {
-                hour: 'MMM D, HH:mm'
-              }
-            },
-            title: {
-              display: true,
-              text: 'Time'
-            }
-          },
-          y: {
-            type: 'linear',
-            title: {
-              display: true,
-              text: 'FRT'
-            },
-            ticks: {
-                callback: function(value: number) {
-                    if (value <= 0) return '0m';
-                    if (value < 60) {
-                      return `${value}m`;
-                    } else {
-                      const hours = Math.floor(value / 60);
-                      const minutes = value % 60;
-                      return `${hours}h ${minutes}m`;
-                    }
-                }
-            },
-          }
-        }
-      }
+      // this.testData = {
+      //   datasets: [
+      //       {
+      //           label: 'First Response Time',
+      //           data: combinedData.sort((a, b) => a.x.getTime() - b.x.getTime()),
+      //           borderColor: '#42A5F5',
+      //           fill: false,
+      //           tension: 0.4,
+      //       }
+      //   ]
+      // }
+      // this.testOptions = {
+      //   responsive: true,
+      //   scales: {
+      //     x: {
+      //       type: 'time',
+      //       time: {
+      //         unit: 'hour',
+      //         tooltipFormat: 'll HH:mm',
+      //         displayFormats: {
+      //           hour: 'MMM D, HH:mm'
+      //         }
+      //       },
+      //       title: {
+      //         display: true,
+      //         text: 'Time'
+      //       }
+      //     },
+      //     y: {
+      //       type: 'linear',
+      //       title: {
+      //         display: true,
+      //         text: 'FRT'
+      //       },
+      //       ticks: {
+      //           callback: function(value: number) {
+      //               if (value <= 0) return '0m';
+      //               if (value < 60) {
+      //                 return `${value}m`;
+      //               } else {
+      //                 const hours = Math.floor(value / 60);
+      //                 const minutes = value % 60;
+      //                 return `${hours}h ${minutes}m`;
+      //               }
+      //           }
+      //       },
+      //     }
+      //   }
+      // }
 
 
       this.data = {
           datasets: [
-            //   {
-            //       label: 'Email count',
-            //       fill: false,
-            //       borderColor: documentStyle.getPropertyValue('--blue-500'),
-            //       backgroundColor: "rgba(0, 100, 250, 0.4)",
-            //       yAxisID: 'y',
-            //       tension: 0.4,
-            //       data: this.emailCount,
-            //   },
               {
-                  label: 'First Response Time',
+                  label: '',
                   fill: true,
                   borderColor: documentStyle.getPropertyValue('--green-500'),
                   backgroundColor: "rgba(0, 200, 100, 0.2)",
@@ -151,6 +143,7 @@ export class DashboardTimeGraphComponent implements OnInit {
                   unit: 'hour',
                   tooltipFormat: 'll HH:mm',
                   displayFormats: {
+                    // hour: 'MMM D',
                     hour: 'MMM D, HH:mm'
                   }
                 },
@@ -174,17 +167,22 @@ export class DashboardTimeGraphComponent implements OnInit {
                         if (value <= 0) return '0m';
                         if (value < 60) {
                           return `${value}m`;
-                        } else {
+                        } else if (value < 1440) {
                           const hours = Math.floor(value / 60);
                           const minutes = value % 60;
                           return `${hours}h ${minutes}m`;
+                        } else {
+                          const days = Math.floor(value / 1440);
+                          const hours = Math.floor((value % 1440) / 60);
+                          const minutes = value % 60;
+                          return `${days}d ${hours}h`;
                         }
                     },
                   },
             },
               y1: {
                   type: 'linear',
-                  display: true,
+                  display: false,
                   position: 'right',
                   ticks: {
                       color: textColorSecondary
@@ -194,7 +192,22 @@ export class DashboardTimeGraphComponent implements OnInit {
                       color: surfaceBorder
                   }
               }
-          }
+          },
+          elements: {
+            point: {
+              pointStyle: false,
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: (tooltipItem: any) => {
+                // return "hi";
+                const yLabel = parseInt(tooltipItem.yLabel);
+                const formattedValue = this.utilityService.convertMinutes(yLabel);
+                return `FRT: ${formattedValue}`;
+              }
+            }
+          },
       };
   }
 }
