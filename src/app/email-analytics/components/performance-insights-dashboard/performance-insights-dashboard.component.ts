@@ -16,7 +16,7 @@ export class PerformanceInsightsDashboardComponent {
   breadcrumbItems: MenuItem[] = [
     {label: "Email Analytics"},
     {label: "Dashboard"},
-    {label:"Performance analytics"}
+    {label:"Performance Insights"}
   ];
 
   @Input() intervalInDaysStart!: number;
