@@ -2,7 +2,7 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { UtilityService } from '../../services/utility.service';
 import { Subscription } from 'rxjs';
-import { TimeCardResponse } from '../../interfaces/dashboard';
+import { OverdueIssuesResponse, TimeCardResponse, TimeGraph } from '../../interfaces/dashboard';
 import { DataService } from '../../services/dashboardMain.service';
 
 
@@ -23,25 +23,24 @@ export class PopUpTimeGraphComponent {
   @Input() isOpened!:boolean;
 
   rangeDates: Date[] | undefined;
-  
   fromDate: Date | undefined;
   toDate: Date | undefined;
-
   minDate: Date = new Date();
   maxDate: Date = new Date();
 
   isLoadingResponseTime: boolean = false;
   isLoadingResolutionTime: boolean = false;
   isLoadingOverdue: boolean = false;
+  resolutionTimesY: number[] = [];
+  responseTimesY: number[] = [];
+  resolutionTimesX: string[] = [];
+  responseTimesX: string[] = [];
+  overdueCount: number = 0;
 
   private ResponseTimeSubscription: Subscription | undefined;
   private ResolutionTimeSubscription: Subscription | undefined;
   private OverdueIssuesdataSubscription: Subscription | undefined;
 
-  resolutionTimesY: number[] = [];
-  responseTimesY: number[] = [];
-  resolutionTimesX: string[] = [];
-  responseTimesX: string[] = [];
 
   constructor(
     private utilityService: UtilityService, 
@@ -101,7 +100,6 @@ export class PopUpTimeGraphComponent {
   }
   subscribeALL(){
     this.getDataForFirstResponseTime()
-    //this.getDataForOverallEfficiencyandEffectivenessDntChart()
     this.getDataForResolutionTime()
     this.getOverdueIssuesdata()
   }
@@ -113,20 +111,20 @@ export class PopUpTimeGraphComponent {
   getDataForFirstResponseTime(){
     this.isLoadingResponseTime = true;
     this.ResponseTimeSubscription = this.dataService
-      .getDataForTimeGraph(this.intervalInDaysStart, this.intervalInDaysEnd)
-      .subscribe((data: TimeCardResponse) => {
-        this.responseTimesY = data.firstResponseTimes;
-        this.responseTimesX = data.clientMsgTimes;
+      .getFirstResponseTime(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: TimeGraph) => {
+        this.responseTimesY = data.y;
+        this.responseTimesX = data.x;
         this.isLoadingResponseTime = false;
       });
   }
   getDataForResolutionTime(){
     this.isLoadingResolutionTime = true;
     this.ResolutionTimeSubscription = this.dataService
-      .getDataForTimeGraph(this.intervalInDaysStart, this.intervalInDaysEnd)
-      .subscribe((data: TimeCardResponse) => {
-        this.resolutionTimesY = data.firstResponseTimes;
-        this.resolutionTimesX = data.clientMsgTimes;
+      .getResolutionTime(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: TimeGraph) => {
+        this.resolutionTimesY = data.y;
+        this.resolutionTimesX = data.x;
         this.isLoadingResolutionTime = false;
       });
   }
@@ -134,9 +132,9 @@ export class PopUpTimeGraphComponent {
     this.isLoadingOverdue = true;
     this.OverdueIssuesdataSubscription = this.dataService
       .getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd)
-      .subscribe((data: any) => {
+      .subscribe((data: OverdueIssuesResponse) => {
+        this.overdueCount = data.sum_overdue_issues;
         this.isLoadingOverdue = false;
-        console.log('Overdue Issues Data:', data);
       });
   }
 }

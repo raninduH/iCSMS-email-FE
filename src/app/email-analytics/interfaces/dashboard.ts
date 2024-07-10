@@ -178,3 +178,8 @@ export interface TimeCardResponse {
     avgFirstResponseTime: number;
     clientMsgTimes: string[];
 }
+
+export interface TimeGraph {
+    x: string[];
+    y: number[];
+}
