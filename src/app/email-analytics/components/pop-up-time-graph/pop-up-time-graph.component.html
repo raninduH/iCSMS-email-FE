@@ -14,20 +14,32 @@
       />
     </div>
 </div>
-<div class="flex flex-row gap-6">
-    <div class="w-1/2">
-        <app-time-graphs
-            [yAxisTimes]="responseTimesY"
-            [clientMsgTimes]="responseTimesX"
-            type="response"
-        />
+<div class="flex flex-col gap-y-16">
+    <div class="flex flex-row gap-6 place-content-center">
+        <div class="w-1/2">
+            <app-time-graphs
+                [yAxisTimes]="responseTimesY"
+                [clientMsgTimes]="responseTimesX"
+                [avg]="responseAvg"
+                type="response"
+            />
+        </div>
+        <div class="w-1/2">
+            <app-time-graphs
+                [yAxisTimes]="resolutionTimesY"
+                [clientMsgTimes]="resolutionTimesX"
+                [avg]="resolutionAvg"
+                type="resolution"
+            />
+        </div>
     </div>
-    <div class="w-1/2">
-        <app-time-graphs
-            [yAxisTimes]="resolutionTimesY"
-            [clientMsgTimes]="resolutionTimesX"
-            type="resolution"
+    
+    <div class="flex flex-row gap-6 place-content-center">
+        <app-best-worst-card
+            [header]="overallOverdueIssuesHeader"
+            [card_content]="overallOverdueIssuesContent"
+            [bgcolor]="overdueBgColor"
+            *ngIf="!false"
         />
     </div>
 </div>
-

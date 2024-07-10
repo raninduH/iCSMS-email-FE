@@ -162,6 +162,7 @@ export class Dashboard2Component implements OnInit {
   private DataForGaugeChartSubscription: Subscription | undefined;
   private DataForProductsByIssueandInquirySubscription: Subscription | undefined;
   private DataForTimeGraphSubscription: Subscription | undefined;
+  private OverdueIssuesdataSubscription: Subscription | undefined;
   // private DataForEffiandEffecInquiriesSubscription: Subscription | undefined;
   // private DataForIssueandInquiryTypesSubscription: Subscription | undefined;
   // private DataForEfficiencyByEmailAccSubscription: Subscription | undefined;
@@ -170,6 +171,7 @@ export class Dashboard2Component implements OnInit {
 
 
   _isPerfInsightsOpened: boolean = false;
+  isLoadingTimeGraphOverdue: boolean = true;
 
   set isPerfInsightsOpened(value: boolean) {
     this._isPerfInsightsOpened = value;
@@ -440,10 +442,17 @@ export class Dashboard2Component implements OnInit {
       .getDataForTimeGraph(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: TimeCardResponse) => {
         this.avgFirstResponseTime = data.avgFirstResponseTime;
-        this.overdueCount = data.overdueCount;
         this.firstResponseTimes = data.firstResponseTimes;
         this.clientMsgTimes = data.clientMsgTimes;
         this.isLoadingTimeCard = false;
       });
+    this.isLoadingTimeGraphOverdue = true;
+    this.OverdueIssuesdataSubscription = this.dataService
+      .getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd)
+      .subscribe((data: OverdueIssuesResponse) => {
+        this.overdueCount = data.sum_overdue_issues
+        this.isLoadingTimeGraphOverdue = false;
+      });
   }
+  
 }

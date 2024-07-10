@@ -21,21 +21,30 @@ export class TimeGraphsComponent {
   @Input() clientMsgTimes!: string[];
   title!: string;
   @Input() type!: "resolution" | "response";
+  @Input() avg!: number;
+  displayedAvg: string = '';
+  avgType!: "Avg FRT" | "Avg RT";
 
   constructor (private utilityService: UtilityService) {}
 
   ngOnInit() {
     this.updateData();
     this.title = this.type=="response" ? "First Response Time" : "Resolution Time";
+    this.avgType = this.type=="response" ? "Avg FRT" : "Avg RT";
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['yAxisTimes'] || changes['clientMsgTimes']) {
+    if (changes['yAxisTimes'] || changes['clientMsgTimes'] || changes['avg']) {
       this.updateData();
     }
   }
 
   updateData() {
+      if (this.avg < 0) {
+        this.displayedAvg = "N/A";
+      } else {
+      this.displayedAvg = this.utilityService.convertMinutes(this.avg);
+      }
       const documentStyle = getComputedStyle(document.documentElement);
       const textColor = documentStyle.getPropertyValue('--text-color');
       const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
@@ -54,7 +63,7 @@ export class TimeGraphsComponent {
                   borderColor: this.type=="response" ? documentStyle.getPropertyValue('--green-500') : documentStyle.getPropertyValue('--blue-500'),
                   backgroundColor: this.type=="response" ? "rgba(0, 200, 100, 0.2)" : "rgba(0, 150, 255, 0.2)",
                   yAxisID: 'y',
-                  tension: 0.4,
+                  tension: 0.2,
                   data: combinedData.sort((a, b) => a.x.getTime() - b.x.getTime()),
               }
           ]

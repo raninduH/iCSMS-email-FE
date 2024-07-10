@@ -182,4 +182,5 @@ export interface TimeCardResponse {
 export interface TimeGraph {
     x: string[];
     y: number[];
+    avg?: number;
 }

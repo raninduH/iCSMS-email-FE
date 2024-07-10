@@ -316,11 +316,8 @@ getOverdueIssuesdata(){
   this.isLoadingoverallOverdueIssuesCount = true
 
   this.dataService.getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverdueIssuesResponse) => {
-    console.log("overdue issues related DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa", data)
- 
     this.overallOverdueIssuesHeader = `${data.sum_overdue_issues} OVERDUE ISSUES recorded`
     this.overallOverdueIssuesContent = `out of ${data.total_ongoing_issues} ongoing issues `
-    this.isLoadingoverallOverdueIssuesCount = false
     
     this.overdueIssByEmailsLabels = data.all_reading_email_accs
     this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email
@@ -328,6 +325,7 @@ getOverdueIssuesdata(){
     for (let i of this.overdueIssByEmailsLabels){
       this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
     }
+    this.isLoadingoverallOverdueIssuesCount = false
     this.isLoadingOverdueIssByEmailAcc = false
   
        

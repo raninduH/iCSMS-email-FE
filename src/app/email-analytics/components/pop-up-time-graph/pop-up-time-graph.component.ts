@@ -2,7 +2,7 @@ import { Component, Input, SimpleChanges } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { UtilityService } from '../../services/utility.service';
 import { Subscription } from 'rxjs';
-import { OverdueIssuesResponse, TimeCardResponse, TimeGraph } from '../../interfaces/dashboard';
+import { OverdueIssuesResponse, TimeGraph } from '../../interfaces/dashboard';
 import { DataService } from '../../services/dashboardMain.service';
 
 
@@ -35,7 +35,11 @@ export class PopUpTimeGraphComponent {
   responseTimesY: number[] = [];
   resolutionTimesX: string[] = [];
   responseTimesX: string[] = [];
-  overdueCount: number = 0;
+  responseAvg: number = -1;
+  resolutionAvg: number = -1;
+  overdueBgColor = '#ff6259';
+  overallOverdueIssuesHeader: string = "Overall Overdue Issues";
+  overallOverdueIssuesContent: string = "The number of issues that are overdue";
 
   private ResponseTimeSubscription: Subscription | undefined;
   private ResolutionTimeSubscription: Subscription | undefined;
@@ -115,6 +119,7 @@ export class PopUpTimeGraphComponent {
       .subscribe((data: TimeGraph) => {
         this.responseTimesY = data.y;
         this.responseTimesX = data.x;
+        this.responseAvg = data.avg ?? -1;
         this.isLoadingResponseTime = false;
       });
   }
@@ -125,6 +130,7 @@ export class PopUpTimeGraphComponent {
       .subscribe((data: TimeGraph) => {
         this.resolutionTimesY = data.y;
         this.resolutionTimesX = data.x;
+        this.resolutionAvg = data.avg ?? -1;
         this.isLoadingResolutionTime = false;
       });
   }
@@ -133,7 +139,8 @@ export class PopUpTimeGraphComponent {
     this.OverdueIssuesdataSubscription = this.dataService
       .getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: OverdueIssuesResponse) => {
-        this.overdueCount = data.sum_overdue_issues;
+        this.overallOverdueIssuesHeader = `${data.sum_overdue_issues} OVERDUE ISSUES recorded`
+        this.overallOverdueIssuesContent = `out of ${data.total_ongoing_issues} ongoing issues `
         this.isLoadingOverdue = false;
       });
   }
