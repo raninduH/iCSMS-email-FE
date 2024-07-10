@@ -101,6 +101,8 @@ import { PopUpProductInsightsDashboardComponent } from './components/pop-up-prod
 import { PopUpIssuesAndInquiryInsightsDashboardComponent } from './components/pop-up-issues-and-inquiry-insights-dashboard/pop-up-issues-and-inquiry-insights-dashboard.component';
 import { PopUpEmailAccountInsightsDashboardComponent } from './components/pop-up-email-account-insights-dashboard/pop-up-email-account-insights-dashboard.component';
 import 'chartjs-adapter-moment';
+import { TimeGraphsComponent } from './components/time-graphs/time-graphs.component';
+import { PopUpTimeGraphComponent } from './components/pop-up-time-graph/pop-up-time-graph.component';
 
 @NgModule({
   declarations: [
@@ -158,6 +160,8 @@ import 'chartjs-adapter-moment';
     PopUpProductInsightsDashboardComponent,
     PopUpIssuesAndInquiryInsightsDashboardComponent,
     PopUpEmailAccountInsightsDashboardComponent,
+    TimeGraphsComponent,
+    PopUpTimeGraphComponent,
   ],
   imports: [
     CommonModule,
