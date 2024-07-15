@@ -123,6 +123,8 @@ export class PopUpProductInsightsDashboardComponent {
         this.unsubscribeAll();
       }
     }
+
+
   }
   
   ngOnDestroy(): void {

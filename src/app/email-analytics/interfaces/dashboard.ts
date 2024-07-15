@@ -48,6 +48,12 @@ export interface word_cloud_single_response{
     color: string;
 }
 
+export interface TrendingWord {
+    word: string;
+    weight: number;
+    color: string
+  }
+
 
 export interface stat_card_single_response{
     title: number;
