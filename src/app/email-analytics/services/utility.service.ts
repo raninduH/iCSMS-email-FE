@@ -4,9 +4,6 @@
 import { Injectable } from '@angular/core';
 import { Filter } from '../interfaces/filters';
 import { CommonColors } from '../interfaces/utility';
-import { Issue } from '../interfaces/issues';
-import { Inquiry } from '../interfaces/inquiries';
-import { Suggestion } from '../interfaces/suggestions';
 
 @Injectable({
   providedIn: 'root'
