@@ -1,8 +1,7 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { MenuItem } from "primeng/api";
-import { BestPerformingEmailAccResponse, EmailAccEfficiencyResponse, GaugeChartResponse, 
-  InquiriesByEfficiencyEffectivenessResponse, IssueInquiryFreqByProdcuts, 
-  IssueInquiryFreqByTypeResponse, IssuesByEfficiencyEffectivenessResponse, 
+import { GaugeChartResponse, 
+  IssueInquiryFreqByProdcuts, 
   OngoingAndClosedStatsResponse, OverallyEfficiencyEffectivenessPecentagesResponse, 
   OverdueIssuesResponse, stat_card_single_response, TimeCardResponse } from '../../interfaces/dashboard';
 import { DataService } from '../../services/dashboardMain.service';
@@ -34,7 +33,6 @@ export class Dashboard2Component implements OnInit {
 
   // calenders
 
-  // rangeDates: Date[] | undefined;
   rangeDates: Date[] = [new Date(), new Date()];
   
   fromDate: Date | undefined;
@@ -149,12 +147,9 @@ export class Dashboard2Component implements OnInit {
   closedInquiriesCount!:number 
   
   dataValue_forGaugeStart:number = 0
-
   products_labels!: string[]
   products_performance_scores!: number[]
-
   isProductPerformanceChart: boolean = true;
-
   
   private statCardsSubscription: Subscription | undefined;
   private DataForStatCardsSubscription: Subscription | undefined;
@@ -163,12 +158,6 @@ export class Dashboard2Component implements OnInit {
   private DataForProductsByIssueandInquirySubscription: Subscription | undefined;
   private DataForTimeGraphSubscription: Subscription | undefined;
   private OverdueIssuesdataSubscription: Subscription | undefined;
-  // private DataForEffiandEffecInquiriesSubscription: Subscription | undefined;
-  // private DataForIssueandInquiryTypesSubscription: Subscription | undefined;
-  // private DataForEfficiencyByEmailAccSubscription: Subscription | undefined;
-  // private BestPerformingEmailSubscription: Subscription | undefined;
-  // private OverdueIssuesdataSubscription: Subscription | undefined;
-
 
   _isPerfInsightsOpened: boolean = false;
   isLoadingTimeGraphOverdue: boolean = true;
@@ -252,11 +241,6 @@ export class Dashboard2Component implements OnInit {
     this.DataForGaugeChartSubscription?.unsubscribe();
     this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
     this.DataForTimeGraphSubscription?.unsubscribe();
-
-    // this.DataForProductsByIssueandInquirySubscription?.unsubscribe();
-    // this.DataForEfficiencyByEmailAccSubscription?.unsubscribe();
-    // this.BestPerformingEmailSubscription?.unsubscribe();
-    // this.OverdueIssuesdataSubscription?.unsubscribe();
   }
 
   getDataForEmailAccCards(){
@@ -264,7 +248,6 @@ export class Dashboard2Component implements OnInit {
     this.DataForStatCardsSubscription = this.dataService
       .getDataForEmailCards(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data:stat_card_single_response[]) => {
-        // console.log("DATA FOR EMAIL ACC CARDS",data)
         this.EmailAccData = data;
         this.isLoadingEmailCards = false;
       });
@@ -274,7 +257,6 @@ export class Dashboard2Component implements OnInit {
     this.statCardsSubscription =  this.dataService
       .getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: OngoingAndClosedStatsResponse) => {
-    // console.log("ISSUE AND INQUIRY COUNT DATA", data)
         this.openedIssuesCount = data.count_total_ongoing_issues
         this.closedIssuesCount = data.count_total_closed_issues
         this.openedInquiriesCount = data.count_total_ongoing_inquiries
@@ -292,7 +274,6 @@ export class Dashboard2Component implements OnInit {
     this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService
       .getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
-        // console.log("data for overall efficiency and effectiveness", data)
         this.dntChartDataOverallEfficiency = data.efficiency_percentages
         this.dntChartOverallEfficiencyLabels= data.efficiency_categories.reverse()
         this.dntChartDataOverallEffeftiveness= data.effectiveness_percentages
@@ -308,7 +289,6 @@ export class Dashboard2Component implements OnInit {
     this.DataForProductsByIssueandInquirySubscription = this.dataService
       .getDataForProductsByIssueandInquiry(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: IssueInquiryFreqByProdcuts) => {
-      // console.log("data for Isseus and Inquiries by PRODUCTS",data)
         this.products_labels = data.product_labels
         this.products_performance_scores = data.performence_scores
         this.isProductPerformanceChart = false
@@ -322,7 +302,6 @@ export class Dashboard2Component implements OnInit {
     this.DataForGaugeChartSubscription = this.dataService
       .getDataForGaugeChart(this.intervalInDaysStart, this.intervalInDaysEnd)
       .subscribe((data: GaugeChartResponse) => {
-        //console.log("gauge chart data", data.value)
         this.dataValue_forGaugeStart = data.value
         this.isLoadingGC = false;
       });

@@ -7,13 +7,10 @@ import { UtilityService } from '../../services/utility.service';
   styleUrl: './dashboard-time-graph.component.scss'
 })
 export class DashboardTimeGraphComponent implements OnInit {
-
   dialogVisible: boolean = false;
   data: any;
   options: any;
-
-  testData: any;
-  testOptions: any;
+  displayedAvgFRT: string = '';
 
   @Input() intervalInDaysStart!: number;
   @Input() intervalInDaysEnd!: number;
@@ -21,7 +18,6 @@ export class DashboardTimeGraphComponent implements OnInit {
   @Input() overdueCount!: number;
   @Input() avgFRT!: number;
   @Input() clientMsgTimes!: string[];
-  displayedAvgFRT: string = '';
 
   constructor (private utilityService: UtilityService) {}
 
@@ -50,56 +46,6 @@ export class DashboardTimeGraphComponent implements OnInit {
         x: new Date(x), // Convert to Date object
         y: this.firstResponseTimes[index]
       }));
-      // this.testData = {
-      //   datasets: [
-      //       {
-      //           label: 'First Response Time',
-      //           data: combinedData.sort((a, b) => a.x.getTime() - b.x.getTime()),
-      //           borderColor: '#42A5F5',
-      //           fill: false,
-      //           tension: 0.4,
-      //       }
-      //   ]
-      // }
-      // this.testOptions = {
-      //   responsive: true,
-      //   scales: {
-      //     x: {
-      //       type: 'time',
-      //       time: {
-      //         unit: 'hour',
-      //         tooltipFormat: 'll HH:mm',
-      //         displayFormats: {
-      //           hour: 'MMM D, HH:mm'
-      //         }
-      //       },
-      //       title: {
-      //         display: true,
-      //         text: 'Time'
-      //       }
-      //     },
-      //     y: {
-      //       type: 'linear',
-      //       title: {
-      //         display: true,
-      //         text: 'FRT'
-      //       },
-      //       ticks: {
-      //           callback: function(value: number) {
-      //               if (value <= 0) return '0m';
-      //               if (value < 60) {
-      //                 return `${value}m`;
-      //               } else {
-      //                 const hours = Math.floor(value / 60);
-      //                 const minutes = value % 60;
-      //                 return `${hours}h ${minutes}m`;
-      //               }
-      //           }
-      //       },
-      //     }
-      //   }
-      // }
-
 
       this.data = {
           datasets: [
@@ -143,7 +89,6 @@ export class DashboardTimeGraphComponent implements OnInit {
                   unit: 'hour',
                   tooltipFormat: 'll HH:mm',
                   displayFormats: {
-                    // hour: 'MMM D',
                     hour: 'MMM D, HH:mm'
                   }
                 },
@@ -201,7 +146,6 @@ export class DashboardTimeGraphComponent implements OnInit {
           tooltip: {
             callbacks: {
               label: (tooltipItem: any) => {
-                // return "hi";
                 const yLabel = parseInt(tooltipItem.yLabel);
                 const formattedValue = this.utilityService.convertMinutes(yLabel);
                 return `FRT: ${formattedValue}`;

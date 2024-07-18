@@ -11,12 +11,6 @@ export class TimeGraphsComponent {
   data: any;
   options: any;
 
-  testData: any;
-  testOptions: any;
-
-  // @Input() intervalInDaysStart!: number;
-  // @Input() intervalInDaysEnd!: number;
-  // @Input() firstResponseTimes!: number[];
   @Input() yAxisTimes!: number[];
   @Input() clientMsgTimes!: string[];
   title!: string;

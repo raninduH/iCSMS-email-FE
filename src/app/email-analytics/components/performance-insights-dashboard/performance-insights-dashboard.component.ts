@@ -23,7 +23,6 @@ export class PerformanceInsightsDashboardComponent {
   @Input() intervalInDaysEnd!: number;
   @Input() isOpened!:boolean;
  
-
   rangeDates: Date[] | undefined;
   
   fromDate: Date | undefined;
@@ -31,7 +30,6 @@ export class PerformanceInsightsDashboardComponent {
 
   minDate: Date = new Date();
   maxDate: Date = new Date();
-  
 
   dntChartDataProgress: number[] = []
   dntChartProgressLabels: string[] = []
@@ -84,8 +82,6 @@ export class PerformanceInsightsDashboardComponent {
   overdueIssByEmailsData: number[]=[]
   isLoadingOverdueIssByEmailAcc: boolean = true
 
-
-
   documentStyle = getComputedStyle(document.documentElement);
 
   private DataForStatCardsSubscription: Subscription | undefined;
@@ -97,12 +93,7 @@ export class PerformanceInsightsDashboardComponent {
  
   constructor(private fb: FormBuilder, private http: HttpClient, private dataService: DataService) {}
 
- 
-
-
   ngOnInit(): void {
-      
-      
       // calendar configuration
       let today = new Date();
       let month = today.getMonth();
@@ -113,8 +104,6 @@ export class PerformanceInsightsDashboardComponent {
       this.minDate.setMonth(prevMonth);
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
-
-      
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -135,10 +124,7 @@ export class PerformanceInsightsDashboardComponent {
 
   ngOnDestroy(): void {
     this.unsubscribeAll()
-  
   }
-
-
   
 onRangeDatesChanged(rangeDates: Date[]) {
   this.rangeDates = rangeDates;
@@ -160,13 +146,8 @@ onRangeDatesChanged(rangeDates: Date[]) {
   // Calculate the difference in days
   this.intervalInDaysStart = Math.floor(differenceStartMs / (1000 * 60 * 60 * 24))
   this.intervalInDaysEnd = Math.floor(differenceEndMs / (1000 * 60 * 60 * 24))
-
-  console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
-  
   this.unsubscribeAll()
-
   this.subscribeALL();
-
 }
 
 
@@ -188,62 +169,16 @@ unsubscribeAll(){
 }
 
 getDataForStatCards(){
-  
   this.isLoadingDCProgress = true
-
   this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
   // get data for the progress donought chart
-
   this.dntChartDataProgress = [data.ongoing_percentage, data.closed_percentage]
   this.dntChartProgressLabels = ["ongoing percentage", "closed percentage"]
-
   this.isLoadingDCProgress = false
-
-     
  });
-
 }
 
-// getDataForIssuesEfficiencyandEffectivenessDntChart(){
-
-//   this.isLoadingDCIssuesEfficiency = true
-//   this.isLoadingDCIssuesEffectiveness = true
-
-//   this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
-//     console.log("data for overall efficiency and effectiveness", data)
-//     this.dntChartDataInquiryEfficiency = [0,0,40,60]
-//     this.dntChartIssuesEfficiencyLabels= data.efficiency_categories.reverse()
-//     this.dntChartDataIssuesEffeftiveness= [0,0,30,70]
-//     this.dntChartIssuesEffectivenessLabels = data.effectiveness_categories.reverse()
-
-//     this.isLoadingDCIssuesEfficiency = false
-//     this.isLoadingDCIssuesEffectiveness = false
-
-       
-//    });
-// }
-
-// getDataForInquiriesEfficiencyandEffectivenessDntChart(){
-
-//   this.isLoadingDCInquiryEffectiveness = true
-//   this.isLoadingDCInquiryEfficiency = true
-
-//   this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
-//     console.log("data for overall efficiency and effectiveness", data)
-//     this.dntChartDataInquiryEfficiency = [0,0,40,60]
-//     this.dntChartInquiryEfficiencyLabels= data.efficiency_categories.reverse()
-//     this.dntChartDataInquiryEffeftiveness= [0,0,30,70]
-//     this.dntChartInquiryEffectivenessLabels = data.effectiveness_categories.reverse()
-
-//     this.isLoadingDCInquiryEfficiency = false
-//     this.isLoadingDCInquiryEffectiveness = false
-
-       
-//    });
-// }
-
 getDataForEfficiencyDstriandEffectivenessDistri(){
-
   this.isLoadingEffiDistri = true
   this.isLoadingEffectDistri = true
   
@@ -266,36 +201,17 @@ getDataForEfficiencyDstriandEffectivenessDistri(){
       this.effect_distri_vert_var_issues_data = effec_issue_date
       this.effi_distri_vert_var_issues_data = effi_issue_data
 
-
-      // console.log("PERFORMANCE ISNIGHTS: EFFI EFFEC DISTRIBUTION DATA \n", 
-      //   "effi_dstri_vert_bar_labels",this.effi_dstri_vert_bar_labels,
-      //   "effect_dstri_vert_bar_labels",this.effect_dstri_vert_bar_labels,
-      //   "effi_distri_vert_var_inquiries_data",this.effi_distri_vert_var_inquiries_data,
-      //   "effect_distri_vert_var_inquiries_data",this.effect_distri_vert_var_inquiries_data,
-      //   "effect_distri_vert_var_issues_data",this.effect_distri_vert_var_issues_data,
-      //   "effi_distri_vert_var_issues_data",this.effi_distri_vert_var_issues_data
-      // )
-
-        this.isLoadingEffiDistri = false
-        this.isLoadingEffectDistri = false
-    
+      this.isLoadingEffiDistri = false
+      this.isLoadingEffectDistri = false
       });
        
-   });
-
-
-
-  
+   });  
 }
 
 
 getDataForEfficiencyByEmaiAcss(){
-
   this.isLoadingEffiByEmailAcc = true
-
   this.DataForEfficiencyByEmailAccSubscription = this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
-    console.log("Efficiency by emails acc data", data)
-    
     this.email_acc_effi_labels = data.all_reading_email_accs
     this.email_acc_effi_dataset = [
       {
@@ -303,38 +219,31 @@ getDataForEfficiencyByEmaiAcss(){
         label: 'Inefficient Percentage',
         backgroundColor:  this.documentStyle.getPropertyValue('--inefficient-color'),
         data: data.ineff_percentages
-    },
-    {
+      },
+      {
         type: 'bar',
         label: 'Less Efficient Percentage',
         backgroundColor: this.documentStyle.getPropertyValue('--less-efficient-color'),
         data: data.less_eff_percentages
-    },
-    {
-      type: 'bar',
-      label: 'Moderately Efficient Percentage',
-      backgroundColor:   this.documentStyle.getPropertyValue('--moderately-efficient-color'),
-      data: data.mod_eff_percentages
-  },
-  {
-      type: 'bar',
-      label: 'High Efficient Percentage',
-      backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
-      // backgroundColor: "rgba(17, 193, 14, 0.9)",
-      data: data.highly_eff_percentages
-  }
-
+      },
+      {
+        type: 'bar',
+        label: 'Moderately Efficient Percentage',
+        backgroundColor:   this.documentStyle.getPropertyValue('--moderately-efficient-color'),
+        data: data.mod_eff_percentages
+      },
+      {
+        type: 'bar',
+        label: 'High Efficient Percentage',
+        backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
+        data: data.highly_eff_percentages
+      }
     ]
-
     this.isLoadingEffiByEmailAcc = false
   });
-
-
 }
 
-
 getOverdueIssuesdata(){
-  
   this.isLoadingOverdueIssByEmailAcc = true
   this.isLoadingoverallOverdueIssuesCount = true
 
@@ -345,14 +254,13 @@ getOverdueIssuesdata(){
     this.overdueIssByEmailsLabels = data.all_reading_email_accs
     this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email
     this.overdueIssByEmailsColors = []
+
     for (let i of this.overdueIssByEmailsLabels){
       this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
     }
+
     this.isLoadingoverallOverdueIssuesCount = false
     this.isLoadingOverdueIssByEmailAcc = false
-  
-       
    });
 }
-
 }

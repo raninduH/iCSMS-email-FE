@@ -64,13 +64,7 @@ export class PopUpEmailAccountInsightsDashboardComponent {
 
 
   constructor(private fb: FormBuilder, private http: HttpClient, private dataService: DataService) {}
-
- 
-
-
   ngOnInit(): void {
-      
-      
       // calendar configuration
       let today = new Date();
       let month = today.getMonth();
@@ -81,8 +75,6 @@ export class PopUpEmailAccountInsightsDashboardComponent {
       this.minDate.setMonth(prevMonth);
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
-      
-      
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -92,7 +84,6 @@ export class PopUpEmailAccountInsightsDashboardComponent {
     }
 
     if(changes['isOpened']){
-
       if(this.isOpened){
         this.subscribeAll();
       }else{
@@ -103,14 +94,12 @@ export class PopUpEmailAccountInsightsDashboardComponent {
 
   ngOnDestroy(): void {
     this.unsubscribeAll();
-  
   }
 
   
 onRangeDatesChanged(rangeDates: Date[]) {
   this.rangeDates = rangeDates;
   
-  console.log('Selected Range Dates:', this.rangeDates);
   const endDate = rangeDates[1];
   const startDate = rangeDates[0];
   const today = new Date();
@@ -128,8 +117,6 @@ onRangeDatesChanged(rangeDates: Date[]) {
   this.intervalInDaysStart = Math.floor(differenceStartMs / (1000 * 60 * 60 * 24))
   this.intervalInDaysEnd = Math.floor(differenceEndMs / (1000 * 60 * 60 * 24))
 
-  console.log('Difference in days start:', this.intervalInDaysStart, 'Difference in days end:', this.intervalInDaysEnd);
-  
   this.unsubscribeAll();
   this.subscribeAll();
 }
@@ -153,7 +140,6 @@ getDataForStatCards(){
   this.isLoadingStatCards = true
 
   this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
-  console.log("EMAIL ACCOUNTS STAT DATA",data)
   this.statsData = data
 
   this.isLoadingStatCards = false
@@ -167,7 +153,6 @@ getDataForEfficiencyByEmaiAcss(){
   this.isLoadingEffiByEmailAcc = true
 
   this.DataForEfficiencyByEmaiAcssSubscription = this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
-    console.log("EFFICIENCY by email acc data", data)
     
     this.email_acc_effi_labels = data.all_reading_email_accs
     this.email_acc_effi_dataset = [
@@ -193,12 +178,9 @@ getDataForEfficiencyByEmaiAcss(){
       type: 'bar',
       label: 'High Efficient Percentage',
       backgroundColor: this.documentStyle.getPropertyValue('--highly-efficient-color'),
-      // backgroundColor: "rgba(17, 193, 14, 0.9)",
       data: data.highly_eff_percentages
   }
-
     ]
-
     this.isLoadingEffiByEmailAcc = false
   });
 
@@ -206,26 +188,16 @@ getDataForEfficiencyByEmaiAcss(){
 }
 
 getBestPerformingEmail(){
-
-
   this.BestPerformingEmailSubscription = this.dataService.getBestPerformingEmail(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: BestPerformingEmailAccResponse) => {
-    console.log("best performing email account", data)
- 
     this.bestEmail = data.best_performing_email_acc
     this.isLoadingBestPerfEmail = false
-  
-       
    });
 }
 
 
 getOverdueIssuesdata(){
-  
   this.isLoadingOverdueIssByEmailAcc = true
-
   this.dataService.getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverdueIssuesResponse) => {
-    console.log("OVERDUE issues related data", data)
-
     this.overdueIssByEmailsLabels = data.all_reading_email_accs
     this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email
     this.overdueIssByEmailsColors = []
@@ -233,8 +205,6 @@ getOverdueIssuesdata(){
       this.overdueIssByEmailsColors.push(this.documentStyle.getPropertyValue('--issue-color'))
     }
     this.isLoadingOverdueIssByEmailAcc = false
-  
-       
    });
 }
 }
