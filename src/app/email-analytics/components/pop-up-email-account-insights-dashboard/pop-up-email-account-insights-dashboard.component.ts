@@ -82,8 +82,6 @@ export class PopUpEmailAccountInsightsDashboardComponent {
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
       
-      //this.subscribeAll();
-
       
   }
 
@@ -155,7 +153,7 @@ getDataForStatCards(){
   this.isLoadingStatCards = true
 
   this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data:stat_card_single_response[]) => {
-  console.log("EMAIl ACCOUNTS STAT DATA",data)
+  console.log("EMAIL ACCOUNTS STAT DATA",data)
   this.statsData = data
 
   this.isLoadingStatCards = false
@@ -169,7 +167,7 @@ getDataForEfficiencyByEmaiAcss(){
   this.isLoadingEffiByEmailAcc = true
 
   this.DataForEfficiencyByEmaiAcssSubscription = this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
-    console.log("EFFICiency by emaila acc data", data)
+    console.log("EFFICIENCY by email acc data", data)
     
     this.email_acc_effi_labels = data.all_reading_email_accs
     this.email_acc_effi_dataset = [
@@ -226,7 +224,7 @@ getOverdueIssuesdata(){
   this.isLoadingOverdueIssByEmailAcc = true
 
   this.dataService.getOverdueIssuesdata(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverdueIssuesResponse) => {
-    console.log("overdue issues related DATAAAAa", data)
+    console.log("OVERDUE issues related data", data)
 
     this.overdueIssByEmailsLabels = data.all_reading_email_accs
     this.overdueIssByEmailsData = data.overdue_issues_count_per_each_email

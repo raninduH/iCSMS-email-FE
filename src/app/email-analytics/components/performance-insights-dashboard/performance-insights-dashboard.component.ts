@@ -37,13 +37,21 @@ export class PerformanceInsightsDashboardComponent {
   dntChartProgressLabels: string[] = []
   isLoadingDCProgress : boolean = true;
 
-  dntChartDataOverallEfficiency: number[] = []
-  dntChartOverallEfficiencyLabels: string[] = []
-  isLoadingDCOverallEfficiency : boolean = true;
+  dntChartDataIssuesEfficiency: number[] = []
+  dntChartIssuesEfficiencyLabels: string[] = []
+  isLoadingDCIssuesEfficiency : boolean = true;
 
-  dntChartDataOverallEffeftiveness: number[] = []
-  dntChartOverallEffectivenessLabels: string[] = []
-  isLoadingDCOverallEffectiveness: boolean = true;
+  dntChartDataIssuesEffeftiveness: number[] = []
+  dntChartIssuesEffectivenessLabels: string[] = []
+  isLoadingDCIssuesEffectiveness: boolean = true;
+
+  dntChartDataInquiryEfficiency: number[] = []
+  dntChartInquiryEfficiencyLabels: string[] = []
+  isLoadingDCInquiryEfficiency : boolean = true;
+
+  dntChartDataInquiryEffeftiveness: number[] = []
+  dntChartInquiryEffectivenessLabels: string[] = []
+  isLoadingDCInquiryEffectiveness: boolean = true;
 
   
   effi_dstri_vert_bar_labels: string[]=[]
@@ -105,9 +113,6 @@ export class PerformanceInsightsDashboardComponent {
       this.minDate.setMonth(prevMonth);
       this.minDate.setFullYear(prevYear);
       this.maxDate = today;
-      
-      //this.subscribeALL();
-
 
       
   }
@@ -187,7 +192,6 @@ getDataForStatCards(){
   this.isLoadingDCProgress = true
 
   this.DataForStatCardsSubscription = this.dataService.getDataForStatCards(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OngoingAndClosedStatsResponse) => {
-  console.log(data)
   // get data for the progress donought chart
 
   this.dntChartDataProgress = [data.ongoing_percentage, data.closed_percentage]
@@ -200,24 +204,43 @@ getDataForStatCards(){
 
 }
 
-getDataForOverallEfficiencyandEffectivenessDntChart(){
+// getDataForIssuesEfficiencyandEffectivenessDntChart(){
 
-  this.isLoadingDCOverallEfficiency = true
-  this.isLoadingDCOverallEffectiveness = true
+//   this.isLoadingDCIssuesEfficiency = true
+//   this.isLoadingDCIssuesEffectiveness = true
 
-  this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
-    console.log("data for overall efficiency and effectiveness", data)
-    this.dntChartDataOverallEfficiency = [0,0,40,60]
-    this.dntChartOverallEfficiencyLabels= data.efficiency_categories.reverse()
-    this.dntChartDataOverallEffeftiveness= [0,0,30,70]
-    this.dntChartOverallEffectivenessLabels = data.effectiveness_categories.reverse()
+//   this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
+//     console.log("data for overall efficiency and effectiveness", data)
+//     this.dntChartDataInquiryEfficiency = [0,0,40,60]
+//     this.dntChartIssuesEfficiencyLabels= data.efficiency_categories.reverse()
+//     this.dntChartDataIssuesEffeftiveness= [0,0,30,70]
+//     this.dntChartIssuesEffectivenessLabels = data.effectiveness_categories.reverse()
 
-    this.isLoadingDCOverallEfficiency = false
-    this.isLoadingDCOverallEffectiveness = false
+//     this.isLoadingDCIssuesEfficiency = false
+//     this.isLoadingDCIssuesEffectiveness = false
 
        
-   });
-}
+//    });
+// }
+
+// getDataForInquiriesEfficiencyandEffectivenessDntChart(){
+
+//   this.isLoadingDCInquiryEffectiveness = true
+//   this.isLoadingDCInquiryEfficiency = true
+
+//   this.CurrentOverallEfficiencyandEffectivenessSubscription = this.dataService.getCurrentOverallEfficiencyandEffectiveness(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: OverallyEfficiencyEffectivenessPecentagesResponse) => {
+//     console.log("data for overall efficiency and effectiveness", data)
+//     this.dntChartDataInquiryEfficiency = [0,0,40,60]
+//     this.dntChartInquiryEfficiencyLabels= data.efficiency_categories.reverse()
+//     this.dntChartDataInquiryEffeftiveness= [0,0,30,70]
+//     this.dntChartInquiryEffectivenessLabels = data.effectiveness_categories.reverse()
+
+//     this.isLoadingDCInquiryEfficiency = false
+//     this.isLoadingDCInquiryEffectiveness = false
+
+       
+//    });
+// }
 
 getDataForEfficiencyDstriandEffectivenessDistri(){
 
@@ -244,14 +267,14 @@ getDataForEfficiencyDstriandEffectivenessDistri(){
       this.effi_distri_vert_var_issues_data = effi_issue_data
 
 
-      console.log("PERFORMANCE ISNIGHTS: EFFI EFFEC DISTRIBUTION DATA \n", 
-        "effi_dstri_vert_bar_labels",this.effi_dstri_vert_bar_labels,
-        "effect_dstri_vert_bar_labels",this.effect_dstri_vert_bar_labels,
-        "effi_distri_vert_var_inquiries_data",this.effi_distri_vert_var_inquiries_data,
-        "effect_distri_vert_var_inquiries_data",this.effect_distri_vert_var_inquiries_data,
-        "effect_distri_vert_var_issues_data",this.effect_distri_vert_var_issues_data,
-        "effi_distri_vert_var_issues_data",this.effi_distri_vert_var_issues_data
-      )
+      // console.log("PERFORMANCE ISNIGHTS: EFFI EFFEC DISTRIBUTION DATA \n", 
+      //   "effi_dstri_vert_bar_labels",this.effi_dstri_vert_bar_labels,
+      //   "effect_dstri_vert_bar_labels",this.effect_dstri_vert_bar_labels,
+      //   "effi_distri_vert_var_inquiries_data",this.effi_distri_vert_var_inquiries_data,
+      //   "effect_distri_vert_var_inquiries_data",this.effect_distri_vert_var_inquiries_data,
+      //   "effect_distri_vert_var_issues_data",this.effect_distri_vert_var_issues_data,
+      //   "effi_distri_vert_var_issues_data",this.effi_distri_vert_var_issues_data
+      // )
 
         this.isLoadingEffiDistri = false
         this.isLoadingEffectDistri = false
@@ -271,7 +294,7 @@ getDataForEfficiencyByEmaiAcss(){
   this.isLoadingEffiByEmailAcc = true
 
   this.DataForEfficiencyByEmailAccSubscription = this.dataService.getDataForEfficiencyByEmailAcc(this.intervalInDaysStart, this.intervalInDaysEnd).subscribe((data: EmailAccEfficiencyResponse) => {
-    console.log("EFFICiency by emaila acc data", data)
+    console.log("Efficiency by emails acc data", data)
     
     this.email_acc_effi_labels = data.all_reading_email_accs
     this.email_acc_effi_dataset = [
