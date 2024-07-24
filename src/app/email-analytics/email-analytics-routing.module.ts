@@ -15,11 +15,7 @@ import { ThreadDataviewComponent } from './components/thread-dataview/thread-dat
 
 
 const routes: Routes = [
-  {
-    path: "dashboard1",
-    component: DashboardComponent,
-    canActivate: [conditionGuard,AuthGuardService] 
-  },
+
   {
     path: "dashboard2",
     component: Dashboard2Component,

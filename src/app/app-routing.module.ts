@@ -23,7 +23,7 @@ const routes: Routes = [
  //default path redirect to auth
   {
     path: "",
-    redirectTo: "email",
+    redirectTo: "email/dashboard2",
     pathMatch: "full"
   },
   {
